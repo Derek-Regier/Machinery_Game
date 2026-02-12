@@ -13,6 +13,4 @@ void move_player_horizontal(Player *player);
 
 bool update_health(Player *player, int x);
 
-void take_damage(Player *player,int x);
-
-void restore_health(Player *player,int x);
+void update_damage(Player *player, int x);

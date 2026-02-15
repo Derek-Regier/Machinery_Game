@@ -1,4 +1,4 @@
-typdef struct {
+typedef struct {
     unsigned int x, y;
     int delta_x;
     int delta_y;
@@ -14,3 +14,6 @@ void move_player_horizontal(Player *player);
 bool update_health(Player *player, int x);
 
 void update_damage(Player *player, int x);
+
+int light_attack(Player *player);
+

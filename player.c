@@ -9,12 +9,17 @@ void move_player_horizontal(Player *player){
 }
 
 bool update_health(Player *player, int x){
+    bool is_dead = false;
     player->health += x;
     if (player->health <= 0){
-        return true;
+        is_dead = true;
     }
-    return false;
+    return is_dead;
 }
 void update_damage(Player *player, int x){
     player->damage += x;
+}
+
+int light_attack(Player *player){
+    return player->damage;
 }

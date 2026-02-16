@@ -1,4 +1,5 @@
 #include "player.h"
+#include <stdbool.h>
 
 void move_player_vertical(Player *player){
     player->y += player->delta_y;

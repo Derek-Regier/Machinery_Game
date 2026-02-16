@@ -24,4 +24,4 @@ int boss_attack(Boss *boss);
 bool summon(Boss *boss);
 
 
-#endif
+#endif /* BOSS_H */

@@ -21,4 +21,4 @@ void update_enemy_damage(Enemy *enemy, int x);
 
 int enemy_attack(Enemy *enemy);
 
-#endif 
+#endif /* ENEMY_H */

@@ -1,4 +1,4 @@
-#include "async.h"
+#include "asynch.h"
 #define PLAYER_ATTACK_COOLDOWN 1
 
 void on_light_attack(Player *player, int cooldown){
@@ -10,19 +10,15 @@ void on_light_attack(Player *player, int cooldown){
 void move_player(Player *player, char key){
     if (key == 'w'){
         player->delta_y = 1; // Arbitrary start value, animation will determine later
-        move_player_vertical(player);
     }
     if (key == 's'){
         player->delta_y = -1; 
-        move_player_vertical(player);
     }
     if (key == 'a'){
         player->delta_x = -1; 
-        move_player_horizontal(player);
     }
     if (key == 'd'){
-        player->delta_x= 1; 
-        move_player_horizontal(player);
+        player->delta_x = 1; 
     }
 }
 

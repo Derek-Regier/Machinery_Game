@@ -8,7 +8,7 @@ typedef struct {
     int delta_y;
     int health;
     int damage;
-    unsigned int h,w;
+    unsigned int w, h;
 } Enemy;
 
 void move_enemy_vertical(Enemy *enemy);
@@ -21,4 +21,4 @@ void update_enemy_damage(Enemy *enemy, int x);
 
 int enemy_attack(Enemy *enemy);
 
-#endif
+#endif 

@@ -2,7 +2,7 @@
 #define ITEM_H
 
 typedef struct {
-    unsigned int x,y;
+    unsigned int x, y;
     int value;
 } Item;
 

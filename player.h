@@ -6,7 +6,7 @@ typedef struct {
     int damage;
     bool is_attacking;
     unsigned int attack_cooldown;
-    unsigned int h,w;
+    unsigned int w, h;
 } Player;
 
 void move_player_vertical(Player *player);

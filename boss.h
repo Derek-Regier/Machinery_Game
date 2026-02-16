@@ -8,7 +8,7 @@ typedef struct {
     int health;
     int damage;
     const int max_health;
-    unsigned int h,w;
+    unsigned int w, h;
 } Boss;
 
 void move_boss_vertical(Boss *boss);

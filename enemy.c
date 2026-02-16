@@ -11,7 +11,7 @@ void move_enemy_horizontal(Enemy *enemy){
 bool update_enemy_health(Enemy *enemy, int x){
     bool is_dead = false;
     enemy->health += x;
-    if (ebemy->health <= 0){
+    if (enemy->health <= 0){
         is_dead = true;
     }
     return is_dead;

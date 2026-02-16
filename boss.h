@@ -1,6 +1,8 @@
 #ifndef BOSS_H
 #define BOSS_H
 
+#include <stdbool.h>
+
 typedef struct {
     unsigned int x, y;
     int delta_x;

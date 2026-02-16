@@ -1,6 +1,7 @@
 #ifndef ENEMY_H
 #define ENEMY_H
 
+#include <stdbool.h>
 
 typedef struct {
     unsigned int x, y;

@@ -1,3 +1,6 @@
+#ifndef BOSS_H
+#define BOSS_H
+
 typedef struct {
     unsigned int x, y;
     int delta_x;
@@ -19,3 +22,6 @@ void update_boss_damage(Boss *boss, int x);
 int boss_attack(Boss *boss);
 
 bool summon(Boss *boss);
+
+
+#endif

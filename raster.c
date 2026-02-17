@@ -22,6 +22,30 @@ void clear_screen(UINT32 *base){
 
 }
 
+void clear_region(UINT32 *base, UINT16 row, UINT16 col, UINT16 length, UINT16 width){
+
+    UINT16 r, c;
+  
+    // Prevent Out-of-Bounds
+    if (row >= 400 || col >= 600){
+        return;
+    }
+    if (row + width > 400){
+        width = 400 - row;
+    }
+    if (col + length > 640){
+        length = 640 - col;
+    }
+
+    for (r = 0; r < width; r++){
+        
+        for (c = 0; c < length; c++){
+
+            clear_pixel(base, row + r, col + c);
+        }
+
+}
+
 void plot_pixel(UINT8 *base, UINT16 row, UINT16 col){
 
 }

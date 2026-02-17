@@ -25,5 +25,7 @@ int boss_attack(Boss *boss);
 
 bool summon(Boss *boss);
 
+bool boss_hitbox_overlaps(const Boss *boss, int x, int y, int width, int height);
+
 
 #endif /* BOSS_H */

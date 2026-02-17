@@ -22,4 +22,6 @@ void update_enemy_damage(Enemy *enemy, int x);
 
 int enemy_attack(Enemy *enemy);
 
+bool enemy_hitbox_overlaps(const Enemy *enemy, int x, int y, int width, int height);
+
 #endif /* ENEMY_H */

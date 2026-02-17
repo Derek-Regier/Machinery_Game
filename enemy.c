@@ -24,3 +24,10 @@ void update_enemy_damage(Enemy *enemy, int x){
 int enemy_attack(Enemy *enemy){
     return enemy->damage;
 }
+
+bool enemy_hitbox_overlaps(const Enemy *enemy, int x, int y, int width, int height){  
+    return (enemy->x < x + width &&           /* Enemy's left edge is left of player's right edge */
+            enemy->x + enemy->w > x &&       /* Enemy's right edge is right of player's left edge */
+            enemy->y < y + height &&          /* Enemy's top edge is above player's bottom edge */
+            enemy->y + enemy->h > y);        /* Enemy's bottom edge is below player's top edge */
+}

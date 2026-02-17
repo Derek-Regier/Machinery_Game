@@ -1,3 +1,5 @@
+#ifndef PLAYER_H
+#define PLAYER_H
 #include <stdbool.h>
 
 typedef struct {
@@ -8,7 +10,7 @@ typedef struct {
     int damage;
     bool is_attacking;
     unsigned int attack_cooldown;
-    unsigned int w, h;
+    unsigned int h,w;
 } Player;
 
 void move_player_vertical(Player *player);
@@ -26,3 +28,5 @@ bool player_is_attacking(const Player *player);
 void player_set_attacking(Player *player, bool attacking, const int cooldown);
 
 bool player_hitbox_overlaps(const Player *player, int x, int y, int width, int height);
+
+#endif /* PLAYER_H */

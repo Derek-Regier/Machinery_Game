@@ -190,4 +190,4 @@ void plot_character(UINT8 *base, UINT16 row, UINT16 col, char ch);
 */
 void plot_string(UINT8 *base, UINT16 row, UINT16 col, char *ch);
 
-#endif
+#endif /* RASTER_H */

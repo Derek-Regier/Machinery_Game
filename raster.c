@@ -51,5 +51,52 @@ void plot_pixel(UINT8 *base, UINT16 row, UINT16 col){
 }
 
 void plot_horizontal_line(UINT32 *base, UINT16 row, UINT16 col, UINT16 length){
+  
+    UINT8 *byte_base = (UINT8 *)base;
+    UINT16 i;
+    UINT32 bytes_per_row = 640/8;
+
+    // Boundary  
+    if (row >= 400 || col >= 640){
+        return;
+    }
+    if (col + length > 640){
+        length = 640 - col;
+    }
+
+    for (i = 0l i < length; i++){
+        
+        UINT32 byte_index = row * bytes_per_row + ((col + i) / 8);
+        UINT8 bit_mask = 1 << (7 - ((col + i) % 8));
+
+        byte_base[byte_index] |= bit_mask;
+        
+    }
+
+}
+
+void plot_vertical_line(UINT32 *base, UINT16 row, UINT16 col, UINT16 length){
+
+    UINT8 *byte_base = (UINT8 *)base;
+    UINT16 i;
+    UINT32 bytes_per_row = 640/8;
+
+    if (row >= 400 || col >= 640){
+        return;
+    }
+
+    if (row + length > 400){
+        length = 400 - row;
+    }
+
+    for (i = 0; i < length; i++){
+
+        UINT32 byte_index = (row + i) * bytes_per_row + (col / 8);
+        UINT8 bit_mask = 1 << (7 - (col % 8));
+
+        byte_base[byte_index] |= bit_mask;
+
+    }
+
 
 }

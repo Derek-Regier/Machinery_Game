@@ -37,5 +37,46 @@ void player_hits_enemy(Model *model){
         }
     }
 }
-void enemy_hits_player(Model *model,int enemy_num);
-bool level_end(Player *player);
+void enemy_hit_player(Model *model){
+    /* Check collision with all enemies */
+    for (int i = 0; i < 1; i++){
+        Enemy *enemy = &model->enemy[i];
+        
+        /* Skip if enemy is dead or not attacking */
+        if (enemy->health <= 0 || !enemy->is_attacking){
+            continue;
+        }
+        
+        /* Check if enemy overlaps player */
+        if (enemy_hitbox_overlaps(&model->enemy, 
+                                   player->x, player->y, 
+                                   player->w, player->h)){
+            
+            int damage = enemy_attack(enemy);
+            bool player_died = player_take_damage(&model->player, damage);
+            
+            update_health_HUD(&model->player);
+            
+            if (player_died){
+                /* TODO: Trigger player death */
+            }
+        }
+    }
+}
+bool level_end(Player *player){
+    /* Win: Boss defeated */
+    if (model->boss.health <= 0){
+        /* TODO: Display "You Win" */
+        return true;
+    }
+    
+    /* Lose: Player died */
+    if (model->player.health <= 0){
+        /* TODO: Restart game */
+        return true;
+    }
+    
+    return false;  /* Game continues */
+}
+
+

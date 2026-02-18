@@ -48,6 +48,18 @@ void clear_region(UINT32 *base, UINT16 row, UINT16 col, UINT16 length, UINT16 wi
 
 void plot_pixel(UINT8 *base, UINT16 row, UINT16 col){
 
+    UINT32 bytes_per_row = 640 / 8;
+    // Prevent Out-of-Bounds
+    if (row >= 400 || col >= 640){
+        return;
+    }
+
+
+    UINT32 byte_index = row * bytes_per_row + (col / 8);
+    UINT8 bit_mask = 1 << (7 - (col % 8));
+
+    base[byte_index] |= bit_mask; 
+
 }
 
 void plot_horizontal_line(UINT32 *base, UINT16 row, UINT16 col, UINT16 length){
@@ -56,7 +68,7 @@ void plot_horizontal_line(UINT32 *base, UINT16 row, UINT16 col, UINT16 length){
     UINT16 i;
     UINT32 bytes_per_row = 640/8;
 
-    // Boundary  
+    // Prevent Out-of-Bounds
     if (row >= 400 || col >= 640){
         return;
     }
@@ -81,6 +93,7 @@ void plot_vertical_line(UINT32 *base, UINT16 row, UINT16 col, UINT16 length){
     UINT16 i;
     UINT32 bytes_per_row = 640/8;
 
+    // Prevent Out-of-Bounds
     if (row >= 400 || col >= 640){
         return;
     }

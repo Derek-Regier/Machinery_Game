@@ -37,8 +37,9 @@ void player_hits_enemy(Model *model){
         }
     }
 }
-void enemy_hit_player(Model *model){
+bool enemy_hits_player(Model *model){
     /* Check collision with all enemies */
+    bool player_died = false;
     for (int i = 0; i < 1; i++){
         Enemy *enemy = &model->enemy[i];
         
@@ -57,12 +58,16 @@ void enemy_hit_player(Model *model){
             
             update_health_HUD(&model->player);
             
-            if (player_died){
-                /* TODO: Trigger player death */
-            }
         }
     }
+    return player_died;
 }
+
+void player_dies(){
+    /* call level end and change game state to restart to menue, 
+    this function will be called on conditions like when enemy_hits_player so no implementation for now*/
+}
+
 bool level_end(Player *player){
     /* Win: Boss defeated */
     if (model->boss.health <= 0){
@@ -78,5 +83,4 @@ bool level_end(Player *player){
     
     return false;  /* Game continues */
 }
-
 

@@ -66,7 +66,7 @@ void plot_horizontal_line(UINT32 *base, UINT16 row, UINT16 col, UINT16 length){
   
     UINT8 *byte_base = (UINT8 *)base;
     UINT16 i;
-    UINT32 bytes_per_row = 640/8;
+    UINT32 bytes_per_row = 640 / 8;
 
     // Prevent Out-of-Bounds
     if (row >= 400 || col >= 640){
@@ -91,7 +91,7 @@ void plot_vertical_line(UINT32 *base, UINT16 row, UINT16 col, UINT16 length){
 
     UINT8 *byte_base = (UINT8 *)base;
     UINT16 i;
-    UINT32 bytes_per_row = 640/8;
+    UINT32 bytes_per_row = 640 / 8;
 
     // Prevent Out-of-Bounds
     if (row >= 400 || col >= 640){
@@ -112,4 +112,26 @@ void plot_vertical_line(UINT32 *base, UINT16 row, UINT16 col, UINT16 length){
     }
 
 
+}
+
+void plot_line(UINT32 *base, UINT16 start_row, UINT16 start_col, UINT16 end_row, UINT16 end_col){
+    
+
+}
+
+void plot_rectangle(UINT32 *base, UINT16 row, UINT16 col, UINT16 length, UINT16 width){
+    if (length == 0 || width == 0){
+        return;
+    }
+    // Top
+    plot_horizontal_line(base, row, col, width);
+
+    // Bottom
+    plot_horizontal_line(base, row + length - 1, col, width);
+
+    // Left
+    plot_vertical_line(base, row, col, length);
+
+    // Right
+    plot_vertical_line(base, row, col + width - 1, length);
 }

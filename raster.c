@@ -24,7 +24,11 @@ void clear_screen(UINT32 *base){
 
 void clear_region(UINT32 *base, UINT16 row, UINT16 col, UINT16 length, UINT16 width){
 
+ 
+
     UINT16 r, c;
+
+       int words_per_row = 640 / 32;
   
     // Prevent Out-of-Bounds
     if (row >= 400 || col >= 600){
@@ -41,7 +45,13 @@ void clear_region(UINT32 *base, UINT16 row, UINT16 col, UINT16 length, UINT16 wi
         
         for (c = 0; c < length; c++){
 
-            clear_pixel(base, row + r, col + c);
+            int current_row = row + c;
+            int current_col = col + c;
+            
+            int word_index = current_row * words_per_row + (current_col /32);
+            int bit_position = 31 - (current_col % 32);
+
+            base[word_index] &= ~(1 << bit_position); // bitwise "and" with bitwise "not" 
         }
 
 }
@@ -54,7 +64,7 @@ void plot_pixel(UINT8 *base, UINT16 row, UINT16 col){
         return;
     }
 
-
+    // Traverse row index by bytes 
     UINT32 byte_index = row * bytes_per_row + (col / 8);
     UINT8 bit_mask = 1 << (7 - (col % 8));
 
@@ -199,4 +209,8 @@ void plot_triangle(UINT 32 * base, UINT16 row, UINT16 col, UINT16 base_len, UINT
         break;
 
     }
+}
+
+void plot_bitmap_8(UINT8 *base, UINT16 row, UINT16 col, UINT16 height){
+    
 }

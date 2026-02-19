@@ -135,3 +135,10 @@ void plot_rectangle(UINT32 *base, UINT16 row, UINT16 col, UINT16 length, UINT16 
     // Right
     plot_vertical_line(base, row, col + width - 1, length);
 }
+
+void plot_square(UINT32 *base, UINT16 row, UINT16 col, UINT16 side){
+    if (side == 0){
+        return;
+    }
+    plot_rectangle(base, row, col, side, side);
+}

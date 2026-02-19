@@ -115,7 +115,35 @@ void plot_vertical_line(UINT32 *base, UINT16 row, UINT16 col, UINT16 length){
 }
 
 void plot_line(UINT32 *base, UINT16 start_row, UINT16 start_col, UINT16 end_row, UINT16 end_col){
+    int row = start_row;
+    int col = start_col;
+    int row_step;
+    int col_step;
+
+    if (end_row > start_row){
+        row_step = 1;
+    }else{
+        row_step = -1;
+    }
     
+    if (end_col > start_col){
+        col_step = 1;
+    }else{
+        col_step = -1;
+    }
+
+    while (row != end_row || col != end_col){
+        plot_pixel((UINT8*)base, row, col);
+
+        if (row != end_row){
+            row += row_step;
+        }
+        if (col != end_col){
+            col += col_step;
+        }
+
+    }
+    plot_pixel((UINT8 *)base, end_row, end_col);
 
 }
 
@@ -141,4 +169,34 @@ void plot_square(UINT32 *base, UINT16 row, UINT16 col, UINT16 side){
         return;
     }
     plot_rectangle(base, row, col, side, side);
+}
+
+void plot_triangle(UINT 32 * base, UINT16 row, UINT16 col, UINT16 base_len, UINT16 height, UINT8 direction){
+    switch (direction){
+        case 0: // top left
+            plot_horizontal_line(base, row, col, base_len);
+            plot_vertical_line(base, row, col, height);
+            plot_line()(base, row + height - 1, col, row, col + base_len - 1);
+        break;
+
+        case 1: //top right
+            plot_horizontal_line(base, row, col - base_len + 1, base_len);
+            plot_vertical_line(base, row, col, height);
+            plot(base, row + height + 1, col, row, col - base_len + 1);
+        break;
+
+        case 2: // bottom  left
+            plot_horizontal_line(base, row, col, base_len);
+            plot_vertical_line(base, row, col, height);
+            plot_line(base, row + height + 1, col, row, col - base_len + 1);
+            
+        break;
+
+        case 3: // bottom right
+            plot_horizontal_line(base, row, col - base_len + 1, base_len);
+            plot_vertical_line(base, row - height + 1, col, height);
+            plot_line(base, row - height + 1, col + base_len + 1, row, col);
+        break;
+
+    }
 }

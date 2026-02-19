@@ -1,6 +1,7 @@
 	xdef	_plot_pixel
 	xdef	_clear_screen
 	xdef	_clear_region
+	xdef	_plot_horizontal_line
 	
 BASE	equ	8
 ROW	equ	10	
@@ -74,7 +75,7 @@ CLEAR_WIDTH	equ	18
 _clear_region:
 
 	link	a6,#0
-	movem.l	d0-3/a0,-(sp)
+	movem.l	d0-4/a0,-(sp)
 
 	movea.l	CLEARRE_BASE(a6),a0
 	move.w	CLEAR_ROW(a6),d0
@@ -122,6 +123,120 @@ dont_change_length:
 
 clearre_done:
 
-	movem.l	(sp),d0-3/a0
+	movem.l	(sp),d0-4/a0
+	unlk	a6
+	rts
+
+PLOTHL_BASE	equ	8
+PLOTHL_ROW	equ	12
+PLOTHL_COL	equ	14
+PLOTHL_LENGTH	equ	16
+
+_plot_horizontal_line:
+
+	link	a6,#0
+	movem.l	d0-5/a0,-(sp)
+
+	movea.l	PLOTHL_BASE(a6),a0
+	move.w	PLOTHL_ROW(a6),d0
+	move.w	PLOTHL_COL(a6),d1
+	move.w	PLOTHL_LENGTH(a6),d2
+
+	cmp.w	#400,d0
+	blo	plothl_done
+
+	cmp.w	#640,d1
+	blo	plothl_done
+
+plothl_in_bounds:	
+
+	move.w	d1,d3
+	add.w	d2,d3	;col+length
+	cmp.w	#640,d3	;>640
+	bls	dont_change_hl_length
+
+	move.w	d1,d2
+	sub.w	#640,d2	;length = 640 - col
+
+dont_change_hl_length:
+
+	sub.w	#1,d2		;i = 01
+	move.w	#1,d4		;i
+	move.w	#80,d5		;bytes_per_row
+	
+	length_hl_oop:		
+			
+		mulu.w	d0,d5		;row * bytes_per_row
+
+		add.w	d4,d1		;col+i
+		lsr.w	#3,d1		;(col+i)/8
+
+		add.w	d0,d5		;= byte_index
+
+		move.w	COL(a6),d3
+		add.w	d4,d3		;col+i
+		and.w	#7,d3		;(col+i) % 8
+
+		sub.w	#7,d3		;7-
+		lsl.w	#1,d3		;bit_mask = 1 <<
+
+		movea.l	BASE(a6),a0
+
+		adda.l	d5,a0
+		or.w	(a0),d3		;base[byte_index] |= bit_mask
+
+		add.w	#1,d4		;i++
+
+	dbra.w	d2,length_hl_loop
+
+plothl_done:
+	
+	movem.l	(sp),d0-5/a0
+	unlk	a6
+	rts
+
+PLOTVL_BASE	equ	8
+PLOTVL_ROW	equ	12
+PLOTVL_COL	equ	14
+PLOTVL_LENGTH	equ	16
+
+_plot_vertical_line:
+
+	link	a6,#0
+	movem.l	d0-5/a0,-(sp)
+
+	movea.l	PLOTVL_BASE(a6),a0
+	move.w	PLOTVL_ROW(a6),d0
+	move.w	PLOTVL_COL(a6),d1
+	move.w	PLOTVL_LENGTH(a6),d2
+
+	cmp.w	#400,d0
+	blo	plotvl_done
+
+	cmp.w	#640,d1
+	blo	plotvl_done
+
+plothl_in_bounds:	
+
+	move.w	d0,d3
+	add.w	d2,d3	;row+length
+	cmp.w	#640,d3	;>640
+	bls	dont_change__levlngth
+
+	move.w	d0,d2
+	sub.w	#640,d2	;length = 640 - col
+
+dont_change_vl_length:
+
+	move.w	#80,d5		;bytes_per_row
+	
+	length_vl_oop:		
+			
+
+	dbra.w	d2,length_vl_loop
+	
+plotvl_done:
+	
+	movem.l	(sp),d0-5/a0
 	unlk	a6
 	rts

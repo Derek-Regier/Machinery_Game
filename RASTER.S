@@ -1,4 +1,6 @@
 	xdef	_plot_pixel
+	xdef	_clear_screen
+
 	
 BASE	equ	8
 ROW	equ	10	
@@ -40,8 +42,26 @@ in_bounds:
 
 done:
 	
-	movem.l	(sp),d0-2/a0
+	movem.l	(sp),d0-3/a0
 	unlk	a6
 	rts
 
+
+BASE	equ	8
+_clear_screen:
+
+	link	a6,#0
+	movem.l	d0/a0,-(sp)
+
+	move.w	#8000,d0
+	movea.l	BASE(a6),a0
+
+loop:
+	move.w	#0,(a0)
+	adda.l	#1,(a0)
+	dbra.w	d0,loop
 	
+
+	movem.l	(sp),d0/a0
+	unlk	a6
+	rts

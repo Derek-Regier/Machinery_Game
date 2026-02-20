@@ -3,6 +3,8 @@
 	xdef	_clear_region
 	xdef	_plot_horizontal_line
 	xdef	_plot_vertical_line
+	xdef	_plot_rectangle
+	xdef	_plot_square
 	
 BASE	equ	8
 ROW	equ	10	
@@ -373,3 +375,41 @@ plotr_done:
 	movem.l	(sp)+,d0-4/a0
 	unlk	a6
 	rts	
+
+PLOTQ_BASE	equ	8
+PLOTQ_ROW	equ	12
+PLOTQ_COL	equ	14
+PLOTQ_SIDE	equ	16
+	
+_plot_square:
+
+	link	a6,#0
+	movem.l	d0-4/a0,-(sp)
+
+	movea.l	PLOTQ_BASE(a6),a0
+	move.w	PLOTQ_ROW(a6),d0
+	move.w	PLOTQ_COL(a6),d1
+	move.w	PLOTQ_SIDE(a6),d2
+
+	cmp.w	#0,d2
+	blo	plotq_done
+
+	move.w 	d2,-(sp) 	;UINT16 side
+	move.w 	d2,-(sp) 	;UINT16 side
+	move.w 	d1,-(sp) 	;UINT16 col
+	move.w 	d0,-(sp)	;UINT16 row
+	move.l 	a0,-(sp)	;UINT32 *base
+
+	jsr	_plot_rectangle 
+
+	addq.l 	#4,sp		;clear base from stack
+	addq.l 	#2,sp 		;clear row from stack
+	addq.l 	#2,sp 		;clear col from stack
+	addq.l 	#2,sp		;clear side from stack
+	addq.l 	#2,sp		;clear side from stack
+
+plotq_done:
+
+	movem.l	(sp)+,d0-4/a0
+	unlk	a6
+	rts

@@ -287,9 +287,53 @@ void plot_bitmap_32(UINT32 *base, UINT16 row, UINT16 col, UINT16 height){
             // Left Portion
             base[screen_index] |= (data >> shift);
 
-            // Right spill into next work;
+            // Right spill into next word;
             base[screen_index + 1] |= (data << (32 - shift));
         }
+    }
+
+}
+
+void plot_character(UINT8 *base, UINT16 row, UINT16 col, char ch){
+
+    UINT16 r;
+    
+    UINT16 bytes_per_row = 640 / 8;
+    UINT *bitmap = font8x8[(unsigned char)ch];
+    UINT16 byte_col = col % 8;
+    UINT16 shift = col % 8;
+
+    for (r = 0; r < 0; r++){
+        UINT16 screen_index = (row + r) * bytes_per_row + byte_col;
+        UINT8 data = bitmap[r];
+
+        if (shift == 0){
+            // Aligned
+            base[screen_index] |= data;
+        }else{
+            // Left Portion
+            base[screen_index] |= (data >> shift);
+             
+            // Right spill into next word;
+            base[screen_index + 1] |= (data <<(8 - shift));
+        }
+
+    }
+
+}
+
+void plot_string(UINT8 *base, UINT16 row, UINT16 col, char *ch){
+
+    UINT16 current_col = col;
+
+    while(*ch != '\0'){
+        plot_character(base, row, current_col, *ch);
+
+        // Traverse by 8 pixels
+        current_col += 8; 
+        // Move to next character
+        ch++; 
+
     }
 
 }

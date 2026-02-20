@@ -45,7 +45,7 @@ in_bounds:
 
 done:
 	
-	movem.l	(sp),d0-3/a0
+	movem.l	(sp)+,d0-3/a0
 	unlk	a6
 	rts
 
@@ -65,7 +65,7 @@ loop:
 	dbra.w	d0,loop
 	
 
-	movem.l	(sp),d0/a0
+	movem.l	(sp)+,d0/a0
 	unlk	a6
 	rts
 
@@ -151,7 +151,7 @@ dont_change_length:
 
 clearre_done:
 
-	movem.l	(sp),d0-4/a0
+	movem.l	(sp)+,d0-4/a0
 	unlk	a6
 	rts
 
@@ -220,7 +220,7 @@ dont_change_hl_length:
 
 plothl_done:
 	
-	movem.l	(sp),d0-5/a0
+	movem.l	(sp)+,d0-5/a0
 	unlk	a6
 	rts
 
@@ -287,6 +287,89 @@ dont_change_vl_length:
 	
 plotvl_done:
 	
-	movem.l	(sp),d0-5/a0
+	movem.l	(sp)+,d0-5/a0
 	unlk	a6
 	rts
+
+PLOTR_BASE	equ	8
+PLOTR_ROW	equ	12
+PLOTR_COL	equ	14
+PLOTR_LENGTH	equ	16
+PLOTR_WIDTH	equ	18
+	
+_plot_rectangle:
+
+	link	a6,#0
+	movem.l	d0-4/a0,-(sp)
+
+	movea.l	PLOTR_BASE(a6),a0
+	move.w	PLOTR_ROW(a6),d0
+	move.w	PLOTR_COL(a6),d1
+	move.w	PLOTR_LENGTH(a6),d2
+	move.w	PLOTR_WIDTH(a6),d3
+
+	cmp.w	#0,d0
+	blo	plotr_done
+
+	cmp.w	#0,d1
+	blo	plotr_done
+
+	move.w 	d3,-(sp) 	;UINT16 width
+	move.w 	d1,-(sp) 	;UINT16 col
+	move.w 	d0,-(sp)	;UINT16 row
+	move.l 	a0,-(sp)	;UINT32 *base
+
+	jsr	_plot_horizontal_line ;top
+
+	addq.l 	#4,sp		;clear base from stack
+	addq.l 	#2,sp 		;clear row from stack
+	addq.l 	#2,sp 		;clear col from stack
+	addq.l 	#2,sp		;clear width from stack
+
+	move.w 	d3,-(sp) 	;UINT16 width
+	move.w 	d1,-(sp) 	;UINT16 col
+	move.w 	d0,-(sp)	;UINT16 row
+	move.l 	a0,-(sp)	;UINT32 *base
+
+	jsr	_plot_horizontal_line ;bottom
+	
+	move.w	d1,d4		;still need row for later
+	add.w	d2,d4		;row + length
+	sub.w	#1,d4		;(row + length) - 1
+	addq.l 	#4,sp		;clear base from stack
+	addq.l 	#2,sp 		;clear row from stack
+	addq.l 	#2,sp 		;clear col from stack
+	addq.l 	#2,sp		;clear width from stack
+
+	move.w 	d2,-(sp) 	;UINT16 length
+	move.w 	d1,-(sp) 	;UINT16 col
+	move.w 	d0,-(sp)	;UINT16 (row + length) - 1
+	move.l 	a0,-(sp)	;UINT32 *base
+
+	jsr	_plot_vertical_line ;left
+
+	addq.l 	#4,sp		;clear base from stack
+	addq.l 	#2,sp 		;clear row from stack
+	addq.l 	#2,sp 		;clear col from stack
+	addq.l 	#2,sp		;clear length from stack
+
+
+	add.w	d3,d1		;col + width
+	sub.w	#1,d1		;(col + width) - 1
+	move.w 	d2,-(sp) 	;UINT16 length
+	move.w 	d1,-(sp) 	;UINT16 (col + width) - 1
+	move.w 	d0,-(sp)	;UINT16 row
+	move.l 	a0,-(sp)	;UINT32 *base
+
+	jsr	_plot_vertical_line ;right
+
+	addq.l #4,sp		;clear base from stack
+	addq.l #2,sp 		;clear row from stack
+	addq.l #2,sp 		;clear (col + width) - 1 from stack
+	addq.l #2,sp		;clear length from stack
+
+plotr_done:	
+	
+	movem.l	(sp)+,d0-4/a0
+	unlk	a6
+	rts	

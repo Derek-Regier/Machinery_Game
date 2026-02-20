@@ -130,7 +130,7 @@ void plot_triangle(UINT32 *base, UINT16 row, UINT16 col, UINT16 base, UINT16 hei
 
  PURPOSE: Plots a bitmap to the screen given by the top left pixel of the bitmap and the height of bitmap.
 
- INPUT: Address(UINT16*) /* Chintan NOTE - This should be UINT8? */: to the start of the screen
+ INPUT: Address(UINT16*) **** Chintan NOTE - This should be UINT8? **** : to the start of the screen
         Position(row,col): the coordinates of the top left pixel of the bitmap
         Height: the lenth (number of rows) of the height in pixels of the bitmap
 

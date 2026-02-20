@@ -24,7 +24,6 @@ void clear_screen(UINT32 *base){
 
 void clear_region(UINT32 *base, UINT16 row, UINT16 col, UINT16 length, UINT16 width){
 
- 
 
     UINT16 r, c;
 
@@ -212,5 +211,85 @@ void plot_triangle(UINT 32 * base, UINT16 row, UINT16 col, UINT16 base_len, UINT
 }
 
 void plot_bitmap_8(UINT8 *base, UINT16 row, UINT16 col, UINT16 height){
-    
+
+    UINT16 r;
+
+    UINT16 bytes_per_row = 640 / 8;
+
+    UINT16 byte_col = col % 8;
+
+    for (r = 0; r < height; r ++){
+
+        UINT16 screen_index = (row + r) * bytes_per_row + byte_col;
+        UINT8 data = bitmap[r];
+
+
+        if (shift == 0){
+            // Aligned
+            base[screen_index] |= data;
+        }else{
+            // Left Portion
+            base[screen_index] |= (data >> shift);
+
+            // Right spill into next byte
+            base[screen_index + 1] |= (data << (8 - shift));
+
+        }
+
+    }
+}
+
+void plot_bitmap_16(UINT16 *base, UINT16 row, UINT16 col, UINT16 height){
+
+UINT16 r;
+
+UINT16 words_per_row = 640 / 16;
+UINT16 word_col = col /16;
+UINT16 shift = col % 16;
+
+for (r = 0; r < height; r++){
+
+    UINT16 screen_index = (row + r) * words_per_row + word_col;
+    UINT16 data = bitmap[r];
+
+    if (shift == 0){
+        // Aligned
+        base[screen_index] |= data;
+    }else{
+
+        // Left Portion
+        base[screen_index] |= (data >> shift);
+
+        // Right spill into next word
+        base[screen_index] |= (data << (16 - shift));
+      }
+
+    }
+
+}
+
+void plot_bitmap_32(UINT32 *base, UINT16 row, UINT16 col, UINT16 height){ 
+
+    UINT16 r;
+
+    UINT16 words_per_row = 640 / 32;
+    UINT16 word_col = col / 32;
+    UINT16 shift = col % 32;
+
+    for ( r = 0 ; r < height; r++){
+        UINT32 screen_index = (row + r) * words_per_row + word_col;
+        UINT data = bitmap[r];
+
+        if (shift == 0){
+            // Aligned
+            base[screen_index] |= data;
+        }else{
+            // Left Portion
+            base[screen_index] |= (data >> shift);
+
+            // Right spill into next work;
+            base[screen_index + 1] |= (data << (32 - shift));
+        }
+    }
+
 }

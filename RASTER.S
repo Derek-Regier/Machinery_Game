@@ -5,6 +5,8 @@
 	xdef	_plot_vertical_line
 	xdef	_plot_rectangle
 	xdef	_plot_square
+	xdef	_plot_line
+	xdef	_plot_triangle
 	
 BASE	equ	8
 ROW	equ	10	
@@ -410,6 +412,310 @@ _plot_square:
 
 plotq_done:
 
+	movem.l	(sp)+,d0-4/a0
+	unlk	a6
+	rts
+
+PLOTL_BASE	equ	8
+START_ROW	equ	12
+START_COL	equ	14
+END_ROW		equ	16
+END_COL		equ	18
+	
+_plot_line:	
+
+	link	a6,#0
+	movem.l	d0-4/a0,-(sp)
+	
+	movea.l	PLOTL_BASE(a6),a0
+	move.w	START_ROW(a6),d0
+	move.w	START_COL(a6),d1
+	move.w	END_ROW(a6),d2
+	move.w	END_COL(a6),d3
+
+	move.w	#1,d4		;row_step
+	move.w	#1,d5		;col_step
+
+	cmp.w	d0,d2
+	bhi	row_not_neg
+
+	move.w	#-1,d4
+
+row_not_neg:
+
+	cmp.w	d1,d3
+	bhi	col_not_neg
+
+	move.w	#-1,d5
+	
+col_not_neg:
+
+plotl_loop:	
+
+	cmp.w	d0,d2
+	beq	plotl_done
+
+	cmp.w	d1,d3
+	beq	plotl_done
+
+	move.w 	d1,-(sp) 	;UINT16 col
+	move.w 	d0,-(sp)	;UINT16 row
+	move.l 	a0,-(sp)	;UINT32 *base
+
+	jsr	_plot_pixel
+
+	addq.l 	#4,sp		;clear base from stack
+	addq.l 	#2,sp 		;clear row from stack
+	addq.l 	#2,sp 		;clear col from stack
+	
+	cmp.w	d0,d2
+	beq	check_end_col
+
+	cmp.w	d1,d3
+	beq	plotl_done
+	
+plotl_done:
+	
+	movem.l	(sp)+,d0-4/a0
+	unlk	a6
+	rts
+
+PLOTT_BASE	equ	8
+PLOTT_ROW	equ	12
+PLOTT_COL	equ	14
+BASE_LEN	equ	16
+PLOTT_HEIGHT	equ	18
+DIRECTION	equ	20
+	
+_plot_triangle:	
+
+	link	a6,#0
+	movem.l	d0-4/a0,-(sp)
+
+	movea.l	PLOTT_BASE(a6),a0
+	move.w	PLOTT_ROW(a6),d0	
+	move.w	PLOTT_COL(a6),d1	
+	move.w	BASE_LEN(a6),d2
+	move.w	PLOTT_HEIGHT(a6),d3
+	move.w	DIRECTION(a6),d4
+
+	cmp.w	#0,d4		
+	beq	top_left
+
+	cmp.w	#1,d4
+	beq	top_right
+
+	cmp.w	#2,d4
+	beq	bottom_left
+
+	cmp.w	#3,d4
+	beq	bottom_right
+	
+top_left:
+
+	move.w 	d2,-(sp) 	;UINT16 base_len 
+	move.w 	d1,-(sp) 	;UINT16 col
+	move.w 	d0,-(sp)	;UINT16 row
+	move.l 	a0,-(sp)	;UINT32 *base
+
+	jsr	_plot_horizontal_line 
+
+	addq.l 	#4,sp		;clear base from stack
+	addq.l 	#2,sp 		;clear row from stack
+	addq.l 	#2,sp 		;clear col from stack
+	addq.l 	#2,sp		;clear bas_len from stack
+	
+	move.w 	d3,-(sp) 	;UINT16 height
+	move.w 	d1,-(sp) 	;UINT16 col
+	move.w 	d0,-(sp)	;UINT16 row
+	move.l 	a0,-(sp)	;UINT32 *base
+
+	jsr	_plot_vertical_line 
+
+	addq.l 	#4,sp		;clear base from stack
+	addq.l 	#2,sp 		;clear row from stack
+	addq.l 	#2,sp 		;clear col from stack
+	addq.l 	#2,sp		;clear height from stack
+
+	add.w	d0,d3		;row+height
+	sub.w	#1,d3		;row+height-1
+
+	add.w	d1,d2		;col+base_len
+	sub.w	#1,d3		;col+base_len-1
+
+	move.w	d2,-(sp)	;UINT16 col+base_len-1
+	move.w 	d0,-(sp) 	;UINT16 row
+	move.w 	d1,-(sp) 	;UINT16 col
+	move.w 	d3,-(sp)	;UINT16 row+height-1
+	move.l 	a0,-(sp)	;UINT32 *base
+
+	jsr	_plot_line 
+
+	addq.l 	#4,sp		;clear base from stack
+	addq.l 	#2,sp 		;clear row+height-1 from stack
+	addq.l 	#2,sp 		;clear col from stack
+	addq.l 	#2,sp 		;clear row from stack
+	addq.l 	#2,sp		;clear col+base_len-1 from stack
+	
+	bra	plott_done
+	
+top_right:
+
+	sub.w	d2,d1		;col-base_len
+	add.w	#1,d1		;col-base_len+1
+	
+	move.w 	d2,-(sp) 	;UINT16 base_len 
+	move.w 	d1,-(sp) 	;UINT16 col-base_len+1
+	move.w 	d0,-(sp)	;UINT16 row
+	move.l 	a0,-(sp)	;UINT32 *base
+
+	jsr	_plot_horizontal_line 
+
+	addq.l 	#4,sp		;clear base from stack
+	addq.l 	#2,sp 		;clear row from stack
+	addq.l 	#2,sp 		;clear col-base_len+1 from stack
+	addq.l 	#2,sp		;clear bas_len from stack
+
+	move.w	PLOTT_COL(a6),d1 ;restoring col register
+	
+	move.w 	d3,-(sp) 	;UINT16 height
+	move.w 	d1,-(sp) 	;UINT16 col
+	move.w 	d0,-(sp)	;UINT16 row
+	move.l 	a0,-(sp)	;UINT32 *base
+
+	jsr	_plot_vertical_line 
+
+	addq.l 	#4,sp		;clear base from stack
+	addq.l 	#2,sp 		;clear row from stack
+	addq.l 	#2,sp 		;clear col from stack
+	addq.l 	#2,sp		;clear height from stack
+
+	add.w	d0,d3		;row+height
+	add.w	#1,d3		;row+height+1
+
+	sub.w	d1,d2		;col-base_len
+	add.w	#1,d3		;col-base_len+1
+
+	move.w	d2,-(sp)	;UINT16 col-base_len+1
+	move.w 	d0,-(sp) 	;UINT16 row
+	move.w 	d1,-(sp) 	;UINT16 col
+	move.w 	d3,-(sp)	;UINT16 row+height+1
+	move.l 	a0,-(sp)	;UINT32 *base
+
+	jsr	_plot_line 
+
+	addq.l 	#4,sp		;clear base from stack
+	addq.l 	#2,sp 		;clear row+height+1 from stack
+	addq.l 	#2,sp 		;clear col from stack
+	addq.l 	#2,sp 		;clear row from stack
+	addq.l 	#2,sp		;clear col-base_len+1 from stack
+
+	bra	plott_done
+	
+bottom_left:
+
+	move.w 	d2,-(sp) 	;UINT16 base_len 
+	move.w 	d1,-(sp) 	;UINT16 col
+	move.w 	d0,-(sp)	;UINT16 row
+	move.l 	a0,-(sp)	;UINT32 *base
+
+	jsr	_plot_horizontal_line 
+
+	addq.l 	#4,sp		;clear base from stack
+	addq.l 	#2,sp 		;clear row from stack
+	addq.l 	#2,sp 		;clear col from stack
+	addq.l 	#2,sp		;clear bas_len from stack
+	
+	move.w 	d3,-(sp) 	;UINT16 height
+	move.w 	d1,-(sp) 	;UINT16 col
+	move.w 	d0,-(sp)	;UINT16 row
+	move.l 	a0,-(sp)	;UINT32 *base
+
+	jsr	_plot_vertical_line 
+
+	addq.l 	#4,sp		;clear base from stack
+	addq.l 	#2,sp 		;clear row from stack
+	addq.l 	#2,sp 		;clear col from stack
+	addq.l 	#2,sp		;clear height from stack
+
+	add.w	d0,d3		;row+height
+	add.w	#1,d3		;row+height+1
+
+	sub.w	d1,d2		;col-base_len
+	add.w	#1,d3		;col-base_len+1
+
+	move.w	d2,-(sp)	;UINT16 col-base_len+1
+	move.w 	d0,-(sp) 	;UINT16 row
+	move.w 	d1,-(sp) 	;UINT16 col
+	move.w 	d3,-(sp)	;UINT16 row+height+1
+	move.l 	a0,-(sp)	;UINT32 *base
+
+	jsr	_plot_line 
+
+	addq.l 	#4,sp		;clear base from stack
+	addq.l 	#2,sp 		;clear row+height+1 from stack
+	addq.l 	#2,sp 		;clear col from stack
+	addq.l 	#2,sp 		;clear row from stack
+	addq.l 	#2,sp		;clear col-base_len+1 from stack
+	
+	bra	plott_done
+	
+bottom_right:
+
+	sub.w	d2,d1		;col-base_len
+	add.w	#1,d1		;col-base_len+1
+	
+	move.w 	d2,-(sp) 	;UINT16 base_len 
+	move.w 	d1,-(sp) 	;UINT16 col-base_len+1
+	move.w 	d0,-(sp)	;UINT16 row
+	move.l 	a0,-(sp)	;UINT32 *base
+
+	jsr	_plot_horizontal_line 
+
+	addq.l 	#4,sp		;clear base from stack
+	addq.l 	#2,sp 		;clear row from stack
+	addq.l 	#2,sp 		;clear col-base_len+1 from stack
+	addq.l 	#2,sp		;clear bas_len from stack
+
+	move.w	PLOTT_COL(a6),d1 ;restoring col register
+	sub.w	d3,d0		;row-height
+	add.w	#1,d0		;row-height+1
+	
+	move.w 	d3,-(sp) 	;UINT16 height
+	move.w 	d1,-(sp) 	;UINT16 col
+	move.w 	d0,-(sp)	;UINT16 row-height+1
+	move.l 	a0,-(sp)	;UINT32 *base
+
+	jsr	_plot_vertical_line 
+
+	addq.l 	#4,sp		;clear base from stack
+	addq.l 	#2,sp 		;clear row-height+1 from stack
+	addq.l 	#2,sp 		;clear col from stack
+	addq.l 	#2,sp		;clear height from stack
+	
+	move.w	PLOTT_ROW(a6),d0 ;restoring col register
+	sub.w	d0,d3		;row-height
+	add.w	#1,d3		;row-height+1
+
+	add.w	d1,d2		;col+base_len
+	add.w	#1,d3		;col+base_len+1
+
+	move.w	d2,-(sp)	;UINT16 col+base_len+1
+	move.w 	d0,-(sp) 	;UINT16 row
+	move.w 	d1,-(sp) 	;UINT16 col
+	move.w 	d3,-(sp)	;UINT16 row-height+1
+	move.l 	a0,-(sp)	;UINT32 *base
+
+	jsr	_plot_line 
+
+	addq.l 	#4,sp		;clear base from stack
+	addq.l 	#2,sp 		;clear row-height+1 from stack
+	addq.l 	#2,sp 		;clear col from stack
+	addq.l 	#2,sp 		;clear row from stack
+	addq.l 	#2,sp		;clear col+base_len+1 from stack
+	
+plott_done:
+	
 	movem.l	(sp)+,d0-4/a0
 	unlk	a6
 	rts

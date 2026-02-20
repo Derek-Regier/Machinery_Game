@@ -2,10 +2,12 @@
 	xdef	_clear_screen
 	xdef	_clear_region
 	xdef	_plot_horizontal_line
+	xdef	_plot_vertical_line
 	
 BASE	equ	8
 ROW	equ	10	
 COL	equ	12
+	
 _plot_pixel:	
 
 	link	a6,#0
@@ -39,7 +41,7 @@ in_bounds:
 	movea.l	BASE(a6),a0
 
 	adda.l	d2,a0
-	or.w	(a0),d3		;base[byte_index] |= bit_mask
+	or.w	d3,(a0)		;base[byte_index] |= bit_mask
 
 done:
 	
@@ -72,6 +74,7 @@ CLEAR_ROW	equ	12
 CLEAR_COL	equ	14
 CLEAR_LENGTH	equ	16
 CLEAR_WIDTH	equ	18
+	
 _clear_region:
 
 	link	a6,#0
@@ -111,14 +114,39 @@ dont_change_width:
 
 dont_change_length:
 
+	move.w	#0,d4		;c
+	move.w	#0,d5		;r
+	
 	width_loop:
 
 		length_loop:
 			
-			;clear_pixel(...)
+			move.w	CLEAR_ROW(a6),d0
+			move.w	CLEAR_COL(a6),d1
 
+			add.w	d5,d0 	;current_row = row + r
+			add.w	d4,d1 	;current_col = col + c
+
+			mulu.w	#20,d0 	;current_row * words_per_row
+
+			move.w	d1,d6 	;still need current_col so copying d1
+			lsr.w	#5,d6 	;current_col / 32
+
+			add.w	d0,d6 	;word_index=
+
+			and.w	#7,d1	;current_col % 8
+
+			sub.w	#31,d1	;bit_position = 31 -
+
+			lsl.w	#1,d1 	;1 << bit_position
+			not.w	d1	;~(1 << bit_position)
+			adda.l	d6,a0
+			and.w	d1,(a0)	;base[word_index] &= ~(1<<bit_position)
+	
+			add.w	#1,d4 	;c++
 		dbra.w	d2,length_loop				
-			
+
+		add.w	#1,d5	;r++
 	dbra.w	d3,width_loop
 
 clearre_done:
@@ -162,10 +190,13 @@ dont_change_hl_length:
 
 	sub.w	#1,d2		;i = 01
 	move.w	#1,d4		;i
-	move.w	#80,d5		;bytes_per_row
 	
-	length_hl_oop:		
-			
+	length_hl_loop:		
+
+		move.w	PLOTHL_ROW(a6),d0
+		move.w	PLOTHL_COL(a6),d1
+		move.w	#80,d5		;bytes_per_row
+	
 		mulu.w	d0,d5		;row * bytes_per_row
 
 		add.w	d4,d1		;col+i
@@ -173,17 +204,15 @@ dont_change_hl_length:
 
 		add.w	d0,d5		;= byte_index
 
-		move.w	COL(a6),d3
+		move.w	PLOTHL_COL(a6),d3
 		add.w	d4,d3		;col+i
 		and.w	#7,d3		;(col+i) % 8
 
 		sub.w	#7,d3		;7-
 		lsl.w	#1,d3		;bit_mask = 1 <<
 
-		movea.l	BASE(a6),a0
-
 		adda.l	d5,a0
-		or.w	(a0),d3		;base[byte_index] |= bit_mask
+		or.w	d3,(a0)		;base[byte_index] |= bit_mask
 
 		add.w	#1,d4		;i++
 
@@ -216,22 +245,43 @@ _plot_vertical_line:
 	cmp.w	#640,d1
 	blo	plotvl_done
 
-plothl_in_bounds:	
+plotvl_in_bounds:	
 
 	move.w	d0,d3
 	add.w	d2,d3	;row+length
 	cmp.w	#640,d3	;>640
-	bls	dont_change__levlngth
+	bls	dont_change_vl_length
 
 	move.w	d0,d2
 	sub.w	#640,d2	;length = 640 - col
 
 dont_change_vl_length:
 
-	move.w	#80,d5		;bytes_per_row
+	move.w	#0,d4		;i
 	
-	length_vl_oop:		
+	length_vl_loop:		
 			
+		move.w	PLOTVL_ROW(a6),d0
+		move.w	PLOTVL_COL(a6),d1
+		move.w	#80,d5		;bytes_per_row
+
+		add.w	d4,d0		;row+i	
+		mulu.w	d0,d5		;(row+i) * bytes_per_row
+
+		lsr.w	#3,d1		;col/8
+
+		add.w	d0,d5		;= byte_index
+
+		move.w	PLOTVL_COL(a6),d3
+		and.w	#7,d3		;col+i % 8
+
+		sub.w	#7,d3		;7-
+		lsl.w	#1,d3		;bit_mask = 1 <<
+
+		adda.l	d5,a0
+		or.w	d3,(a0)		;base[byte_index] |= bit_mask
+
+		add.w	#1,d4		;i++
 
 	dbra.w	d2,length_vl_loop
 	

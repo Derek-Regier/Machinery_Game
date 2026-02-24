@@ -1,6 +1,6 @@
 # Machinery_Game
 
-Instructions on how to use
+Instructions on how to use .mak files
 
 There are three test makefiles.
 

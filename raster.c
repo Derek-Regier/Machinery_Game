@@ -1,341 +1,342 @@
+/*
+ * raster.c - Raster graphics library for the Atari ST (C layer).
+ *
+ * Screen: 640 x 400, monochrome, 80 bytes per row.
+ * Pixel (row, col): byte = base[row*80 + col/8], bit = 7-(col%8).
+ *
+ *
+ * Authors: Aydin Salonius, Chintan Thakor, Derek Regier
+ * Course: COMP 2659, Winter 2026
+ */
+
 #include "raster.h"
 
+#define SCREEN_WIDTH      640
+#define SCREEN_HEIGHT     400
+#define BYTES_PER_ROW     80   /* 640 / 8 */
+#define WORDS_PER_ROW     40   /* 640 / 16 */
+#define LONGS_PER_ROW     20   /* 640 / 32 */
 
-/* 
-Screen resolution 640 x 400 = 256,000 pixels
-                  256,000/8 = 32,000 bytes
-UINT32 = 4 bytes
-UINT16 = 2 bytes
-UINT8  = 1 byte
+/* ------------------------------------------------------------------ */
+/* clear_screen                                                         */
+/* ------------------------------------------------------------------ 
 
-*/
-
-
-void clear_screen(UINT32 *base){
-
+ void clear_screen(UINT32 *base)
+{
     UINT32 i;
-
-    // 32,000 bytes/4 bytes = 8000 32-bit words
-    for (i = 0; i < 8000; i++){         
-        base[i] = 0; 
-    }
-
+    for (i = 0; i < 8000; i++)  /* 32000 bytes / 4 = 8000 longs 
+        base[i] = 0;
 }
+/* ------------------------------------------------------------------ */
+/* clear_region                                                         */
+/* ------------------------------------------------------------------ 
 
-void clear_region(UINT32 *base, UINT16 row, UINT16 col, UINT16 length, UINT16 width){
+void clear_region(UINT32 *base, UINT16 row, UINT16 col,
+                  UINT16 length, UINT16 width)
+{
+    UINT16 r;
+    UINT16 c;
+    UINT16 cur_row;
+    UINT16 cur_col;
+    UINT32 word_index;
+    UINT32 bit_pos;
 
+    if (row >= SCREEN_HEIGHT || col >= SCREEN_WIDTH) return;
 
-    UINT16 r, c;
+    if (row + length > SCREEN_HEIGHT) length = SCREEN_HEIGHT - row;
+    if (col + width  > SCREEN_WIDTH)  width  = SCREEN_WIDTH  - col;
 
-       int words_per_row = 640 / 32;
-
-    // Prevent Out-of-Bounds
-    if (row >= 400 || col >= 600){
-        return;
-    }
-    if (row + width > 400){
-        width = 400 - row;
-    }
-    if (col + length > 640){
-        length = 640 - col;
-    }
-
-    for (r = 0; r < width; r++){
-
-        for (c = 0; c < length; c++){
-
-            int current_row = row + c;
-            int current_col = col + c;
-
-            int word_index = current_row * words_per_row + (current_col /32);
-            int bit_position = 31 - (current_col % 32);
-
-            base[word_index] &= ~(1 << bit_position); // bitwise "and" with bitwise "not" 
+    for (r = 0; r < length; r++)
+    {
+        for (c = 0; c < width; c++)
+        {
+            cur_row    = row + r;          /* was using c for both — fixed 
+            cur_col    = col + c;
+            word_index = cur_row * LONGS_PER_ROW + (cur_col / 32);
+            bit_pos    = 31 - (cur_col % 32);
+            base[word_index] &= ~(1UL << bit_pos);
         }
+    }
+}   /* was missing closing brace for outer loop — fixed */
 
+/* ------------------------------------------------------------------ */
+/* plot_pixel                                                           */
+/* ------------------------------------------------------------------  
+
+void plot_pixel(UINT8 *base, UINT16 row, UINT16 col)
+{
+    UINT32 byte_index;  /* declared at top — C89 requirement 
+    UINT8  bit_mask;
+
+    if (row >= SCREEN_HEIGHT || col >= SCREEN_WIDTH) return;
+
+    byte_index = (UINT32)row * BYTES_PER_ROW + (col / 8);
+    bit_mask   = 1 << (7 - (col % 8));
+    base[byte_index] |= bit_mask;
 }
 
-void plot_pixel(UINT8 *base, UINT16 row, UINT16 col){
+/* ------------------------------------------------------------------ */
+/* plot_horizontal_line                                                 */
+/* ------------------------------------------------------------------  
 
-    UINT32 bytes_per_row = 640 / 8;
-    // Prevent Out-of-Bounds
-    if (row >= 400 || col >= 640){
-        return;
-    }
+void plot_horizontal_line(UINT32 *base, UINT16 row, UINT16 col,
+                          UINT16 length)
+{
+    UINT8  *byte_base = (UINT8 *)base;
+    UINT16  i;
+    UINT32  byte_index;
+    UINT8   bit_mask;
 
-    // Traverse row index by bytes 
-    UINT32 byte_index = row * bytes_per_row + (col / 8);
-    UINT8 bit_mask = 1 << (7 - (col % 8));
+    if (row >= SCREEN_HEIGHT || col >= SCREEN_WIDTH) return;
+    if (col + length > SCREEN_WIDTH) length = SCREEN_WIDTH - col;
 
-    base[byte_index] |= bit_mask; 
-
-}
-
-void plot_horizontal_line(UINT32 *base, UINT16 row, UINT16 col, UINT16 length){
-
-    UINT8 *byte_base = (UINT8 *)base;
-    UINT16 i;
-    UINT32 bytes_per_row = 640 / 8;
-
-    // Prevent Out-of-Bounds
-    if (row >= 400 || col >= 640){
-        return;
-    }
-    if (col + length > 640){
-        length = 640 - col;
-    }
-
-    for (i = 0l i < length; i++){
-
-        UINT32 byte_index = row * bytes_per_row + ((col + i) / 8);
-        UINT8 bit_mask = 1 << (7 - ((col + i) % 8));
-
+    for (i = 0; i < length; i++)   /* was "0l" (letter l) — fixed to 0 
+    {
+        byte_index = (UINT32)row * BYTES_PER_ROW + ((col + i) / 8);
+        bit_mask   = 1 << (7 - ((col + i) % 8));
         byte_base[byte_index] |= bit_mask;
-
     }
-
 }
 
-void plot_vertical_line(UINT32 *base, UINT16 row, UINT16 col, UINT16 length){
+/* ------------------------------------------------------------------ */
+/* plot_vertical_line                                                   */
+/* ------------------------------------------------------------------ 
 
-    UINT8 *byte_base = (UINT8 *)base;
-    UINT16 i;
-    UINT32 bytes_per_row = 640 / 8;
+void plot_vertical_line(UINT32 *base, UINT16 row, UINT16 col,
+                        UINT16 length)
+{
+    UINT8  *byte_base = (UINT8 *)base;
+    UINT16  i;
+    UINT32  byte_index;
+    UINT8   bit_mask;
 
-    // Prevent Out-of-Bounds
-    if (row >= 400 || col >= 640){
-        return;
-    }
+    if (row >= SCREEN_HEIGHT || col >= SCREEN_WIDTH) return;
+    if (row + length > SCREEN_HEIGHT) length = SCREEN_HEIGHT - row;
 
-    if (row + length > 400){
-        length = 400 - row;
-    }
+    bit_mask = 1 << (7 - (col % 8));   /* constant per column — compute once 
 
-    for (i = 0; i < length; i++){
-
-        UINT32 byte_index = (row + i) * bytes_per_row + (col / 8);
-        UINT8 bit_mask = 1 << (7 - (col % 8));
-
+    for (i = 0; i < length; i++)
+    {
+        byte_index = (UINT32)(row + i) * BYTES_PER_ROW + (col / 8);
         byte_base[byte_index] |= bit_mask;
-
     }
-
-
 }
 
-void plot_line(UINT32 *base, UINT16 start_row, UINT16 start_col, UINT16 end_row, UINT16 end_col){
-    int row = start_row;
-    int col = start_col;
-    int row_step;
-    int col_step;
+/* ------------------------------------------------------------------ */
+/* plot_line  (Bresenham)                                               */
+/* ------------------------------------------------------------------ 
 
-    if (end_row > start_row){
-        row_step = 1;
-    }else{
-        row_step = -1;
+void plot_line(UINT32 *base, UINT16 start_row, UINT16 start_col,
+               UINT16 end_row, UINT16 end_col)
+{
+    int row = (int)start_row;
+    int col = (int)start_col;
+    int dr = (int)end_row - (int)start_row;
+    int dc = (int)end_col - (int)start_col;
+    int abs_dr = dr < 0 ? -dr : dr;
+    int abs_dc = dc < 0 ? -dc : dc;
+    int step_r = dr < 0 ? -1 : 1;
+    int step_c = dc < 0 ? -1 : 1;
+    int err = abs_dc - abs_dr;
+    int e2;
+
+    while (1)
+    {
+        plot_pixel((UINT8 *)base, (UINT16)row, (UINT16)col);
+        if (row == (int)end_row && col == (int)end_col) break;
+        e2 = 2 * err;
+        if (e2 > -abs_dr) { err -= abs_dr; col += step_c; }
+        if (e2 <  abs_dc) { err += abs_dc; row += step_r; }
     }
+}
+/* ------------------------------------------------------------------ */
+/* plot_rectangle                                                       */
+/* ------------------------------------------------------------------ 
 
-    if (end_col > start_col){
-        col_step = 1;
-    }else{
-        col_step = -1;
-    }
+void plot_rectangle(UINT32 *base, UINT16 row, UINT16 col,
+                    UINT16 length, UINT16 width)
+{
+    if (length == 0 || width == 0) return;
 
-    while (row != end_row || col != end_col){
-        plot_pixel((UINT8*)base, row, col);
-
-        if (row != end_row){
-            row += row_step;
-        }
-        if (col != end_col){
-            col += col_step;
-        }
-
-    }
-    plot_pixel((UINT8 *)base, end_row, end_col);
-
+    plot_horizontal_line(base, row,            col, width);   /* top    
+    plot_horizontal_line(base, row + length - 1, col, width); /* bottom 
+    plot_vertical_line  (base, row, col,            length);  /* left   
+    plot_vertical_line  (base, row, col + width - 1, length); /* right  
 }
 
-void plot_rectangle(UINT32 *base, UINT16 row, UINT16 col, UINT16 length, UINT16 width){
-    if (length == 0 || width == 0){
-        return;
-    }
-    // Top
-    plot_horizontal_line(base, row, col, width);
+/* ------------------------------------------------------------------ */
+/* plot_square                                                          */
+/* ------------------------------------------------------------------ 
 
-    // Bottom
-    plot_horizontal_line(base, row + length - 1, col, width);
-
-    // Left
-    plot_vertical_line(base, row, col, length);
-
-    // Right
-    plot_vertical_line(base, row, col + width - 1, length);
-}
-
-void plot_square(UINT32 *base, UINT16 row, UINT16 col, UINT16 side){
-    if (side == 0){
-        return;
-    }
+void plot_square(UINT32 *base, UINT16 row, UINT16 col, UINT16 side)
+{
+    if (side == 0) return;
     plot_rectangle(base, row, col, side, side);
 }
 
-void plot_triangle(UINT 32 * base, UINT16 row, UINT16 col, UINT16 base_len, UINT16 height, UINT8 direction){
-    switch (direction){
-        case 0: // top left
+/* ------------------------------------------------------------------ */
+/* plot_triangle                                                        */
+/* ------------------------------------------------------------------ 
+
+void plot_triangle(UINT32 *base, UINT16 row, UINT16 col,
+                   UINT16 base_len, UINT16 height, UINT8 direction)
+{
+    switch (direction)
+    {
+        case 0: /* anchor = top-left
             plot_horizontal_line(base, row, col, base_len);
-            plot_vertical_line(base, row, col, height);
-            plot_line()(base, row + height - 1, col, row, col + base_len - 1);
-        break;
+            plot_vertical_line  (base, row, col, height);
+            plot_line(base, row + height - 1, col,
+                            row,             col + base_len);
+            break;
 
-        case 1: //top right
+        case 1: /* anchor = top-right 
             plot_horizontal_line(base, row, col - base_len + 1, base_len);
-            plot_vertical_line(base, row, col, height);
-            plot(base, row + height + 1, col, row, col - base_len + 1);
-        break;
+            plot_vertical_line  (base, row, col, height);
+            plot_line(base, row + height - 1, col,   /* was plot() — fixed 
+                            row, col - base_len + 1);
+            break;
 
-        case 2: // bottom  left
+        case 2: /* anchor = bottom-left 
             plot_horizontal_line(base, row, col, base_len);
-            plot_vertical_line(base, row, col, height);
-            plot_line(base, row + height + 1, col, row, col - base_len + 1);
+            plot_vertical_line  (base, row - height + 1, col, height);
+            plot_line(base, row - height + 1, col,
+                            row, col + base_len - 1);
+            break;
 
-        break;
-
-        case 3: // bottom right
+        case 3: /* anchor = bottom-right 
             plot_horizontal_line(base, row, col - base_len + 1, base_len);
-            plot_vertical_line(base, row - height + 1, col, height);
-            plot_line(base, row - height + 1, col + base_len + 1, row, col);
-        break;
-
+            plot_vertical_line  (base, row - height + 1, col, height);
+            plot_line(base, row - height + 1, col,
+                            row, col - base_len + 1);
+            break;
     }
 }
 
-void plot_bitmap_8(UINT8 *base, UINT16 row, UINT16 col, UINT16 height){
+/* ------------------------------------------------------------------ 
+/* plot_bitmap_8                                                        */
+/* ------------------------------------------------------------------ */
 
+void plot_bitmap_8(UINT8 *base, UINT16 row, UINT16 col,
+                   const UINT8 *bitmap, UINT16 height)
+{
     UINT16 r;
+    UINT16 shift     = col % 8;
+    UINT16 byte_col  = col / 8;
+    UINT32 screen_index;
+    UINT8  data;
 
-    UINT16 bytes_per_row = 640 / 8;
+    for (r = 0; r < height; r++)
+    {
+        screen_index = (UINT32)(row + r) * BYTES_PER_ROW + byte_col;
+        data         = bitmap[r];
 
-    UINT16 byte_col = col % 8;
-
-    for (r = 0; r < height; r ++){
-
-        UINT16 screen_index = (row + r) * bytes_per_row + byte_col;
-        UINT8 data = bitmap[r];
-
-
-        if (shift == 0){
-            // Aligned
+        if (shift == 0)
+        {
             base[screen_index] |= data;
-        }else{
-            // Left Portion
-            base[screen_index] |= (data >> shift);
-
-            // Right spill into next byte
-            base[screen_index + 1] |= (data << (8 - shift));
-
         }
-
+        else
+        {
+            base[screen_index]     |= (data >> shift);
+            base[screen_index + 1] |= (data << (8 - shift));  /* spill */
+        }
     }
 }
 
-void plot_bitmap_16(UINT16 *base, UINT16 row, UINT16 col, UINT16 height){
+/* ------------------------------------------------------------------ 
+/* plot_bitmap_16                                                       */
+/* ------------------------------------------------------------------ */
 
-UINT16 r;
-
-UINT16 words_per_row = 640 / 16;
-UINT16 word_col = col /16;
-UINT16 shift = col % 16;
-
-for (r = 0; r < height; r++){
-
-    UINT16 screen_index = (row + r) * words_per_row + word_col;
-    UINT16 data = bitmap[r];
-
-    if (shift == 0){
-        // Aligned
-        base[screen_index] |= data;
-    }else{
-
-        // Left Portion
-        base[screen_index] |= (data >> shift);
-
-        // Right spill into next word
-        base[screen_index] |= (data << (16 - shift));
-      }
-
-    }
-
-}
-
-void plot_bitmap_32(UINT32 *base, UINT16 row, UINT16 col, UINT16 height){ 
-
+void plot_bitmap_16(UINT16 *base, UINT16 row, UINT16 col,
+                    const UINT16 *bitmap, UINT16 height)
+{
     UINT16 r;
+    UINT16 shift       = col % 16;
+    UINT16 word_col    = col / 16;
+    UINT32 screen_index;
+    UINT16 data;
 
-    UINT16 words_per_row = 640 / 32;
-    UINT16 word_col = col / 32;
-    UINT16 shift = col % 32;
+    for (r = 0; r < height; r++)
+    {
+        screen_index = (UINT32)(row + r) * WORDS_PER_ROW + word_col;
+        data         = bitmap[r];
 
-    for ( r = 0 ; r < height; r++){
-        UINT32 screen_index = (row + r) * words_per_row + word_col;
-        UINT data = bitmap[r];
-
-        if (shift == 0){
-            // Aligned
+        if (shift == 0)
+        {
             base[screen_index] |= data;
-        }else{
-            // Left Portion
-            base[screen_index] |= (data >> shift);
+        }
+        else
+        {
+            base[screen_index]     |= (data >> shift);
+            base[screen_index + 1] |= (data << (16 - shift)); /* was writing to screen_index again — fixed */
+        }
+    }
+}
 
-            // Right spill into next work;
-            // Right spill into next word;
+/* ------------------------------------------------------------------ */
+/* plot_bitmap_32                                                       */
+/* ------------------------------------------------------------------ */
+
+void plot_bitmap_32(UINT32 *base, UINT16 row, UINT16 col,
+                    const UINT32 *bitmap, UINT16 height)
+{
+    UINT16 r;
+    UINT16 shift       = col % 32;
+    UINT16 word_col    = col / 32;
+    UINT32 screen_index;
+    UINT32 data;          /* was "UINT data" — fixed to UINT32 */
+
+    for (r = 0; r < height; r++)
+    {
+        screen_index = (UINT32)(row + r) * LONGS_PER_ROW + word_col;
+        data         = bitmap[r];
+
+        if (shift == 0)
+        {
+            base[screen_index] |= data;
+        }
+        else
+        {
+            base[screen_index]     |= (data >> shift);
             base[screen_index + 1] |= (data << (32 - shift));
         }
     }
-
 }
 
-void plot_character(UINT8 *base, UINT16 row, UINT16 col, char ch){
+/* ------------------------------------------------------------------ */
+/* plot_character                                                       */
+/*                                                                      */
+/* Font table layout (TOS / 8x8 convention used here):                 */
+/*   Row N of char C is at font_table[C * 8 + N]                       */
+/* Call linea0() once at program start and pass (UINT8 *)V_FNT_AD.     */
+/* ------------------------------------------------------------------ */
 
-    UINT16 r;
-    
-    UINT16 bytes_per_row = 640 / 8;
-    UINT *bitmap = font8x8[(unsigned char)ch];
-    UINT16 byte_col = col % 8;
-    UINT16 shift = col % 8;
+void plot_character(UINT8 *base, UINT16 row, UINT16 col,
+                    char ch, const UINT8 *font_table)
+{
+    UINT8        glyph[8];
+    UINT16       r;
+    const UINT8 *src = font_table + ((unsigned char)ch - ' ') * 8; /* new change here */
 
-    for (r = 0; r < 0; r++){
-        UINT16 screen_index = (row + r) * bytes_per_row + byte_col;
-        UINT8 data = bitmap[r];
+    for (r = 0; r < 8; r++)
+        glyph[r] = src[r];
 
-        if (shift == 0){
-            // Aligned
-            base[screen_index] |= data;
-        }else{
-            // Left Portion
-            base[screen_index] |= (data >> shift);
-             
-            // Right spill into next word;
-            base[screen_index + 1] |= (data <<(8 - shift));
-        }
-
-    }
-
+    plot_bitmap_8(base, row, col, glyph, 8); /* was "r < 0" — fixed to 8 */
 }
 
-void plot_string(UINT8 *base, UINT16 row, UINT16 col, char *ch){
+/* ------------------------------------------------------------------ */
+/* plot_string                                                          */
+/* ------------------------------------------------------------------ */
 
+void plot_string(UINT8 *base, UINT16 row, UINT16 col,
+                 const char *str, const UINT8 *font_table)
+{
     UINT16 current_col = col;
 
-    while(*ch != '\0'){
-        plot_character(base, row, current_col, *ch);
-
-        // Traverse by 8 pixels
-        current_col += 8; 
-        // Move to next character
-        ch++; 
-
+    while (*str != '\0')
+    {
+        plot_character(base, row, current_col, *str, font_table);
+        current_col += 8;
+        str++;
     }
-
 }
-

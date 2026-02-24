@@ -1,0 +1,12 @@
+tstbit.prg: tstbit.o raster.o rast_asm.o bitmap.o
+	cc68x tstbit.o raster.o rast_asm.o bitmap.o -o tstbit.prg
+tstbit.o: tstbit.c raster.h
+	cc68x -g -c tstbit.c
+raster.o: raster.c raster.h
+	cc68x -g -c raster.c
+bitmap.o: bitmap.c raster.h
+	cc68x -g -c bitmap.c
+rast_asm.o: rast_asm.s
+	gen -D -L2 rast_asm.s
+clean:
+	$(RM) *.o *.prg

@@ -1,3 +1,14 @@
+/*
+ * raster.c - Raster graphics library for the Atari ST (C layer).
+ *
+ * Screen: 640 x 400, monochrome, 80 bytes per row.
+ * Pixel (row, col): byte = base[row*80 + col/8], bit = 7-(col%8).
+ *
+ *
+ * Authors: Aydin Salonius, Chintan Thakor, Derek Regier
+ * Course: COMP 2659, Winter 2026
+ */
+
 #include "raster.h"
 
 #define SCREEN_WIDTH      640
@@ -13,7 +24,7 @@
  void clear_screen(UINT32 *base)
 {
     UINT32 i;
-    for (i = 0; i < 8000; i++)  /* 32000 bytes / 4 = 8000 longs */
+    for (i = 0; i < 8000; i++)  /* 32000 bytes / 4 = 8000 longs 
         base[i] = 0;
 }
 /* ------------------------------------------------------------------ */
@@ -182,7 +193,7 @@ void plot_triangle(UINT32 *base, UINT16 row, UINT16 col,
         case 1: /* anchor = top-right */
             plot_horizontal_line(base, row, col - base_len + 1, base_len);
             plot_vertical_line  (base, row, col, height);
-            plot_line(base, row + height - 1, col,   /* was plot() — fixed */
+            plot_line(base, row + height - 1, col,   /* was plot() — fixed 
                             row, col - base_len + 1);
             break;
 
@@ -236,7 +247,7 @@ void pbm8(UINT8 *base, UINT16 row, UINT16 col,
 /* plot_bitmap_16                                                       */
 /* ------------------------------------------------------------------ */
 
-void pmb16(UINT16 *base, UINT16 row, UINT16 col,
+void pbm16(UINT16 *base, UINT16 row, UINT16 col,
                     const UINT16 *bitmap, UINT16 height)
 {
   
@@ -291,7 +302,7 @@ void plot_character(UINT8 *base, UINT16 row, UINT16 col,
     for (r = 0; r < 8; r++)
         glyph[r] = src[r];
 
-    pbm8(base, row, col, glyph, 8); /* was "r < 0" — fixed to 8 */
+    plot_bitmap_8(base, row, col, glyph, 8); /* was "r < 0" — fixed to 8 */
 }
 
 /* ------------------------------------------------------------------ */

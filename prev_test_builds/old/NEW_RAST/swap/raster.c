@@ -1,3 +1,14 @@
+/*
+ * raster.c - Raster graphics library for the Atari ST (C layer).
+ *
+ * Screen: 640 x 400, monochrome, 80 bytes per row.
+ * Pixel (row, col): byte = base[row*80 + col/8], bit = 7-(col%8).
+ *
+ *
+ * Authors: Aydin Salonius, Chintan Thakor, Derek Regier
+ * Course: COMP 2659, Winter 2026
+ */
+
 #include "raster.h"
 
 #define SCREEN_WIDTH      640
@@ -10,10 +21,10 @@
 /* clear_screen                                                         */
 /* ------------------------------------------------------------------ */
 
- void clear_screen(UINT32 *base)
+void clear_screen(UINT32 *base)
 {
     UINT32 i;
-    for (i = 0; i < 8000; i++)  /* 32000 bytes / 4 = 8000 longs */
+    for (i = 0; i < 8000; i++)  /* 32000 bytes / 4 = 8000 longs 
         base[i] = 0;
 }
 /* ------------------------------------------------------------------ */
@@ -46,15 +57,16 @@ void clear_region(UINT32 *base, UINT16 row, UINT16 col,
             base[word_index] &= ~(1UL << bit_pos);
         }
     }
+    
 }   /* was missing closing brace for outer loop — fixed */
 
 /* ------------------------------------------------------------------ */
 /* plot_pixel                                                           */
-/* ------------------------------------------------------------------  */
+/* ------------------------------------------------------------------ 
 
 void plot_pixel(UINT8 *base, UINT16 row, UINT16 col)
 {
-    UINT32 byte_index;  /* declared at top — C89 requirement */
+    UINT32 byte_index;  /* declared at top — C89 requirement 
     UINT8  bit_mask;
 
     if (row >= SCREEN_HEIGHT || col >= SCREEN_WIDTH) return;
@@ -66,7 +78,7 @@ void plot_pixel(UINT8 *base, UINT16 row, UINT16 col)
 
 /* ------------------------------------------------------------------ */
 /* plot_horizontal_line                                                 */
-/* ------------------------------------------------------------------  */
+/* ------------------------------------------------------------------ */
 
 void plot_horizontal_line(UINT32 *base, UINT16 row, UINT16 col,
                           UINT16 length)
@@ -178,6 +190,7 @@ void plot_triangle(UINT32 *base, UINT16 row, UINT16 col,
             plot_line(base, row + height - 1, col,
                             row,             col + base_len);
             break;
+        
 
         case 1: /* anchor = top-right */
             plot_horizontal_line(base, row, col - base_len + 1, base_len);
@@ -185,20 +198,22 @@ void plot_triangle(UINT32 *base, UINT16 row, UINT16 col,
             plot_line(base, row + height - 1, col,   /* was plot() — fixed */
                             row, col - base_len + 1);
             break;
-
-        case 2: /* anchor = bottom-left */
+        
+        case 2:  /* anchor = bottom-left */
             plot_horizontal_line(base, row, col, base_len);
             plot_vertical_line  (base, row - height + 1, col, height);
             plot_line(base, row - height + 1, col,
                             row, col + base_len - 1);
             break;
+        
 
-        case 3: /* anchor = bottom-right */
+        case 3:  /* anchor = bottom-right */
             plot_horizontal_line(base, row, col - base_len + 1, base_len);
             plot_vertical_line  (base, row - height + 1, col, height);
             plot_line(base, row - height + 1, col,
                             row, col - base_len + 1);
             break;
+        
     }
 }
 
@@ -206,7 +221,7 @@ void plot_triangle(UINT32 *base, UINT16 row, UINT16 col,
 /* plot_bitmap_8                                                        */
 /* ------------------------------------------------------------------ */
 
-void pbm8(UINT8 *base, UINT16 row, UINT16 col,
+void plot_bitmap_8(UINT8 *base, UINT16 row, UINT16 col,
                    const UINT8 *bitmap, UINT16 height)
 {
     UINT16 r;
@@ -236,18 +251,37 @@ void pbm8(UINT8 *base, UINT16 row, UINT16 col,
 /* plot_bitmap_16                                                       */
 /* ------------------------------------------------------------------ */
 
-void pmb16(UINT16 *base, UINT16 row, UINT16 col,
+void plot_bitmap_16(UINT16 *base, UINT16 row, UINT16 col,
                     const UINT16 *bitmap, UINT16 height)
 {
-  
-  pmb16(base, row, col,bitmap,height);
+    UINT16 r;
+    UINT16 shift       = col % 16;
+    UINT16 word_col    = col / 16;
+    UINT32 screen_index;
+    UINT16 data;
+
+    for (r = 0; r < height; r++)
+    {
+        screen_index = (UINT32)(row + r) * WORDS_PER_ROW + word_col;
+        data         = bitmap[r];
+
+        if (shift == 0)
+        {
+            base[screen_index] |= data;
+        }
+        else
+        {
+            base[screen_index]     |= (data >> shift);
+            base[screen_index + 1] |= (data << (16 - shift)); /* was writing to screen_index again — fixed */
+        }
+    }
 }
 
 /* ------------------------------------------------------------------ */
 /* plot_bitmap_32                                                       */
 /* ------------------------------------------------------------------ */
 
-void pbm32(UINT32 *base, UINT16 row, UINT16 col,
+void plot_bitmap_32(UINT32 *base, UINT16 row, UINT16 col,
                     const UINT32 *bitmap, UINT16 height)
 {
     UINT16 r;
@@ -286,12 +320,12 @@ void plot_character(UINT8 *base, UINT16 row, UINT16 col,
 {
     UINT8        glyph[8];
     UINT16       r;
-    const UINT8 *src = font_table + ((unsigned char)ch - ' ') * 8; /* new change here */
+    const UINT8 *src = font_table + (unsigned char)ch * 8;
 
     for (r = 0; r < 8; r++)
         glyph[r] = src[r];
 
-    pbm8(base, row, col, glyph, 8); /* was "r < 0" — fixed to 8 */
+    plot_bitmap_8(base, row, col, glyph, 8); /* was "r < 0" — fixed to 8 */
 }
 
 /* ------------------------------------------------------------------ */

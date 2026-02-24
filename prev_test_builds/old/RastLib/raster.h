@@ -48,13 +48,13 @@ void plot_triangle(UINT32 *base, UINT16 row, UINT16 col,
  * bitmap: pointer to row data; each entry is one 8-bit row of the sprite.
  * height: number of rows in the bitmap.
  */
-void pbm8(UINT8 *base, UINT16 row, UINT16 col,
+void plot_bitmap_8(UINT8 *base, UINT16 row, UINT16 col,
                    const UINT8 *bitmap, UINT16 height);
-
-void pbm16(UINT16 *base, UINT16 row, UINT16 col,
+/**/
+void plot_bitmap_16(UINT16 *base, UINT16 row, UINT16 col,
                     const UINT16 *bitmap, UINT16 height);
 
-void pbm32(UINT32 *base, UINT16 row, UINT16 col,
+void plot_bitmap_32(UINT32 *base, UINT16 row, UINT16 col,
                     const UINT32 *bitmap, UINT16 height);
 
 /*

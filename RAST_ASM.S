@@ -958,53 +958,66 @@ _plot_character:
     link    a6,#0
     movem.l d0-3/a0-2,-(sp)
 
-    movea.l FONT_TABLE(a6),a1      ; a1 = font_table
-    move.w  FONT_CH(a6),d0         ; d0 = ch
-    and.w   #$FF,d0                ; unsigned char
-    sub.w   #32,d0                 ; ch - ' '
-    lsl.w   #3,d0                  ; * 8 (8 bytes per glyph)
-    adda.l  d0,a1                  ; a1 = &font_table[ch - ' ']
+    ; src = font_table + ((unsigned char)ch - ' ') * 8
+    movea.l FONT_TABLE(a6),a1       ; a1 = font_table
+    move.w  FONT_CH(a6),d0          ; d0 = ch
+    and.w   #$FF,d0                 ; unsigned char
+    sub.w   #32,d0                  ; ch - ' '
+    lsl.w   #3,d0                   ; * 8
+    adda.l  d0,a1                   ; a1 = src
 
-    move.w  #8,-(sp)               ; height = 8
-    pea     (a1)                   ; glyph ptr
-    move.w  FONT_COL(a6),-(sp)     ; col
-    move.w  FONT_ROW(a6),-(sp)     ; row
-    move.l  FONT_BASE(a6),-(sp)    ; base
+    ; copy glyph[8] onto stack
+    subq.l  #8,sp                   ; allocate 8 bytes on stack
+    movea.l sp,a2                   ; a2 = glyph
+
+    move.w  #7,d1                   ; r = 0..7
+glyph_loop:
+    move.b  (a1)+,(a2)+             ; glyph[r] = src[r]
+    dbra    d1,glyph_loop
+
+    ; plot_bitmap_8(base, row, col, glyph, 8)
+    move.w  #8,-(sp)                ; height = 8
+    pea     2(sp)                   ; glyph is 2 bytes above sp (past the pushed #8)
+    move.w  FONT_COL(a6),-(sp)      ; col
+    move.w  FONT_ROW(a6),-(sp)      ; row
+    move.l  FONT_BASE(a6),-(sp)     ; base
     jsr     _pbm8
-    add.l   #14,sp                 ; clean up (4+2+2+4+2)
+    add.l   #14,sp                  ; clean up args
+
+    addq.l  #8,sp                   ; free glyph
 
     movem.l (sp)+,d0-3/a0-2
     unlk    a6
     rts
 
-
-STR_BASE    equ 8
-STR_ROW     equ 12
-STR_COL     equ 14
-STR_PTR     equ 16
-STR_FONT    equ 20
+STR_BASE        equ 8
+STR_ROW         equ 12
+STR_COL         equ 14
+STR_PTR         equ 16
+STR_FONT        equ 20
 
 _plot_string:
     link    a6,#0
     movem.l d0-1/a0-1,-(sp)
 
-    movea.l STR_PTR(a6),a0         ; a0 = str
-    move.w  STR_COL(a6),d0         ; d0 = current_col
+    movea.l STR_PTR(a6),a0          ; a0 = str
+    move.w  STR_COL(a6),d0         ; d0 = current_col = col
 
 str_loop:
-    move.b  (a0),d1                ; d1 = *str
-    beq     str_done               ; if '\0' exit
+    move.b  (a0),d1                 ; d1 = *str
+    beq     str_done                ; if *str == '\0' exit
 
-    move.l  STR_FONT(a6),-(sp)     ; font_table
-    move.w  d1,-(sp)               ; ch
-    move.w  d0,-(sp)               ; current_col
-    move.w  STR_ROW(a6),-(sp)      ; row
-    move.l  STR_BASE(a6),-(sp)     ; base
+    ; plot_character(base, row, current_col, *str, font_table)
+    move.l  STR_FONT(a6),-(sp)      ; font_table
+    move.w  d1,-(sp)                ; ch = *str
+    move.w  d0,-(sp)                ; current_col
+    move.w  STR_ROW(a6),-(sp)       ; row
+    move.l  STR_BASE(a6),-(sp)      ; base
     jsr     _plot_character
-    add.l   #14,sp                 ; clean up (4+2+2+2+4)
+    add.l   #14,sp                  ; clean up args (4+2+2+2+4=14)
 
-    add.w   #8,d0                  ; current_col += 8
-    addq.l  #1,a0                  ; str++
+    add.w   #8,d0                   ; current_col += 8
+    addq.l  #1,a0                   ; str++
     bra     str_loop
 
 str_done:

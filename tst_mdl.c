@@ -10,7 +10,7 @@
 #include <stdio.h>
 #include "model.h"
 
-static int tests_run    = 0;
+static int tests_run = 0;
 static int tests_passed = 0;
 
 static void check(const char *desc, int result)
@@ -24,11 +24,9 @@ static void check(const char *desc, int result)
     }
 }
 
-/* ------------------------------------------------------------
- * Maker functions - build structs field by field so no
- * compound initializer is needed after a statement (C89 rule).
- * ------------------------------------------------------------ */
+/* Maker functions - build structs field by field to avoid compiler error with {} */
 
+/* Create player*/
 static Player make_player(void)
 {
     Player p;
@@ -45,7 +43,7 @@ static Player make_player(void)
     p.w              = 32;
     return p;
 }
-
+/* Create enemy */
 static Enemy make_enemy(unsigned int x, unsigned int y, int health, int damage)
 {
     Enemy e;
@@ -60,7 +58,7 @@ static Enemy make_enemy(unsigned int x, unsigned int y, int health, int damage)
     e.is_attacking = FALSE;
     return e;
 }
-
+/* Create Boss */
 static Boss make_boss(unsigned int x, unsigned int y, int health, int max_health)
 {
     Boss b;
@@ -76,7 +74,7 @@ static Boss make_boss(unsigned int x, unsigned int y, int health, int max_health
     b.h          = 48;
     return b;
 }
-
+/* Create Item */
 static Item make_item(int value)
 {
     Item i;
@@ -88,26 +86,29 @@ static Item make_item(int value)
     return i;
 }
 
-/* ------------------------------------------------------------ */
-/* Player tests                                                  */
-/* ------------------------------------------------------------ */
+/* Player tests */
 
 static void test_player_movement(void)
 {
+    /* Both pkayer movement functions are nearly identitical so some tests work for both */
     Player p = make_player();
     printf("\nPlayer Movement\n");
 
+    /* Move player horizontally */
     move_player_horizontal(&p);
     check("horizontal moves x by delta_x (no delta, stays)", p.x == 100);
 
+    /* Move player horizontally with actual velocity */
     p.delta_x = 3;
     p.delta_y = 2;
     move_player_horizontal(&p);
     check("horizontal moves x by delta_x", p.x == 103);
 
+    /* Move player vertically */
     move_player_vertical(&p);
     check("vertical moves y by delta_y", p.y == 102);
 
+    /* Move player in negative direction */
     p.delta_x = -5;
     move_player_horizontal(&p);
     check("negative delta_x decrements x", p.x == 98);
@@ -120,6 +121,7 @@ static void test_player_health(void)
     bool died;
     printf("\nPlayer Health\n");
 
+    /* Repeatedly test if player dies */
     died = update_health(&p, -20);
     check("damage reduces health", p.health == 80);
     check("not dead at 80 hp", !died);
@@ -137,6 +139,7 @@ static void test_player_health(void)
 
 static void test_player_attack_state(void)
 {
+    /* Check initial attacking, current attacking and atacking activates cooldown*/
     Player p = make_player();
     printf("\nPlayer Attack State\n");
 
@@ -152,6 +155,7 @@ static void test_player_attack_state(void)
 
 static void test_player_hitbox(void)
 {
+    /* Test player overlapping for hitboxes */
     Player p = make_player();
     printf("\nPlayer Hitbox\n");
 
@@ -168,15 +172,13 @@ static void test_player_hitbox(void)
           player_hitbox_overlaps(&p, 105, 105, 10, 10));
 }
 
-/* ------------------------------------------------------------ */
-/* Enemy tests                                                   */
-/* ------------------------------------------------------------ */
+/* Enemy tests */
 
 static void test_enemy_movement(void)
 {
     Enemy e = make_enemy(200, 150, 50, 8);
     printf("\nEnemy Movement\n");
-
+    /* Enemy movement has same implementation as player, test the basic functionality */
     e.delta_x = -2;
     e.delta_y =  3;
     move_enemy_horizontal(&e);
@@ -188,6 +190,7 @@ static void test_enemy_movement(void)
 
 static void test_enemy_health(void)
 {
+    /* Test for enemy health reduction and death */
     Enemy e = make_enemy(0, 0, 30, 8);
     bool died;
     printf("\nEnemy Health\n");
@@ -203,6 +206,7 @@ static void test_enemy_health(void)
 
 static void test_enemy_hitbox(void)
 {
+    /* Test the hitbox overlapping - Same as player */
     Enemy e = make_enemy(200, 200, 50, 8);
     printf("\nEnemy Hitbox\n");
 
@@ -215,13 +219,11 @@ static void test_enemy_hitbox(void)
     check("no overlap when touching left edge only",
           !enemy_hitbox_overlaps(&e, 168, 200, 32, 32));
 }
-
-/* ------------------------------------------------------------ */
-/* Boss tests                                                    */
-/* ------------------------------------------------------------ */
+/* Boss tests  */
 
 static void test_boss_health(void)
 {
+    /* Test boss health and death state */
     Boss boss = make_boss(500, 200, 200, 200);
     bool died;
     printf("\nBoss Health\n");
@@ -236,6 +238,7 @@ static void test_boss_health(void)
 
 static void test_boss_summon(void)
 {
+    /* Ensure boss will summon at 50% health */
     Boss boss = make_boss(500, 200, 200, 200);
     printf("\nBoss Summon Threshold\n");
 
@@ -250,6 +253,7 @@ static void test_boss_summon(void)
 
 static void test_boss_hitbox(void)
 {
+    /* Test boss overlapping hitboxes */
     Boss boss = make_boss(500, 200, 200, 200);
     printf("\nBoss Hitbox\n");
 
@@ -260,12 +264,11 @@ static void test_boss_hitbox(void)
           !boss_hitbox_overlaps(&boss, 100, 100, 32, 32));
 }
 
-/* ------------------------------------------------------------ */
-/* Item tests                                                    */
-/* ------------------------------------------------------------ */
+/* Item tests */
 
 static void test_item(void)
 {
+    /* Simple create and returning item value */
     Item potion = make_item(30);
     Item empty  = make_item(0);
     printf("\nItem\n");
@@ -274,12 +277,12 @@ static void test_item(void)
     check("get_value returns 0 for empty item", get_value(&empty) == 0);
 }
 
-/* ------------------------------------------------------------ */
-/* Model init test                                               */
-/* ------------------------------------------------------------ */
+/* Model init test */
+
 
 static void test_model_init(void)
 {
+    /* Test the model init to ensure it works for initial game state */
     Model model;
     printf("\nModel Init\n");
 
@@ -295,12 +298,11 @@ static void test_model_init(void)
     check("item value initialized",           model.item[0].value > 0);
 }
 
-/* ------------------------------------------------------------ */
-/* Main                                                          */
-/* ------------------------------------------------------------ */
+/* Main */
 
 int main(void)
 {
+    /* Run tests and print the number passes*/
     printf("Model Test Driver\n");
 
     test_player_movement();

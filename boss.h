@@ -1,7 +1,7 @@
 #ifndef BOSS_H
 #define BOSS_H
 
-#include <stdbool.h>
+#include "types.h"
 
 typedef struct {
     unsigned int x, y;
@@ -10,7 +10,7 @@ typedef struct {
     int health;
     int damage;
     bool summoned;
-    const int max_health;
+    int max_health;     /* set once at init; treat as read-only afterward */
     unsigned int w, h;
 } Boss;
 
@@ -27,7 +27,6 @@ int boss_attack(Boss *boss);
 bool summon(Boss *boss);
 
 bool boss_hitbox_overlaps(const Boss *boss, int x, int y, int width, int height);
-
 
 
 #endif /* BOSS_H */

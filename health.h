@@ -1,5 +1,5 @@
-#ifndef HEALTHBAR_H
-#define HEALTHBAR_H
+#ifndef HEALTH_H
+#define HEALTH_H
 
 typedef struct {
     unsigned int x, y;
@@ -9,4 +9,4 @@ typedef struct {
 
 int update_value(Healthbar *healthbar, int value);
 
-#endif /* HEALTHBAR_H */
+#endif /* HEALTH_H */

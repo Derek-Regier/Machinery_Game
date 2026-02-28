@@ -26,9 +26,7 @@ static void check(const char *desc, int result)
 }
 
 
-/* ------------------------------------------------------------
- * Maker functions - build structs field by field so no
- * ------------------------------------------------------------ */
+/* Maker functions - build structs field by field */
 
 static Player make_player(void)
 {
@@ -88,13 +86,11 @@ static Item make_item(int value)
     i.value = value;
     return i;
 }
-
-/* ------------------------------------------------------------ */
-/* Async handler tests                                           */
-/* ------------------------------------------------------------ */
+/* Async handler tests */
 
 static void test_async_move(void)
 {
+    /*Test to ensure player velocity updates properly and does not modify position */
     Player p = make_player();
     printf("\nAsync: move_player\n");
 
@@ -116,8 +112,9 @@ static void test_async_move(void)
 
 static void test_async_light_attack(void)
 {
-    Player p         = make_player();
-    Player p2        = make_player();
+    /* Initialize two players and ensure is attacking protections and cooldowns work */
+    Player p = make_player();
+    Player p2 = make_player();
     unsigned int cd_before;
     printf("\nAsync: on_light_attack\n");
 
@@ -136,15 +133,16 @@ static void test_async_light_attack(void)
 
 static void test_async_use_item(void)
 {
-    Player p      = make_player();
-    Item   potion;
-    int    hp_before;
+    /* Initalize item and test if player's health updates according to the value */
+    Player p = make_player();
+    Item potion;
+    int hp_before;
     printf("\nAsync: on_use_item\n");
 
-    potion.x     = 0;
-    potion.y     = 0;
-    potion.h     = 16;
-    potion.w     = 16;
+    potion.x = 0;
+    potion.y = 0;
+    potion.h = 16;
+    potion.w = 16;
     potion.value = 30;
 
     hp_before = p.health;
@@ -152,13 +150,12 @@ static void test_async_use_item(void)
     check("health increases by item value", p.health == hp_before + 30);
 }
 
-/* ------------------------------------------------------------ */
-/* Synch handler tests                                           */
-/* ------------------------------------------------------------ */
+/* Synch handler tests */
 
 static void test_synch_player_position(void)
 {
-    Player       p = make_player();
+    /* Test player movement updates properly */
+    Player p = make_player();
     unsigned int x_before;
     unsigned int y_before;
     printf("\nSynch: update_player_position\n");
@@ -180,20 +177,21 @@ static void test_synch_player_position(void)
 
 static void test_synch_screen_boundary(void)
 {
+    /* Test player does not move off screen from normal movement */
     Player p  = make_player();
     Player p2 = make_player();
     printf("\nSynch: screen boundary clamping\n");
 
-    p.x       = 607;
-    p.y       = 367;
+    p.x = 607;
+    p.y = 367;
     p.delta_x = 5;
     p.delta_y = 5;
     update_player_position(&p);
     check("x clamped at MAX_X (608)", p.x <= 608);
     check("y clamped at MAX_Y (368)", p.y <= 368);
 
-    p2.x       = 0;
-    p2.y       = 0;
+    p2.x = 0;
+    p2.y = 0;
     p2.delta_x = -5;
     p2.delta_y = -5;
     update_player_position(&p2);
@@ -203,6 +201,7 @@ static void test_synch_screen_boundary(void)
 
 static void test_synch_cooldowns(void)
 {
+    /* test all cooldowns */
     Player p = make_player();
     printf("\nSynch: cooldown ticking\n");
 
@@ -234,6 +233,7 @@ static void test_synch_cooldowns(void)
 
 static void test_synch_enemy_position(void)
 {
+    /* Test enemy movement */
     Enemy  e = make_enemy(200, 150, 50, 8);
     Player p = make_player();
     printf("\nSynch: update_enemy_position\n");
@@ -251,7 +251,8 @@ static void test_synch_enemy_position(void)
 
 static void test_cond_player_takes_damage(void)
 {
-    Player p  = make_player();
+    /* Test player taking damage from cond events */
+    Player p = make_player();
     Player p2 = make_player();
     bool   died;
     printf("\nCond: player_take_damage\n");
@@ -270,11 +271,12 @@ static void test_cond_player_takes_damage(void)
 
 static void test_cond_player_hits_enemy(void)
 {
-    Player p      = make_player();
-    Enemy  e      = make_enemy(110, 110, 50, 8);
-    Enemy  dead_e = make_enemy(110, 110, 0,  8);
-    Enemy  far_e  = make_enemy(400, 400, 50, 8);
-    int    hp_dead;
+    /* check variations of whether enemies get hit by player or not */
+    Player p = make_player();
+    Enemy e = make_enemy(110, 110, 50, 8);
+    Enemy dead_e = make_enemy(110, 110, 0,  8);
+    Enemy far_e  = make_enemy(400, 400, 50, 8);
+    int hp_dead;
     printf("\nCond: player_hits_enemy\n");
 
     player_hits_enemy(&p, &e);
@@ -295,9 +297,10 @@ static void test_cond_player_hits_enemy(void)
 
 static void test_cond_player_hits_boss(void)
 {
-    Player p        = make_player();
-    Boss   boss     = make_boss(110, 110, 200, 200);
-    Boss   far_boss = make_boss(500, 500, 200, 200);
+    /* Similar tests as enemy */
+    Player p = make_player();
+    Boss boss = make_boss(110, 110, 200, 200);
+    Boss far_boss = make_boss(500, 500, 200, 200);
     printf("\nCond: player_hits_boss\n");
 
     player_hits_boss(&p, &boss);
@@ -314,11 +317,12 @@ static void test_cond_player_hits_boss(void)
 
 static void test_cond_enemy_hits_player(void)
 {
-    Player p  = make_player();
+    /* Test variations on enemy hitting player */
+    Player p = make_player();
     Player p2 = make_player();
-    Enemy  e  = make_enemy(110, 110, 50, 15);
-    Enemy  big;
-    bool   died;
+    Enemy e = make_enemy(110, 110, 50, 15);
+    Enemy big;
+    bool died;
     printf("\nCond: enemy_hits_player\n");
 
     died = enemy_hits_player(&e, &p);
@@ -331,8 +335,8 @@ static void test_cond_enemy_hits_player(void)
           p.health == 100 - e.damage);
     check("not dead after one hit", !died);
 
-    p2.health      = 1;
-    big            = make_enemy(110, 110, 50, 999);
+    p2.health = 1;
+    big = make_enemy(110, 110, 50, 999);
     big.is_attacking = TRUE;
     died = enemy_hits_player(&big, &p2);
     check("player_dies returned from lethal hit", died);
@@ -340,6 +344,7 @@ static void test_cond_enemy_hits_player(void)
 
 static void test_cond_boss_summon(void)
 {
+    /* Test if the boss summons properly and only once */
     Boss boss = make_boss(500, 200, 200, 200);
     printf("\nCond: boss_summon\n");
 
@@ -357,6 +362,7 @@ static void test_cond_boss_summon(void)
 
 static void test_cond_level_end(void)
 {
+    /* Test the game ending */
     Model model;
     printf("\nCond: level_end\n");
 
@@ -371,12 +377,11 @@ static void test_cond_level_end(void)
     check("level ends when player dies", level_end(&model));
 }
 
-/* ------------------------------------------------------------ */
-/* Main                                                          */
-/* ------------------------------------------------------------ */
+/* Main */
 
 int main(void)
 {
+    /* Run all the tests */
     printf("Event Handler Test Driver\n");
 
     test_async_move();

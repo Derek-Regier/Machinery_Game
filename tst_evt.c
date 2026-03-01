@@ -40,8 +40,8 @@ static Player make_player(void)
     p.is_attacking = FALSE;
     p.item_cooldown  = 0;
     p.attack_cooldown = 0;
-    p.h              = 32;
-    p.w              = 32;
+    p.h = 32;
+    p.w = 32;
     return p;
 }
 

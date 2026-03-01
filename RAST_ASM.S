@@ -976,13 +976,14 @@ glyph_loop:
     dbra    d1,glyph_loop
 
     ; plot_bitmap_8(base, row, col, glyph, 8)
+    movea.l sp,a2                   ; save glyph base BEFORE pushing args
     move.w  #8,-(sp)                ; height = 8
-    pea     2(sp)                   ; glyph is 2 bytes above sp (past the pushed #8)
+    move.l  a2,-(sp)                ; glyph pointer
     move.w  FONT_COL(a6),-(sp)      ; col
     move.w  FONT_ROW(a6),-(sp)      ; row
     move.l  FONT_BASE(a6),-(sp)     ; base
     jsr     _pbm8
-    add.l   #14,sp                  ; clean up args
+    add.l   #14,sp
 
     addq.l  #8,sp                   ; free glyph
 
@@ -1000,7 +1001,7 @@ _plot_string:
     link    a6,#0
     movem.l d0-1/a0-1,-(sp)
 
-    movea.l STR_PTR(a6),a0          ; a0 = str
+    movea.l STR_PTR(a6),a0         ; a0 = str
     move.w  STR_COL(a6),d0         ; d0 = current_col = col
 
 str_loop:
@@ -1024,3 +1025,4 @@ str_done:
     movem.l (sp)+,d0-1/a0-1
     unlk    a6
     rts
+    

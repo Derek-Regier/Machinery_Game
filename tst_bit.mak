@@ -11,4 +11,4 @@ font.o: font.c font.h
 rast_asm.o: rast_asm.s
 	gen -D -L2 rast_asm.s
 clean:
-	$(RM) *.o *.prg
+	rm *.o*.prg

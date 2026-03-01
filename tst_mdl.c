@@ -30,31 +30,31 @@ static void check(const char *desc, int result)
 static Player make_player(void)
 {
     Player p;
-    p.x              = 100;
-    p.y              = 100;
-    p.delta_x        = 0;
-    p.delta_y        = 0;
-    p.health         = 100;
-    p.damage         = 10;
-    p.is_attacking   = FALSE;
-    p.item_cooldown  = 0;
+    p.x = 100;
+    p.y = 100;
+    p.delta_x = 0;
+    p.delta_y = 0;
+    p.health = 100;
+    p.damage = 10;
+    p.is_attacking = FALSE;
+    p.item_cooldown = 0;
     p.attack_cooldown = 0;
-    p.h              = 32;
-    p.w              = 32;
+    p.h = 32;
+    p.w = 32;
     return p;
 }
 /* Create enemy */
 static Enemy make_enemy(unsigned int x, unsigned int y, int health, int damage)
 {
     Enemy e;
-    e.x           = x;
-    e.y           = y;
-    e.delta_x     = 0;
-    e.delta_y     = 0;
-    e.health      = health;
-    e.damage      = damage;
-    e.w           = 32;
-    e.h           = 32;
+    e.x = x;
+    e.y = y;
+    e.delta_x = 0;
+    e.delta_y = 0;
+    e.health = health;
+    e.damage = damage;
+    e.w = 32;
+    e.h = 32;
     e.is_attacking = FALSE;
     return e;
 }
@@ -62,26 +62,26 @@ static Enemy make_enemy(unsigned int x, unsigned int y, int health, int damage)
 static Boss make_boss(unsigned int x, unsigned int y, int health, int max_health)
 {
     Boss b;
-    b.x          = x;
-    b.y          = y;
-    b.delta_x    = 0;
-    b.delta_y    = 0;
-    b.health     = health;
+    b.x = x;
+    b.y = y;
+    b.delta_x = 0;
+    b.delta_y = 0;
+    b.health = health;
     b.max_health = max_health;
-    b.damage     = 15;
-    b.summoned   = FALSE;
-    b.w          = 48;
-    b.h          = 48;
+    b.damage = 15;
+    b.summoned = FALSE;
+    b.w  = 48;
+    b.h = 48;
     return b;
 }
 /* Create Item */
 static Item make_item(int value)
 {
     Item i;
-    i.x     = 0;
-    i.y     = 0;
-    i.h     = 16;
-    i.w     = 16;
+    i.x = 0;
+    i.y = 0;
+    i.h = 16;
+    i.w = 16;
     i.value = value;
     return i;
 }

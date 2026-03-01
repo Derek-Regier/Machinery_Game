@@ -215,7 +215,7 @@ void plot_triangle(UINT32 *base, UINT16 row, UINT16 col,
 
 /* ------------------------------------------------------------------ */
 /* plot_bitmap_8                                                        */
-/* ------------------------------------------------------------------ */
+/* ------------------------------------------------------------------ 
 
 void pbm8(UINT8 *base, UINT16 row, UINT16 col,
                    const UINT8 *bitmap, UINT16 height)
@@ -238,7 +238,7 @@ void pbm8(UINT8 *base, UINT16 row, UINT16 col,
         else
         {
             base[screen_index]     |= (data >> shift);
-            base[screen_index + 1] |= (data << (8 - shift));  /* spill */
+            base[screen_index + 1] |= (data << (8 - shift));  /* spill *
         }
     }
 }
@@ -290,24 +290,24 @@ void pbm32(UINT32 *base, UINT16 row, UINT16 col,
 /* Font table layout (TOS / 8x8 convention used here):                */
 /*   Row N of char C is at font_table[C * 8 + N]                      */
 /* Call linea0() once at program start and pass (UINT8 *)V_FNT_AD.    */
-/* ------------------------------------------------------------------ *
+/* ------------------------------------------------------------------ 
 
 void plot_character(UINT8 *base, UINT16 row, UINT16 col,
                     char ch, const UINT8 *font_table)
 {
     UINT8        glyph[8];
     UINT16       r;
-    const UINT8 *src = font_table + ((unsigned char)ch - ' ') * 8; /* new change here 
+    const UINT8 *src = font_table + ((unsigned char)ch - ' ') * 8; /* new change here *
 
     for (r = 0; r < 8; r++)
         glyph[r] = src[r];
 
-    pbm8(base, row, col, glyph, 8); /* was "r < 0" — fixed to 8 
+    pbm8(base, row, col, glyph, 8); /* was "r < 0" — fixed to 8 *
 }
 
 /* ------------------------------------------------------------------ */
 /* plot_string                                                          */
-/* ------------------------------------------------------------------ */
+/* ------------------------------------------------------------------ *
 
 void plot_string(UINT8 *base, UINT16 row, UINT16 col,
                  const char *str, const UINT8 *font_table)
@@ -321,3 +321,4 @@ void plot_string(UINT8 *base, UINT16 row, UINT16 col,
         str++;
     }
 }
+*/

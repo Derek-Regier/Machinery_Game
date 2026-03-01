@@ -28,7 +28,8 @@ int main()
     clear_screen((UINT32 *)base);
     /* each character is 8 pixels wide*/
     
-    plot_character(base, 0, 0, 'A', font);
+    plot_character(base, 0, 0, ' ', font);
+    plot_character(base, 0, 8, 'B', font);
 
     plot_string(base, 50, 50, "THIS IS A STRING!", font);
     

@@ -808,6 +808,7 @@ _pbm8:
     sub.w   d3,d4           ; anti_shift = 8 - shift
     subq.w  #1,d2
 plot8_loop:
+    move.w #0,d6
     move.w  d0,d6
     lsl.w   #6,d6
     move.w  d0,d5
@@ -953,30 +954,25 @@ FONT_ROW    equ 12
 FONT_COL    equ 14
 FONT_CH     equ 16
 FONT_TABLE  equ 18
-
 _plot_character:
     link    a6,#0
     movem.l d0-3/a0-2,-(sp)
-
     ; src = font_table + ((unsigned char)ch - ' ') * 8
     movea.l FONT_TABLE(a6),a1       ; a1 = font_table
     move.w  FONT_CH(a6),d0          ; d0 = ch
     and.w   #$FF,d0                 ; unsigned char
     sub.w   #32,d0                  ; ch - ' '
     lsl.w   #3,d0                   ; * 8
-    adda.l  d0,a1                   ; a1 = src
-
+    adda.w  d0,a1                   ; a1 = src (use .w not .l)
     ; copy glyph[8] onto stack
     subq.l  #8,sp                   ; allocate 8 bytes on stack
     movea.l sp,a2                   ; a2 = glyph
-
     move.w  #7,d1                   ; r = 0..7
 glyph_loop:
     move.b  (a1)+,(a2)+             ; glyph[r] = src[r]
     dbra    d1,glyph_loop
-
     ; plot_bitmap_8(base, row, col, glyph, 8)
-    movea.l sp,a2                   ; save glyph base BEFORE pushing args
+    movea.l sp,a2                   ; reset a2 to glyph start
     move.w  #8,-(sp)                ; height = 8
     move.l  a2,-(sp)                ; glyph pointer
     move.w  FONT_COL(a6),-(sp)      ; col
@@ -984,9 +980,7 @@ glyph_loop:
     move.l  FONT_BASE(a6),-(sp)     ; base
     jsr     _pbm8
     add.l   #14,sp
-
     addq.l  #8,sp                   ; free glyph
-
     movem.l (sp)+,d0-3/a0-2
     unlk    a6
     rts
@@ -1025,4 +1019,3 @@ str_done:
     movem.l (sp)+,d0-1/a0-1
     unlk    a6
     rts
-    

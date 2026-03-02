@@ -42,10 +42,10 @@ _plot_pixel:
     link    a6,#0
     movem.l d2-d6/a0,-(sp)
 
+    ; Load position and do bounds check
     move.w  ROW(a6),d2
     cmp.w   #400,d2
     bhs     pp_done
-
     move.w  COL(a6),d3
     cmp.w   #640,d3
     bhs     pp_done
@@ -265,11 +265,13 @@ _plot_horizontal_line:
     link    a6,#0
     movem.l d0-d7/a0,-(sp)
 
+    ; Load parameters
     move.w  PLOTHL_ROW(a6),d0
     move.w  PLOTHL_COL(a6),d1
     move.w  PLOTHL_LENGTH(a6),d2
     movea.l PLOTHL_BASE(a6),a0
-
+    
+    ; Perform bounds check
     cmp.w   #400,d0
     bhs     plothl_done
     cmp.w   #640,d1
@@ -476,6 +478,7 @@ _plot_rectangle:
 	link	a6,#0
 	movem.l	d0-4/a0,-(sp)
 
+        ; Load paramerers
 	movea.l	PLOTR_BASE(a6),a0
 	move.w	PLOTR_ROW(a6),d0
 	move.w	PLOTR_COL(a6),d1
@@ -583,6 +586,7 @@ _plot_square:
 	link	a6,#0
 	movem.l	d0-4/a0,-(sp)
 
+        ; Load parameters
 	movea.l	PLOTQ_BASE(a6),a0
 	move.w	PLOTQ_ROW(a6),d0
 	move.w	PLOTQ_COL(a6),d1
@@ -645,6 +649,7 @@ _plot_line:
     link    a6,#-6
     movem.l d0-d7/a0,-(sp)
 
+    ; Load parameters
     movea.l PLOTL_BASE(a6),a0
     move.w  START_ROW(a6),d0
     move.w  START_COL(a6),d1
@@ -759,6 +764,7 @@ _plot_triangle:
 	link	a6,#0
 	movem.l	d0-4/a0,-(sp)
 
+        ; Load parameters
 	movea.l	PLOTT_BASE(a6),a0
 	move.w	PLOTT_ROW(a6),d0	
 	move.w	PLOTT_COL(a6),d1	
@@ -766,6 +772,7 @@ _plot_triangle:
 	move.w	PLOTT_HEIGHT(a6),d3
 	move.w	DIRECTION(a6),d4
 
+        ; Choose direction to plot
 	cmp.w	#0,d4		
 	beq	top_left
 
@@ -1030,6 +1037,8 @@ BM_HEIGHT   equ  20     ; word: number of rows
 _pbm8:
     link    a6,#0
     movem.l d0-d6/a0-a2,-(sp)
+
+    ; Load parameters
     movea.l BM_BASE(a6),a0
     movea.l BM_BITMAP(a6),a1
     move.w  BM_ROW(a6),d0

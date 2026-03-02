@@ -54,8 +54,8 @@ void init_model(Model *model)
     model->boss.w = 48;
     model->boss.h = 48;
 
-    model->item[0].x = 0;
-    model->item[0].y = 0;
+    model->item[0].x = 128;
+    model->item[0].y = 4;
     model->item[0].h = 16;
     model->item[0].w = 16;
     model->item[0].value = 30;

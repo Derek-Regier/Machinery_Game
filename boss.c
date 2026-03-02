@@ -1,6 +1,6 @@
 /*
  * Boss object behaviour function implementation
- * All functions are used for Boss ibject manipulation in the game.
+ * All functions are used for Boss object manipulation in the game.
  *
  * Authors: Aydin Salonius, Chintan Thakor, Derek Regier
  * Course: COMP 2659, Winter 2026

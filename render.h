@@ -1,6 +1,9 @@
 /*
- * render.h - 
+ * render.h - Renders all game objects
  *
+ * Draws player, enemy, boss, item, and healthbar to screen using
+ * raster and bitmap modules.
+ * 
  *
  * Authors: Aydin Salonius, Chintan Thakor, Derek Regier
  * Course: COMP 2659, Winter 2026

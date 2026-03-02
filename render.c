@@ -1,7 +1,10 @@
 
 /*
- * render.c - 
+ * render.c - Renders all game objects
  *
+ * Draws player, enemy, boss, item, and healthbar to screen using
+ * raster and bitmap modules.
+ * 
  *
  * Authors: Aydin Salonius, Chintan Thakor, Derek Regier
  * Course: COMP 2659, Winter 2026
@@ -63,7 +66,7 @@ void render_item(const Item *item, UINT16 *base){
 
 /* Function purpose: Displays rectangle serving as a health_bar using player health to update display
  * Input: Player health
- * Output: Player health bar displayed to screen. Either being static, incrementing or decrementing. 
+ * Output: Player health bar displayed to top left of screen. Proportionate to player health value. 
  * Assumptions: Damange decrements, Healing increments*/
 void render_health_bar(int health, UINT32 *base){
     plot_rectangle(base, 4, 4, 12, health);

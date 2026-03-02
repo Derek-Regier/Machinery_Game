@@ -1,7 +1,7 @@
 /*
  * tstfont.c - Visual test driver for character plotting and string plotting.
  *
- * Press any key to advance through the test stage.
+ * Press any key to end test stage.
  * 
  * Screen layout reminder: 640 wide x 400 tall, top-left = (0,0).
  *

@@ -14,6 +14,10 @@
 static int tests_run = 0;
 static int tests_passed = 0;
 
+/* Function Purpose: Print a pass fail for given tests
+ * Input: The test description and the test result
+ * Output: Prints pass or fail
+ * Assumption: Appropriate tests are passed and assumed to work correctly */
 static void check(const char *desc, int result)
 {
     tests_run++;
@@ -28,6 +32,11 @@ static void check(const char *desc, int result)
 
 /* Maker functions - build structs field by field */
 
+
+/* Function Purpose: Creates a player object
+ * Input: None
+ * Output: The created player 
+ * Assumptions: The player object and struct work as intended */
 static Player make_player(void)
 {
     Player p;
@@ -45,6 +54,10 @@ static Player make_player(void)
     return p;
 }
 
+/* Function Purpose: Creates an enemy object
+ * Input: None
+ * Output: The created enemy 
+ * Assumptions: The enemy object and struct work as intended */
 static Enemy make_enemy(unsigned int x, unsigned int y, int health, int damage)
 {
     Enemy e;
@@ -60,6 +73,10 @@ static Enemy make_enemy(unsigned int x, unsigned int y, int health, int damage)
     return e;
 }
 
+/* Function Purpose: Creates a boss object
+ * Input: None
+ * Output: The created boss 
+ * Assumptions: The boss object and struct work as intended */
 static Boss make_boss(unsigned int x, unsigned int y, int health, int max_health)
 {
     Boss b;
@@ -76,6 +93,10 @@ static Boss make_boss(unsigned int x, unsigned int y, int health, int max_health
     return b;
 }
 
+/* Function Purpose: Creates an item object
+ * Input: None
+ * Output: The created item 
+ * Assumptions: The item object and struct work as intended */
 static Item make_item(int value)
 {
     Item i;
@@ -88,6 +109,10 @@ static Item make_item(int value)
 }
 /* Async handler tests */
 
+/* Function Purpose: Test asynch movement functions
+ * Input: None
+ * Output: All the prints for each asynch movement test
+ * Assumptions: None */
 static void test_async_move(void)
 {
     /*Test to ensure player velocity updates properly and does not modify position */
@@ -110,6 +135,10 @@ static void test_async_move(void)
     check("y unchanged after async move_player", p.y == 100);
 }
 
+/* Function Purpose: Test light attack function
+ * Input: None
+ * Output: All the prints for plater light attack
+ * Assumptions: None */
 static void test_async_light_attack(void)
 {
     /* Initialize two players and ensure is attacking protections and cooldowns work */
@@ -131,6 +160,10 @@ static void test_async_light_attack(void)
     check("attack blocked when cooldown arg > 0", !player_is_attacking(&p2));
 }
 
+/* Function Purpose: Test item use function
+ * Input: None
+ * Output: All the prints for plater item use
+ * Assumptions: None */
 static void test_async_use_item(void)
 {
     /* Initalize item and test if player's health updates according to the value */
@@ -152,6 +185,10 @@ static void test_async_use_item(void)
 
 /* Synch handler tests */
 
+/* Function Purpose: Test synch movement functions
+ * Input: None
+ * Output: All the prints for each synch movement test
+ * Assumptions: Function can only test movement if felocity from asynch works, so if that fails, this fails */
 static void test_synch_player_position(void)
 {
     /* Test player movement updates properly */
@@ -175,6 +212,11 @@ static void test_synch_player_position(void)
     check("zero delta_y leaves y unchanged", p.y == y_before);
 }
 
+
+/* Function Purpose: Test boundaries
+ * Input: None
+ * Output: All the prints for boundary tests
+ * Assumptions: None, all tests are run*/
 static void test_synch_screen_boundary(void)
 {
     /* Test player does not move off screen from normal movement */
@@ -199,6 +241,10 @@ static void test_synch_screen_boundary(void)
     check("y clamped at 0 (top edge)",  p2.y == 0);
 }
 
+/* Function Purpose: Test cooldowns
+ * Input: None
+ * Output: All the prints for cooldown tests
+ * Assumptions: None, all tests are run*/
 static void test_synch_cooldowns(void)
 {
     /* test all cooldowns */
@@ -231,6 +277,10 @@ static void test_synch_cooldowns(void)
     check("update_player_cooldowns ticks item cd",   p.item_cooldown   == 1);
 }
 
+/* Function Purpose: Run enemy position tests
+ * Input: None
+ * Output: Prints all movement tests
+ * Assumptions: Implemented same as player so not every test is run */
 static void test_synch_enemy_position(void)
 {
     /* Test enemy movement */
@@ -245,10 +295,12 @@ static void test_synch_enemy_position(void)
     check("enemy y advances by delta_y", e.y == 151);
 }
 
-/* ------------------------------------------------------------ */
-/* Conditional handler tests                                     */
-/* ------------------------------------------------------------ */
+/* Conditional handler tests  */
 
+/* Function Purpose: Test variations of taking damage and dying
+ * Input: None
+ * Output: Prints all tests for player taking damage
+ * Assumptions: None */
 static void test_cond_player_takes_damage(void)
 {
     /* Test player taking damage from cond events */
@@ -269,6 +321,10 @@ static void test_cond_player_takes_damage(void)
     check("overkill damage still returns died", died);
 }
 
+/* Function Purpose: Test variations on which the plyaer will hit or not hit an enemy
+ * Input: None
+ * Output: Prints all tests for player hitting enemy
+ * Assumptions: None */
 static void test_cond_player_hits_enemy(void)
 {
     /* check variations of whether enemies get hit by player or not */
@@ -295,6 +351,10 @@ static void test_cond_player_hits_enemy(void)
     check("no damage when enemy not in hitbox range", far_e.health == 50);
 }
 
+/* Function Purpose: Test variations on which the plyaer will hit or not hit the boss
+ * Input: None
+ * Output: Prints all tests for player hitting boss
+ * Assumptions: Implemented same as hitting enemy so not all tests run */
 static void test_cond_player_hits_boss(void)
 {
     /* Similar tests as enemy */
@@ -315,6 +375,10 @@ static void test_cond_player_hits_boss(void)
     check("no boss damage when out of range", far_boss.health == 200);
 }
 
+/* Function Purpose: Test variations on which the enemy will hit or not hit the player
+ * Input: None
+ * Output: Prints all tests for enemy hitting player
+ * Assumptions: None */
 static void test_cond_enemy_hits_player(void)
 {
     /* Test variations on enemy hitting player */
@@ -360,6 +424,11 @@ static void test_cond_boss_summon(void)
     check("boss_summon does not re-fire after summoned set", boss.summoned);
 }
 
+
+/* Function Purpose: Test variations on which the boss will summon
+ * Input: None
+ * Output: Prints all tests for boss summons
+ * Assumptions: None */
 static void test_cond_level_end(void)
 {
     /* Test the game ending */
@@ -379,6 +448,10 @@ static void test_cond_level_end(void)
 
 /* Main */
 
+/* Function purpose: Run all the tests
+ * Input: None
+ * Output: All printed tests for the function and accumulated tests passed, returns 0 if passed and 1 if failed
+ * Assumptions: All previous functions are implemented properly */
 int main(void)
 {
     /* Run all the tests */

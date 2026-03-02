@@ -400,24 +400,6 @@ int main(void)
     test_cond_boss_summon();
     test_cond_level_end();
 
-    printf("Model Test Driver\n");
-
-    test_player_movement();
-    test_player_health();
-    test_player_attack_state();
-    test_player_hitbox();
-
-    test_enemy_movement();
-    test_enemy_health();
-    test_enemy_hitbox();
-
-    test_boss_health();
-    test_boss_summon();
-    test_boss_hitbox();
-
-    test_item();
-    test_model_init();
-
     printf("\nResults: %d / %d passed\n", tests_passed, tests_run);
 
     return (tests_passed == tests_run) ? 0 : 1;

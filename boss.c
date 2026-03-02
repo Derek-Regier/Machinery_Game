@@ -9,10 +9,10 @@ void move_boss_horizontal(Boss *boss){
 }
 
 bool update_boss_health(Boss *boss, int x){
-    bool is_dead = false;
+    bool is_dead = FALSE;
     boss->health += x;
     if (boss->health <= 0){
-        is_dead = true;
+        is_dead = TRUE;
     }
     return is_dead;
 }
@@ -26,7 +26,7 @@ int boss_attack(Boss *boss){
 }
 
 bool summon(Boss *boss){
-    return boss->health <= (boss->max_health >> 1); // less than 50% health, will need to ensure this triggers only once (probably in main game logic)
+    return boss->health <= (boss->max_health >> 1); /* less than 50% health, will need to ensure this triggers only once (probably in main game logic)*/
 }
 
 bool boss_hitbox_overlaps(const Boss *boss, int x, int y, int width, int height){

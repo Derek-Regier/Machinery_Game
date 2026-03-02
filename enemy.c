@@ -1,5 +1,6 @@
 #include "enemy.h"
 
+
 void move_enemy_vertical(Enemy *enemy){
     enemy->y += enemy->delta_y;
 }
@@ -9,10 +10,10 @@ void move_enemy_horizontal(Enemy *enemy){
 }
 
 bool update_enemy_health(Enemy *enemy, int x){
-    bool is_dead = false;
+    bool is_dead = FALSE;
     enemy->health += x;
     if (enemy->health <= 0){
-        is_dead = true;
+        is_dead = TRUE;
     }
     return is_dead;
 }

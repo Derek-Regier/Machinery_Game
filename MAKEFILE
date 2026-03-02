@@ -1,10 +1,16 @@
+#the clean doesn't work
+
 all: do_all
 
 do_all:
 	make -f tst_rast.mak
 	make -f tst_font.mak
 	make -f tst_bit.mak
+	make -f tst_evt.mak
+	make -f tst_mdl.mak
 clean:
 	make -f tst_rast.mak clean
 	make -f tst_font.mak clean
 	make -f tst_bit.mak clean
+	make -f tst_evt.mak	clean
+	make -f tst_mdl.mak clean

@@ -3,13 +3,13 @@
 
 void on_light_attack(Player *player, int cooldown){
     if (cooldown <= 0){
-        player_set_attacking(player, true, PLAYER_ATTACK_COOLDOWN);
+        player_set_attacking(player, TRUE, PLAYER_ATTACK_COOLDOWN);
     }
 }
 
 void move_player(Player *player, char key){
     if (key == 'w'){
-        player->delta_y = 1; // Arbitrary start value, animation will determine later
+        player->delta_y = 1; /* Arbitrary start value, animation will determine later*/
     }
     if (key == 's'){
         player->delta_y = -1; 

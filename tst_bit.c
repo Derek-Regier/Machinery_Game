@@ -11,7 +11,8 @@
 #include "raster.h"
 #include "bitmaps.h"
 
- * wait - halts until any key is pressed.
+ /* 
+ wait - halts until any key is pressed.
  */
 static void wait(void)
 {

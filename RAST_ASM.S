@@ -1270,7 +1270,7 @@ _plot_character:
     and.w   #$FF,d0                 ; unsigned char
     sub.w   #32,d0                  ; ch - ' '
     lsl.w   #3,d0                   ; * 8
-    adda.l  d0,a1                   ; a1 = src
+    adda.w  d0,a1                   ; a1 = src (also fixed from l to w)
 
     ; copy glyph[8] onto stack
     subq.l  #8,sp                   ; allocate 8 bytes on stack

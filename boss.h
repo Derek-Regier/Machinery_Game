@@ -40,9 +40,9 @@ void move_boss_horizontal(Boss *boss);
  * Assumptions: Valid input types */
 bool update_boss_health(Boss *boss, int x);
 
-/* Function purpose: update health for the boss
+/* Function purpose: update damage for the boss
  * Input: The boss object and the damage to change
- * Output: None, updates the boos object directly
+ * Output: None, updates the boss object directly
  * Assumptions: Valid input types */
 void update_boss_damage(Boss *boss, int x);
 
@@ -67,4 +67,5 @@ bool boss_hitbox_overlaps(const Boss *boss, int x, int y, int width, int height)
 
 
 #endif /* BOSS_H */
+
 

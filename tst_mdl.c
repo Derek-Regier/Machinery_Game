@@ -1,5 +1,5 @@
 /*
- * tst_mdl.c - Test driver for Player, Enemy, Boss, and Item models.
+ * Test driver for Player, Enemy, Boss, and Item models.
  *
  * Verifies object behaviour functions in isolation using printf output.
  *
@@ -13,6 +13,10 @@
 static int tests_run = 0;
 static int tests_passed = 0;
 
+/* Function Purpose: Print a pass fail for given tests
+ * Input: The test description and the test result
+ * Output: Prints pass or fail
+ * Assumption: Appropriate tests are passed and assumed to work correctly */
 static void check(const char *desc, int result)
 {
     tests_run++;
@@ -26,68 +30,87 @@ static void check(const char *desc, int result)
 
 /* Maker functions - build structs field by field to avoid compiler error with {} */
 
-/* Create player*/
+/* Function Purpose: Creates a player object
+ * Input: None
+ * Output: The created player 
+ * Assumptions: The player object and struct work as intended */
 static Player make_player(void)
 {
     Player p;
-    p.x              = 100;
-    p.y              = 100;
-    p.delta_x        = 0;
-    p.delta_y        = 0;
-    p.health         = 100;
-    p.damage         = 10;
-    p.is_attacking   = FALSE;
-    p.item_cooldown  = 0;
+    p.x  = 100;
+    p.y = 100;
+    p.delta_x = 0;
+    p.delta_y = 0;
+    p.health = 100;
+    p.damage = 10;
+    p.is_attacking = FALSE;
+    p.item_cooldown = 0;
     p.attack_cooldown = 0;
-    p.h              = 32;
-    p.w              = 32;
+    p.h = 32;
+    p.w = 32;
     return p;
 }
-/* Create enemy */
+
+/* Function Purpose: Creates an enemy object
+ * Input: None
+ * Output: The created enemy 
+ * Assumptions: The enemy object and struct work as intended */
 static Enemy make_enemy(unsigned int x, unsigned int y, int health, int damage)
 {
     Enemy e;
-    e.x           = x;
-    e.y           = y;
-    e.delta_x     = 0;
-    e.delta_y     = 0;
-    e.health      = health;
-    e.damage      = damage;
-    e.w           = 32;
-    e.h           = 32;
+    e.x = x;
+    e.y = y;
+    e.delta_x = 0;
+    e.delta_y = 0;
+    e.health = health;
+    e.damage = damage;
+    e.w = 32;
+    e.h = 32;
     e.is_attacking = FALSE;
     return e;
 }
-/* Create Boss */
+
+/* Function Purpose: Creates a boss object
+ * Input: None
+ * Output: The created boss 
+ * Assumptions: The boss object and struct work as intended */
 static Boss make_boss(unsigned int x, unsigned int y, int health, int max_health)
 {
     Boss b;
-    b.x          = x;
-    b.y          = y;
-    b.delta_x    = 0;
-    b.delta_y    = 0;
-    b.health     = health;
+    b.x = x;
+    b.y = y;
+    b.delta_x = 0;
+    b.delta_y = 0;
+    b.health = health;
     b.max_health = max_health;
-    b.damage     = 15;
-    b.summoned   = FALSE;
-    b.w          = 48;
-    b.h          = 48;
+    b.damage = 15;
+    b.summoned = FALSE;
+    b.w = 48;
+    b.h = 48;
     return b;
 }
-/* Create Item */
+
+/* Function Purpose: Creates an item object
+ * Input: None
+ * Output: The created item 
+ * Assumptions: The item object and struct work as intended */
 static Item make_item(int value)
 {
     Item i;
-    i.x     = 0;
-    i.y     = 0;
-    i.h     = 16;
-    i.w     = 16;
+    i.x = 0;
+    i.y = 0;
+    i.h = 16;
+    i.w = 16;
     i.value = value;
     return i;
 }
 
 /* Player tests */
 
+/* Function Purpose: Run all player model movement tests
+ * Input: None
+ * Output: All the prints for each player movement test
+ * Assumptions: None, this informs assumptions */
 static void test_player_movement(void)
 {
     /* Both pkayer movement functions are nearly identitical so some tests work for both */
@@ -114,6 +137,10 @@ static void test_player_movement(void)
     check("negative delta_x decrements x", p.x == 98);
 }
 
+/* Function Purpose: Run all player model health tests
+ * Input: None
+ * Output: All the prints for each player health test
+ * Assumptions: None, this informs assumptions */
 static void test_player_health(void)
 {
     Player p  = make_player();
@@ -137,6 +164,10 @@ static void test_player_health(void)
     check("massive damage still returns dead", died);
 }
 
+/* Function Purpose: Run all player model attacking tests
+ * Input: None
+ * Output: All the prints for each player attacking test
+ * Assumptions: None, this informs assumptions */
 static void test_player_attack_state(void)
 {
     /* Check initial attacking, current attacking and atacking activates cooldown*/
@@ -153,6 +184,10 @@ static void test_player_attack_state(void)
     check("set_attacking ignored while cooldown active", p.attack_cooldown == 5);
 }
 
+/* Function Purpose: Run all player model hitbox tests
+ * Input: None
+ * Output: All the prints for each player hitbox test
+ * Assumptions: None, this informs assumptions */
 static void test_player_hitbox(void)
 {
     /* Test player overlapping for hitboxes */
@@ -174,6 +209,11 @@ static void test_player_hitbox(void)
 
 /* Enemy tests */
 
+
+/* Function Purpose: Run all enemy model movement tests
+ * Input: None
+ * Output: All the prints for each enemy movement test
+ * Assumptions: Since implemented the same as player, not all tests are run and players working implies enemy is working*/
 static void test_enemy_movement(void)
 {
     Enemy e = make_enemy(200, 150, 50, 8);
@@ -188,6 +228,10 @@ static void test_enemy_movement(void)
     check("enemy vertical move by delta_y", e.y == 153);
 }
 
+/* Function Purpose: Run all enemy model health tests
+ * Input: None
+ * Output: All the prints for each enemy health test
+ * Assumptions: Since implemented the same as player, not all tests are run and players working implies enemy is working*/
 static void test_enemy_health(void)
 {
     /* Test for enemy health reduction and death */
@@ -204,6 +248,10 @@ static void test_enemy_health(void)
     check("enemy health at or below zero", e.health <= 0);
 }
 
+/* Function Purpose: Run all enemy model hitbox tests
+ * Input: None
+ * Output: All the prints for each enemy hitbox test
+ * Assumptions: Since implemented the same as player, not all tests are run and players working implies enemy is working*/
 static void test_enemy_hitbox(void)
 {
     /* Test the hitbox overlapping - Same as player */
@@ -221,6 +269,10 @@ static void test_enemy_hitbox(void)
 }
 /* Boss tests  */
 
+/* Function Purpose: Run all boss model health tests
+ * Input: None
+ * Output: All the prints for each boss health test
+ * Assumptions: Since implemented the same as player, not all tests are run and players working implies boss is working*/
 static void test_boss_health(void)
 {
     /* Test boss health and death state */
@@ -236,6 +288,10 @@ static void test_boss_health(void)
     check("boss dies at 0 hp", died);
 }
 
+/* Function Purpose: Run all boss model summon  tests
+ * Input: None
+ * Output: All the prints for each summon health test
+ * Assumptions: None */
 static void test_boss_summon(void)
 {
     /* Ensure boss will summon at 50% health */
@@ -251,6 +307,10 @@ static void test_boss_summon(void)
     check("summon returns TRUE below 50% health", summon(&boss));
 }
 
+/* Function Purpose: Run all boss model hitbox tests
+ * Input: None
+ * Output: All the prints for each boss hitbox test
+ * Assumptions: Since implemented the same as player, not all tests are run and players working implies boss is working*/
 static void test_boss_hitbox(void)
 {
     /* Test boss overlapping hitboxes */
@@ -266,6 +326,10 @@ static void test_boss_hitbox(void)
 
 /* Item tests */
 
+/* Function Purpose: Run all item model tests
+ * Input: None
+ * Output: All the prints for each item test
+ * Assumptions: None */
 static void test_item(void)
 {
     /* Simple create and returning item value */
@@ -279,7 +343,10 @@ static void test_item(void)
 
 /* Model init test */
 
-
+/* Function purpose: Check the initial game state initialization
+ * Input: None
+ * Output: All printed tests for the function
+ * Assumptions: None */
 static void test_model_init(void)
 {
     /* Test the model init to ensure it works for initial game state */
@@ -300,6 +367,10 @@ static void test_model_init(void)
 
 /* Main */
 
+/* Function purpose: Run all the tests
+ * Input: None
+ * Output: All printed tests for the function and accumulated tests passed, returns 0 if passed and 1 if failed
+ * Assumptions: All previous functions are implemented properly */
 int main(void)
 {
     /* Run tests and print the number passes*/

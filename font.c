@@ -2,6 +2,7 @@
  * Font Table 
  * Course: COMP 2659, Winter 2026
  */
+
 #include "font.h"
 
 const UINT8 font[] =

@@ -1,3 +1,8 @@
+/*
+ * Font Table 
+ * Course: COMP 2659, Winter 2026
+ */
+
 #ifndef FONT_H
 #define FONT_H
 

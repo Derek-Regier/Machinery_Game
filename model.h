@@ -1,3 +1,10 @@
+/*
+ * Game world model initialization.
+ *
+ * Authors: Aydin Salonius, Chintan Thakor, Derek Regier
+ * Course: COMP 2659, Winter 2026
+ */
+
 #ifndef MODEL_H
 #define MODEL_H
 
@@ -13,6 +20,14 @@ typedef struct {
     Item item[1]; /*Number of items will also depend on gameplay*/
 } Model;
 
+/*
+ *   Function Purpose: Fills *model with the game's initial state:
+ *
+ * Input: The model
+ * Output: None, modifies current game state
+ * Assumptions: All valid declarations
+ */
 void init_model(Model *model);
 
 #endif
+

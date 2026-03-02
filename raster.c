@@ -19,17 +19,17 @@
 
 /* ------------------------------------------------------------------ */
 /* clear_screen                                                         */
-/* ------------------------------------------------------------------ */
+/* ------------------------------------------------------------------ *
 
  void clear_screen(UINT32 *base)
 {
     UINT32 i;
-    for (i = 0; i < 8000; i++)  /* 32000 bytes / 4 = 8000 longs */
+    for (i = 0; i < 8000; i++)  /* 32000 bytes / 4 = 8000 longs *
         base[i] = 0;
 }
-/* ------------------------------------------------------------------ */
+/* ------------------------------------------------------------------ *
 /* clear_region                                                         */
-/* ------------------------------------------------------------------ */
+/* ------------------------------------------------------------------ 
 
 void clear_region(UINT32 *base, UINT16 row, UINT16 col,
                   UINT16 length, UINT16 width)
@@ -50,22 +50,22 @@ void clear_region(UINT32 *base, UINT16 row, UINT16 col,
     {
         for (c = 0; c < width; c++)
         {
-            cur_row    = row + r;          /* was using c for both — fixed */
+            cur_row    = row + r;          /* was using c for both — fixed *
             cur_col    = col + c;
             word_index = cur_row * LONGS_PER_ROW + (cur_col / 32);
             bit_pos    = 31 - (cur_col % 32);
             base[word_index] &= ~(1UL << bit_pos);
         }
     }
-}   /* was missing closing brace for outer loop — fixed */
+}   /* was missing closing brace for outer loop — fixed *
 
 /* ------------------------------------------------------------------ */
 /* plot_pixel                                                           */
-/* ------------------------------------------------------------------  */
+/* ------------------------------------------------------------------  *
 
 void plot_pixel(UINT8 *base, UINT16 row, UINT16 col)
 {
-    UINT32 byte_index;  /* declared at top — C89 requirement */
+    UINT32 byte_index;  /* declared at top — C89 requirement *
     UINT8  bit_mask;
 
     if ((row >= SCREEN_HEIGHT && row < 0) || (col >= SCREEN_WIDTH && col < 0)) return;
@@ -77,7 +77,7 @@ void plot_pixel(UINT8 *base, UINT16 row, UINT16 col)
 
 /* ------------------------------------------------------------------ */
 /* plot_horizontal_line                                                 */
-/* ------------------------------------------------------------------  */
+/* ------------------------------------------------------------------  *
 
 void plot_horizontal_line(UINT32 *base, UINT16 row, UINT16 col,
                           UINT16 length)
@@ -90,7 +90,7 @@ void plot_horizontal_line(UINT32 *base, UINT16 row, UINT16 col,
     if ((row >= SCREEN_HEIGHT && row < 0) || (col >= SCREEN_WIDTH && col < 0)) return;
     if (col + length > SCREEN_WIDTH) length = SCREEN_WIDTH - col;
 
-    for (i = 0; i < length; i++)   /* was "0l" (letter l) — fixed to 0 */
+    for (i = 0; i < length; i++)   /* was "0l" (letter l) — fixed to 0 *
     {
         byte_index = (UINT32)row * BYTES_PER_ROW + ((col + i) / 8);
         bit_mask   = 1 << (7 - ((col + i) % 8));
@@ -100,7 +100,7 @@ void plot_horizontal_line(UINT32 *base, UINT16 row, UINT16 col,
 
 /* ------------------------------------------------------------------ */
 /* plot_vertical_line                                                   */
-/* ------------------------------------------------------------------ */
+/* ------------------------------------------------------------------ *
 
 void plot_vertical_line(UINT32 *base, UINT16 row, UINT16 col,
                         UINT16 length)
@@ -113,7 +113,7 @@ void plot_vertical_line(UINT32 *base, UINT16 row, UINT16 col,
     if ((row >= SCREEN_HEIGHT && row < 0) || (col >= SCREEN_WIDTH && col < 0)) return;
     if (row + length > SCREEN_HEIGHT) length = SCREEN_HEIGHT - row;
 
-    bit_mask = 1 << (7 - (col % 8));   /* constant per column — compute once */
+    bit_mask = 1 << (7 - (col % 8));   /* constant per column — compute once *
 
     for (i = 0; i < length; i++)
     {
@@ -122,9 +122,9 @@ void plot_vertical_line(UINT32 *base, UINT16 row, UINT16 col,
     }
 }
 
-/* ------------------------------------------------------------------ */
+/* ------------------------------------------------------------------ *
 /* plot_line  (Bresenham)                                               */
-/* ------------------------------------------------------------------ */
+/* ------------------------------------------------------------------ *
 
 void plot_line(UINT32 *base, UINT16 start_row, UINT16 start_col,
                UINT16 end_row, UINT16 end_col)
@@ -149,24 +149,24 @@ void plot_line(UINT32 *base, UINT16 start_row, UINT16 start_col,
         if (e2 <  abs_dc) { err += abs_dc; row += step_r; }
     }
 }
-/* ------------------------------------------------------------------ */
+/* ------------------------------------------------------------------ *
 /* plot_rectangle                                                       */
-/* ------------------------------------------------------------------ */
+/* ------------------------------------------------------------------ *
 
 void plot_rectangle(UINT32 *base, UINT16 row, UINT16 col,
                     UINT16 length, UINT16 width)
 {
     if (length == 0 || width == 0) return;
 
-    plot_horizontal_line(base, row,            col, width);   /* top    */
-    plot_horizontal_line(base, row + length - 1, col, width); /* bottom */
-    plot_vertical_line  (base, row, col,            length);  /* left   */
-    plot_vertical_line  (base, row, col + width - 1, length); /* right  */
+    plot_horizontal_line(base, row,            col, width);   /* top    *
+    plot_horizontal_line(base, row + length - 1, col, width); /* bottom *
+    plot_vertical_line  (base, row, col,            length);  /* left   *
+    plot_vertical_line  (base, row, col + width - 1, length); /* right  *
 }
 
 /* ------------------------------------------------------------------ */
 /* plot_square                                                          */
-/* ------------------------------------------------------------------ */
+/* ------------------------------------------------------------------ *
 
 void plot_square(UINT32 *base, UINT16 row, UINT16 col, UINT16 side)
 {
@@ -176,35 +176,35 @@ void plot_square(UINT32 *base, UINT16 row, UINT16 col, UINT16 side)
 
 /* ------------------------------------------------------------------ */
 /* plot_triangle                                                        */
-/* ------------------------------------------------------------------ */
+/* ------------------------------------------------------------------ 
 
 void plot_triangle(UINT32 *base, UINT16 row, UINT16 col,
                    UINT16 base_len, UINT16 height, UINT8 direction)
 {
     switch (direction)
     {
-        case 0: /* anchor = top-left */
+        case 0: /* anchor = top-left *
             plot_horizontal_line(base, row, col, base_len);
             plot_vertical_line  (base, row, col, height);
             plot_line(base, row + height - 1, col,
                             row,             col + base_len);
             break;
 
-        case 1: /* anchor = top-right */
+        case 1: /* anchor = top-right *
             plot_horizontal_line(base, row, col - base_len + 1, base_len);
             plot_vertical_line  (base, row, col, height);
-            plot_line(base, row + height - 1, col,   /* was plot() — fixed */
+            plot_line(base, row + height - 1, col,   /* was plot() — fixed *
                             row, col - base_len + 1);
             break;
 
-        case 2: /* anchor = bottom-left */
+        case 2: /* anchor = bottom-left *
             plot_horizontal_line(base, row, col, base_len);
             plot_vertical_line  (base, row - height + 1, col, height);
             plot_line(base, row - height + 1, col,
                             row, col + base_len - 1);
             break;
 
-        case 3: /* anchor = bottom-right */
+        case 3: /* anchor = bottom-right *
             plot_horizontal_line(base, row, col - base_len + 1, base_len);
             plot_vertical_line  (base, row - height + 1, col, height);
             plot_line(base, row - height + 1, col,
@@ -245,7 +245,7 @@ void pbm8(UINT8 *base, UINT16 row, UINT16 col,
 
 /* ------------------------------------------------------------------ */
 /* plot_bitmap_16                                                       */
-/* ------------------------------------------------------------------ */
+/* ------------------------------------------------------------------ *
 
 void pmb16(UINT16 *base, UINT16 row, UINT16 col,
                     const UINT16 *bitmap, UINT16 height)
@@ -256,7 +256,7 @@ void pmb16(UINT16 *base, UINT16 row, UINT16 col,
 
 /* ------------------------------------------------------------------ */
 /* plot_bitmap_32                                                       */
-/* ------------------------------------------------------------------ */
+/* ------------------------------------------------------------------ *
 
 void pbm32(UINT32 *base, UINT16 row, UINT16 col,
                     const UINT32 *bitmap, UINT16 height)
@@ -265,7 +265,7 @@ void pbm32(UINT32 *base, UINT16 row, UINT16 col,
     UINT16 shift       = col % 32;
     UINT16 word_col    = col / 32;
     UINT32 screen_index;
-    UINT32 data;          /* was "UINT data" — fixed to UINT32 */
+    UINT32 data;          /* was "UINT data" — fixed to UINT32 *
 
     for (r = 0; r < height; r++)
     {

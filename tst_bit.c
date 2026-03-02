@@ -36,7 +36,17 @@ int main()
 
     /* ----------------------------------------------------------------
      * STAGE 11: plot_bitmaps
-     
+     *
+     * Plots corresponding bitmaps:
+     * 
+     * - health_bar
+     * - player
+     * - enemy
+     * - hp_pot
+     * - boss 
+     * 
+     * in that order upon keypresses
+     * 
      * ---------------------------------------------------------------- */
 
     clear_screen(base);

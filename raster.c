@@ -41,7 +41,7 @@ void clear_region(UINT32 *base, UINT16 row, UINT16 col,
     UINT32 word_index;
     UINT32 bit_pos;
 
-    if (row >= SCREEN_HEIGHT || col >= SCREEN_WIDTH) return;
+    if ((row >= SCREEN_HEIGHT && row < 0) || (col >= SCREEN_WIDTH && col < 0)) return;
 
     if (row + length > SCREEN_HEIGHT) length = SCREEN_HEIGHT - row;
     if (col + width  > SCREEN_WIDTH)  width  = SCREEN_WIDTH  - col;
@@ -68,7 +68,7 @@ void plot_pixel(UINT8 *base, UINT16 row, UINT16 col)
     UINT32 byte_index;  /* declared at top — C89 requirement */
     UINT8  bit_mask;
 
-    if (row >= SCREEN_HEIGHT || col >= SCREEN_WIDTH) return;
+    if ((row >= SCREEN_HEIGHT && row < 0) || (col >= SCREEN_WIDTH && col < 0)) return;
 
     byte_index = (UINT32)row * BYTES_PER_ROW + (col / 8);
     bit_mask   = 1 << (7 - (col % 8));
@@ -87,7 +87,7 @@ void plot_horizontal_line(UINT32 *base, UINT16 row, UINT16 col,
     UINT32  byte_index;
     UINT8   bit_mask;
 
-    if (row >= SCREEN_HEIGHT || col >= SCREEN_WIDTH) return;
+    if ((row >= SCREEN_HEIGHT && row < 0) || (col >= SCREEN_WIDTH && col < 0)) return;
     if (col + length > SCREEN_WIDTH) length = SCREEN_WIDTH - col;
 
     for (i = 0; i < length; i++)   /* was "0l" (letter l) — fixed to 0 */
@@ -110,7 +110,7 @@ void plot_vertical_line(UINT32 *base, UINT16 row, UINT16 col,
     UINT32  byte_index;
     UINT8   bit_mask;
 
-    if (row >= SCREEN_HEIGHT || col >= SCREEN_WIDTH) return;
+    if ((row >= SCREEN_HEIGHT && row < 0) || (col >= SCREEN_WIDTH && col < 0)) return;
     if (row + length > SCREEN_HEIGHT) length = SCREEN_HEIGHT - row;
 
     bit_mask = 1 << (7 - (col % 8));   /* constant per column — compute once */
@@ -251,7 +251,7 @@ void pmb16(UINT16 *base, UINT16 row, UINT16 col,
                     const UINT16 *bitmap, UINT16 height)
 {
   
-  pmb16(base, row, col,bitmap,height);
+  pmb16(base, row, col, bitmap, height);
 }
 
 /* ------------------------------------------------------------------ */

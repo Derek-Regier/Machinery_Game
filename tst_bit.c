@@ -27,7 +27,7 @@ int main()
 
 
     /* ----------------------------------------------------------------
-     * STAGE 11: plot_bitmaps
+     * STAGE 1: plot_bitmaps
      * Plots corresponding bitmaps:
      * - health_bar
      * - player
@@ -40,19 +40,19 @@ int main()
     clear_screen(base);
     wait();
     
-    pbm32(base, 4, 4, health_bar, 12);
+    pbm32(base, 4, 4, health_bar_bitmap, 12);
     wait();
-    pbm32(base, 4, 36, health_bar, 12);
+    pbm32(base, 4, 36, health_bar_bitmap, 12);
     wait();
-    pbm32(base, 300, 256, player, 64);
+    pbm32(base, 300, 256, player_bitmap, 64);
     wait();
-    pbm32(base, 300, 500, enemy, 64);
+    pbm32(base, 300, 500, enemy_bitmap, 64);
     wait();
-    pbm16(base, 300, 200, hp_pot, 16);
+    pbm16(base, 300, 200, hp_pot_bitmap, 16);
     wait();
     for (r = 0; r < 128; r++){
         for (w = 0; w < 4; w++){
-            pbm32(base, 100 + r, 200 + (w * 32), &boss[r][w], 1);}
+            pbm32(base, 100 + r, 200 + (w * 32), &boss_bitmap[r][w], 1);}
         }
     wait();
     clear_screen(base);

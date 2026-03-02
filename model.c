@@ -43,7 +43,7 @@ void init_model(Model *model)
     model->enemy[0].h = 32;
     model->enemy[0].is_attacking = FALSE;
 
-    model->boss.x = 580;
+    model->boss.x = 500;
     model->boss.y = 200;
     model->boss.delta_x = 0;
     model->boss.delta_y = 0;
@@ -59,4 +59,6 @@ void init_model(Model *model)
     model->item[0].h = 16;
     model->item[0].w = 16;
     model->item[0].value = 30;
+
+    
 }

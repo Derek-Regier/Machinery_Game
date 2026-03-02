@@ -1,4 +1,4 @@
-#the clean doesn't work
+# clean doesn't work use ./del.sh for deleting files via external terminal
 
 all: do_all
 
@@ -8,9 +8,11 @@ do_all:
 	make -f tst_bit.mak
 	make -f tst_evt.mak
 	make -f tst_mdl.mak
+	make -f tst_rend.mak
 clean:
 	make -f tst_rast.mak clean
 	make -f tst_font.mak clean
 	make -f tst_bit.mak clean
 	make -f tst_evt.mak	clean
 	make -f tst_mdl.mak clean
+	make -f tst_rend.mak clean

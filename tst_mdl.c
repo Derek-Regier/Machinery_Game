@@ -1,5 +1,5 @@
 /*
- * Test driver for Player, Enemy, Boss, and Item models.
+ * tst_mdl.c - Test driver for Player, Enemy, Boss, and Item models.
  *
  * Verifies object behaviour functions in isolation using printf output.
  *

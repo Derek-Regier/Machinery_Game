@@ -1,7 +1,7 @@
 /*
  * tstfont.c - Visual test driver for character plotting and string plotting.
  *
- * Press any key to advance through each test stage.
+ * Press any key to advance through the test stage.
  * 
  * Screen layout reminder: 640 wide x 400 tall, top-left = (0,0).
  *
@@ -9,18 +9,20 @@
  * Course: COMP 2659, Winter 2026
  */
 
-
 #include <osbind.h>
 #include "raster.h"
 #include "font.h"
 
+/*
+ * wait - halts until any key is pressed.
+ */
 static void wait(void)
 {
     Cnecin();
 }
 
    /* ----------------------------------------------------------------
-     * STAGE 12: plot_font
+     * STAGE 1: plot_font
      * Plots the character 'A' and 'B' on the top left of the screen and
      * plots "THIS IS A STRING!" at (50,50).
      *---------------------------------------------------------------- */

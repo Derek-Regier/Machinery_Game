@@ -15,7 +15,7 @@
  * Function Purpose: Applies damage to the player. 
  * Input: The player and the damage to be taken
  * Output: Returns TRUE if the player died.
- * Assumptions: The damage is already applied negatively, so posisitive values are expected
+ * Assumptions: The damage is already applied negatively, so positive values are expected
  */
 bool player_take_damage(Player *player, int damage);
 

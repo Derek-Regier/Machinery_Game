@@ -1,3 +1,18 @@
+/*
+ * Header summary: A collection of bitmaps.
+ * - square
+ * - rectangle
+ * - triangle
+ * - player
+ * - health_bar
+ * - enemy
+ * - boss
+ * - hp_pot
+ *
+ * Authors: Aydin Salonius, Chintan Thakor, Derek Regier
+ * Course: COMP 2659, Winter 2026
+ */
+
 #include "bitmaps.h"
 
 UINT8 square_bitmap[8] = {
@@ -49,7 +64,7 @@ UINT32 tri_bitmap[16] = {
     0x80000000
 };
 
-UINT32 player[64] = {
+UINT32 player_bitmap[64] = {
     0x00000000,
     0x00000000,
     0x00000000,
@@ -118,7 +133,7 @@ UINT32 player[64] = {
 
 
 
-UINT32 health_bar[12] = {
+UINT32 health_bar_bitmap[12] = {
     0xFFFFFFFF,
     0xFFFFFFFF,
     0xFFFFFFFF,
@@ -133,7 +148,7 @@ UINT32 health_bar[12] = {
     0xFFFFFFFF,
 };
 
-UINT32 enemy[64] = {
+UINT32 enemy_bitmap[64] = {
 
     0x38000007,
     0x38000007,
@@ -201,7 +216,7 @@ UINT32 enemy[64] = {
     0x00000000
 
 };
-UINT32 boss[128][4] = {
+UINT32 boss_bitmap[128][4] = {
     {0x00000000, 0x00000000, 0x00000000, 0x00000000},
     {0x00000000, 0x00000000, 0x00000000, 0x00000000},
     {0x00000000, 0x00000000, 0x00000000, 0x00000000},
@@ -332,7 +347,7 @@ UINT32 boss[128][4] = {
     {0x00000000, 0x0FFFF000, 0x0000FFFF, 0x00000000}
 };
 
-UINT16 hp_pot[16] = {
+UINT16 hp_pot_bitmap[16] = {
     0x03C0,
     0x03C0,
     0x0240,

@@ -21,7 +21,7 @@ typedef struct {
 } Model;
 
 /*
- *   Function Purpose: Fills *model with the game's initial state:
+ *  Function Purpose: Fills *model with the game's initial state:
  *
  * Input: The model
  * Output: None, modifies current game state

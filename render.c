@@ -1,36 +1,73 @@
+
+/*
+ * render.c - 
+ *
+ *
+ * Authors: Aydin Salonius, Chintan Thakor, Derek Regier
+ * Course: COMP 2659, Winter 2026
+ */
+
+
 #include "render.h"
 #include "raster.h"
 #include "bitmaps.h"
 
+
+/* Function purpose: Display game snapshot
+ * Input: Game objects (bitmaps and models)
+ * Output: Game objects displayed to screen
+ * Assumptions: init_model initializes*/
+
 void render(const Model *model, void *base){
 
-  render_player($model->player, base);
-  render_enemy($model->enemy, base);
+  render_player(&model->player, base);
+  render_enemy(&model->enemy[0], base);
+  render_health_bar(model->player.health, base);
+  render_item(&model->item[0], base);
   
 }
 
+/* Function purpose: Displays player bitmap according to player's position
+ * Input: Player bitmap and models
+ * Output: Player object displayed to screen
+ * Assumptions: init_model initializes coordinates of model */
 void render_player(const Player *player, UINT32 *base){
-  pbm32(base, player->y, player->x, player, 32); 
+  pbm32(base, player->y, player->x, player_bitmap, 64); 
 }
 
+/* Function purpose: Displays enemy bitmap according to enemy's position
+ * Input: Enemy bitmap and model
+ * Output: Enemy object displayed to screen
+ * Assumptions: init_model initializes coordinates of model*/
 void render_enemy(const Enemy *enemy, UINT32 *base){
-  pbm32(base, enemy->y, enemy->x, enemy, 32);
+  pbm32(base, enemy->y, enemy->x, enemy_bitmap, 64);
 }
-
+/* Function purpose: Displays boss bitmap according to boss's position
+ * Input: Boss bitmap and model 
+ * Output: Boss object displayed to screen
+ * Assumptions: init_model initializes coordinates of model, boss is also 128x128 requiring a loop to display full bitmap*/
 void render_boss(const Boss *boss, UINT32 *base){
   int r, w;
    for (r = 0; r < 128; r++){
         for (w = 0; w < 4; w++){
-            pbm32(base, boss->y + r, boss->x + (w * 32), &boss[r][w], 1);}
+            pbm32(base, boss->y + r, boss->x + (w * 32), &boss_bitmap[r][w], 1);}
         } 
 }
-
+/* Function purpose: Displays item bitmap according to item's position
+ * Input: Item bitmap and models
+ * Output: Item object displayed to screen
+ * Assumptions: init_model initializes coordinates of model, enemies drop items*/
 void render_item(const Item *item, UINT16 *base){
-  pbm16(base, item->y, item->x, hp_pot, 16);
+  pbm16(base, item->y, item->x, hp_pot_bitmap, 16);
 }
 
-void render_health_bar(const *health_bar, UINT32 *base){
-  pbm32(base, 4, 4, health_bar, 32);
+/* Function purpose: Displays rectangle serving as a health_bar using player health to update display
+ * Input: Player health
+ * Output: Player health bar displayed to screen. Either being static, incrementing or decrementing. 
+ * Assumptions: Damange decrements, Healing increments*/
+void render_health_bar(int health, UINT32 *base){
+    plot_rectangle(base, 4, 4, 12, health);
 }
+
 
 

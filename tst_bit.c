@@ -42,7 +42,7 @@ int main()
      * - enemy
      * - hp_pot
      * - boss 
-     * in that order upon keypresses
+     * in that order upon key presses.
      * ---------------------------------------------------------------- */
 
     clear_screen(base);

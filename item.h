@@ -1,5 +1,5 @@
 /*
-* Healthbar object defintitions. Struct is there for position, value, and size only
+ * Item object defintitions. Struct is there for position, value, and size only
  * One function for retrieving value
  *
  * Authors: Aydin Salonius, Chintan Thakor, Derek Regier
@@ -22,5 +22,6 @@ typedef struct {
 int get_value(Item *item);
 
 #endif /* ITEM_H */
+
 
 

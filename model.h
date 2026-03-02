@@ -1,5 +1,5 @@
 /*
- * Game world model initialization.
+ * Game world model definition
  *
  * Authors: Aydin Salonius, Chintan Thakor, Derek Regier
  * Course: COMP 2659, Winter 2026
@@ -30,4 +30,5 @@ typedef struct {
 void init_model(Model *model);
 
 #endif
+
 

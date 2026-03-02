@@ -1,7 +1,5 @@
-
-
-
 #include "TYPES.H"
+#include "bitmaps.h"
 
 UINT8 square_bitmap[8] = {
     0xFF,

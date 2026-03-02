@@ -4,7 +4,7 @@ tst_bit.o: tst_bit.c raster.h
 	cc68x -g -c tst_bit.c
 raster.o: raster.c raster.h
 	cc68x -g -c raster.c
-bitmaps.o: bitmaps.c raster.h
+bitmaps.o: bitmaps.c bitmaps.h raster.h
 	cc68x -g -c bitmaps.c
 font.o: font.c font.h
 	cc68x -g -c font.c

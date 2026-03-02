@@ -954,6 +954,7 @@ FONT_ROW    equ 12
 FONT_COL    equ 14
 FONT_CH     equ 16
 FONT_TABLE  equ 18
+
 _plot_character:
     link    a6,#0
     movem.l d0-3/a0-2,-(sp)

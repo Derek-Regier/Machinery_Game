@@ -1,6 +1,6 @@
 #include "render.h"
 #include "raster.h"
-#include "bitmaps.c"
+#include "bitmaps.h"
 
 void render(const Model *model, void *base){
 
@@ -30,5 +30,7 @@ void render_item(const Item *item, UINT16 *base){
 }
 
 void render_health_bar(const *health_bar, UINT32 *base){
-  pbm32(base, 4, 4, *health_bar, 32);
+  pbm32(base, 4, 4, health_bar, 32);
 }
+
+

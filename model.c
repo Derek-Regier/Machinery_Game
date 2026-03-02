@@ -1,5 +1,5 @@
 /*
- * model.c - Game world model initialization.
+ * Game world model initialization.
  *
  * Authors: Aydin Salonius, Chintan Thakor, Derek Regier
  * Course: COMP 2659, Winter 2026
@@ -8,12 +8,16 @@
 #include "model.h"
 
 /*
- * Fills *model with the game's initial state:
+ *   Function Purpose: Fills *model with the game's initial state:
  *   Player centred left-side of walkable area, full health.
  *   One enemy placed to the right of player.
  *   Boss placed far right, full health, not yet summoned.
  *   One health potion in inventory.
  *   Note: Initializaing with {} braces does not compile.
+ *
+ * Input: The model
+ * Output: None, modifies current game state
+ * Assumptions: All valid declarations
  */
 void init_model(Model *model)
 {

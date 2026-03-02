@@ -1,5 +1,6 @@
 /*
- * cond.c - Condition-based (cascaded) event handler implementations.
+ * Condition-based (cascaded) event handler implementations.
+ * Note: For simplicity and further explanation, the header file function docuementation is NOT repeated here
  *
  * Authors: Aydin Salonius, Chintan Thakor, Derek Regier
  * Course: COMP 2659, Winter 2026
@@ -120,3 +121,4 @@ bool level_end(const Model *model)
     if (model->player.health <= 0)  return TRUE;  /* defeat    */
     return FALSE;
 }
+

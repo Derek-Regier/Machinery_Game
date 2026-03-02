@@ -1,7 +1,19 @@
+/*
+ * Synch events implementation
+ *
+ * Authors: Aydin Salonius, Chintan Thakor, Derek Regier
+ * Course: COMP 2659, Winter 2026
+ */
+
 #include "synch.h"
 #define MAX_X 608 /* 640 pixels - 32 pixels for player */ 
 #define MAX_Y 368 /*400 - 32*/
 
+
+/* Function purpose: Moves the player according to the velocity
+ * Input: The player object
+ * Output: None, moves the player object position on the screen
+ * Assumptions: The player has an appropriate velocity */
 void update_player_position(Player *player)
 {
     /* Horizontal: guard underflow before moving, clamp max after */
@@ -29,6 +41,11 @@ void update_player_position(Player *player)
     }
 }
 
+
+/* Function purpose: Moves the enemy according to the velocity
+ * Input: The enemy object
+ * Output: None, moves the enemy object position on the screen
+ * Assumptions: The enemy has an appropriate velocity */
 void update_enemy_position(Enemy *enemy, const Player *player) {
     /* TODO: Calculate direction to player */
 
@@ -41,6 +58,11 @@ void update_enemy_position(Enemy *enemy, const Player *player) {
     }
 }
 
+
+/* Function purpose: Moves the boss according to the velocity
+ * Input: The boss object
+ * Output: None, moves the boss object position on the screen
+ * Assumptions: The boss has an appropriate velocity */
 void update_boss_position(Boss *boss, const Player *player) {
     /* TODO: Calculate direction to player */
 
@@ -53,6 +75,10 @@ void update_boss_position(Boss *boss, const Player *player) {
     }
 }
 
+/* Function purpose: updates the player cooldowns together
+ * Input: The player object
+ * Output: None, just updates the cooldowns
+ * Assumptions: The other cooldown functions are working properly */
 void update_attack_cooldown(Player *player) {
     if (player->attack_cooldown > 0) {
         player->attack_cooldown--;
@@ -63,14 +89,23 @@ void update_attack_cooldown(Player *player) {
         }
     }
 }
+
+/* Function purpose: Updates the player item cooldown
+ * Input: The player object
+ * Output: None, decrements the cooldown
+ * Assumptions: The function is called at the appropriate timings */
 void update_item_cooldown(Player *player) {
     if (player->item_cooldown > 0) { 
         player->item_cooldown--;
     }
 }
 
-/* Convenience wrapper that ticks both cooldowns each game tick. */
+/* Function purpose: updates the player cooldowns together
+ * Input: The player object
+ * Output: None, just updates the cooldowns
+ * Assumptions: The other cooldown functions are working properly */
 void update_player_cooldowns(Player *player) {
     update_attack_cooldown(player);
     update_item_cooldown(player);
 }
+

@@ -13,10 +13,31 @@
 	xdef    _plot_character
 	xdef	_plot_string
 
+;----------------------------------------------------
+; _plot_pixel:
+;
+; Purpose:
+;
+; - This function serves to plot a pixel
+;   to the screen at a given set of coordinates		
+;
+; Inputs:
+;
+; - BASE: Pointer to physbase();
+; - ROW:  The row at which the pixel is
+;	  plotted
+; - COL:  The column at which the pixel
+;	  is plotted 
+; 
+; Outpus:
+;
+; - None
+;----------------------------------------------------
+	
 BASE    equ 8
 ROW     equ 12
 COL     equ 14
-
+	
 _plot_pixel:
     link    a6,#0
     movem.l d2-d6/a0,-(sp)
@@ -55,9 +76,25 @@ pp_done:
     unlk    a6
     rts
 
+;----------------------------------------------------
+; _clear_screen:
+;
+; Purpose:
+;
+; - This function clears anything
+;   anything that has previously
+;   been plotted to the screen
+;
+; Inputs:
+;
+; - base: Pointer to physbase();
+; 
+; Outpus:
+;
+; - None
+;----------------------------------------------------
 
 base		equ		64		; offset from SP, not A6
-
 
 _clear_screen:
 
@@ -78,6 +115,33 @@ fill_loop:
 
 zeros:		ds.l		13
 
+;----------------------------------------------------
+; _clear_region:
+;
+; Purpose:
+;
+; - This function clears anything
+;   anything that has previously
+;   been plotted to the screen inside
+;   given region
+;
+; Inputs:
+;
+; - CLEARRE_BASE:   Pointer to physbase();
+; - CLEARRE_ROW:    The row containing the region
+;	            to be cleared
+; - CLEARRE_COL:    The column containing the region
+;	            to be cleared
+; - CLEARRE_LENGTH: The length of the region to
+;	            be cleared
+; - CLEARRE_WIDTH:  The width of the region to
+;	            be cleared
+; 
+; Outpus:
+;
+; - None
+;----------------------------------------------------
+	
 CLEARRE_BASE    equ 8
 CLEAR_ROW       equ 12
 CLEAR_COL       equ 14
@@ -169,6 +233,29 @@ clearre_done:
     unlk    a6
     rts
 
+;----------------------------------------------------
+; _plot_horizontal_line:
+;
+; Purpose:
+;
+; - This function serves to plots a horizontal
+;   line to the screen at a given set of coordinates
+;
+; Inputs:
+;
+; - PLOTHL_BASE:   Pointer to physbase();
+; - PLOTHL_ROW:    The row at which the line is to
+;	           be plotted
+; - PLOTHL_COL:    The column at which the line is 
+;	           to be plotted
+; - PLOTHL_LENGTH: The length of the line to be
+;	           plotted
+; 
+; Outpus:
+;
+; - None
+;----------------------------------------------------
+	
 PLOTHL_LENGTH	equ	16
 PLOTHL_COL	equ	14
 PLOTHL_ROW	equ	12
@@ -269,6 +356,29 @@ plothl_done:
     unlk    a6
     rts
 
+;----------------------------------------------------
+; _plot_vertical_line:
+;
+; Purpose:
+;
+; - This function serves to plots a vertical line
+;   to the screen at a given set of coordinates
+;
+; Inputs:
+;
+; - PLOTVL_BASE:   Pointer to physbase();
+; - PLOTVL_ROW:    The row at which the line is to
+;	           be plotted
+; - PLOTVL_COL:    The column at which the line is 
+;	           to be plotted
+; - PLOTVL_LENGTH: The length of the line to be
+;	           plotted
+; 
+; Outpus:
+;
+; - None
+;----------------------------------------------------
+	
 PLOTVL_LENGTH	equ	16
 PLOTVL_COL	equ	14
 PLOTVL_ROW	equ	12
@@ -330,6 +440,31 @@ plotvl_done:
     unlk    a6
     rts
 
+;----------------------------------------------------
+; _plot_rectangle:
+;
+; Purpose:
+;
+; - This function serves to plot a rectangle
+;   to the screen at a given set of coordinates
+;
+; Inputs:
+;
+; - PLOTR_BASE:   Pointer to physbase();
+; - PLOTR_ROW:    The row at which the rectangle is 
+;	          to be plotted
+; - PLOTR_COL:    The column at which the rectangle  
+;	          is to be plotted
+; - PLOTR_LENGTH: The length of the rectangle to be
+;	          plotted
+; - PLOTR_WIDTH:  The width of the rectangle to be
+;	          plotted
+; 
+; Outpus:
+;
+; - None
+;----------------------------------------------------
+	
 PLOTR_BASE	equ	8
 PLOTR_ROW	equ	12
 PLOTR_COL	equ	14
@@ -413,6 +548,31 @@ plotr_done:
 	unlk	a6
 	rts	
 
+;----------------------------------------------------
+; _plot_square:
+;
+; Purpose:
+;
+; - This function serves to plot a square to
+;   the screen at a given set of coordinates
+;
+; Inputs:
+;
+; - PLOTQ_BASE:   Pointer to physbase();
+; - PLOTQ_ROW:    The row at which the square is 
+;	          to be plotted
+; - PLOTQ_COL:    The column at which the square  
+;	          is to be plotted
+; - PLOTQ_LENGTH: The length of the square to be
+;	          plotted
+; - PLOTQ_WIDTH:  The width of the square to be
+;	          plotted
+; 
+; Outpus:
+;
+; - None
+;----------------------------------------------------
+	
 PLOTQ_BASE	equ	8
 PLOTQ_ROW	equ	12
 PLOTQ_COL	equ	14
@@ -451,6 +611,29 @@ plotq_done:
 	unlk	a6
 	rts
 
+;----------------------------------------------------
+; _plot_line:
+;
+; Purpose:
+;
+; - This function serves to plot a generic line
+;   to the screen at a given set of coordinates.
+;   Though this function mainy serves to plot
+;   diagonal lines.
+;
+; Inputs:
+;
+; - PLOTL_BASE: Pointer to physbase();
+; - START_ROW:  The row at which the line starts
+; - END_ROW:    The row at which the line starts
+; - START_COL:  The column at which the line starts
+; - END_COL:    The column at which the line ends
+; 
+; Outpus:
+;
+; - None
+;----------------------------------------------------
+	
 END_COL		equ	18	
 END_ROW		equ	16
 START_COL	equ	14
@@ -536,6 +719,34 @@ plotl_done:
     unlk    a6
     rts
 
+;----------------------------------------------------
+; _plot_triangle:
+;
+; Purpose:
+;
+; - This function serves to plot a triangle to
+;   the screen at a given set of coordinates
+;
+; Inputs:
+;
+; - PLOTT_BASE:   Pointer to physbase();
+; - PLOTT_ROW:    The row at which the triangle is 
+;	          to be plotted
+; - PLOTT_COL:    The column at which the triangle  
+;	          is to be plotted
+; - BASE_LEN:     The length of the triangle's base
+;	          to be plotted
+; - PLOTT_HEIGHT: The height of the triangle to be
+;	          plotted
+; - DIRECTION:    An interger (0-3) denoting the 
+;		  direction the triangle is to face
+;		  when plotted
+; 
+; Outpus:
+;
+; - None
+;----------------------------------------------------
+	
 PLOTT_BASE	equ	8
 PLOTT_ROW	equ	12
 PLOTT_COL	equ	14
@@ -785,6 +996,31 @@ plott_done:
 	rts
 
 ; ─── Shared stack-frame offsets (same layout for _8, _16, _32) ───
+
+;----------------------------------------------------
+; _pmb8:
+;
+; Purpose:
+;
+; - This function serves to plot an 8-bit bitmap
+;   to the screen at a given set of coordinates.
+;
+; Inputs:
+;
+; - BM_BASE:   Pointer to physbase();
+; - BM_ROW:    The row at which the bitmap is
+;	       to be plotted
+; - BM_COL:    The column at which the bitmap 
+;	       is to be plotted
+; - BM_BITMAP: Pointer to the bitmap to be plotted
+; - BM_HEIGHT: The height of the the bitmap to
+;	       be plotted
+; 
+; Outpus:
+;
+; - None
+;----------------------------------------------------
+	
 BM_BASE     equ  8      ; long: framebuffer base pointer
 BM_ROW      equ  12     ; word: starting row
 BM_COL      equ  14     ; word: starting column
@@ -836,6 +1072,30 @@ plot8_done:
     unlk    a6
     rts
 
+;----------------------------------------------------
+; _pmb16:
+;
+; Purpose:
+;
+; - This function serves to plot an 16-bit bitmap
+;   to the screen at a given set of coordinates.
+;
+; Inputs:
+;
+; - BM_BASE:   Pointer to physbase();
+; - BM_ROW:    The row at which the bitmap is
+;	       to be plotted
+; - BM_COL:    The column at which the bitmap 
+;	       is to be plotted
+; - BM_BITMAP: Pointer to the bitmap to be plotted
+; - BM_HEIGHT: The height of the the bitmap to
+;	       be plotted
+; 
+; Outpus:
+;
+; - None
+;----------------------------------------------------
+	
 _pbm16:
     link    a6,#0
     movem.l d0-d6/a0-a2,-(sp)
@@ -881,21 +1141,39 @@ plot16_done:
     unlk    a6
     rts
 
-PLOT32_BASE	equ	8
-PLOT32_ROW	equ	12
-PLOT32_COL	equ	14
-PLOT32_BITMAP	equ	16
-PLOT32_HEIGHT	equ	20
+;----------------------------------------------------
+; _pmb32:
+;
+; Purpose:
+;
+; - This function serves to plot an 32-bit bitmap
+;   to the screen at a given set of coordinates.
+;
+; Inputs:
+;
+; - BM_BASE:   Pointer to physbase();
+; - BM_ROW:    The row at which the bitmap is
+;	       to be plotted
+; - BM_COL:    The column at which the bitmap 
+;	       is to be plotted
+; - BM_BITMAP: Pointer to the bitmap to be plotted
+; - BM_HEIGHT: The height of the the bitmap to
+;	       be plotted
+; 
+; Outpus:
+;
+; - None
+;----------------------------------------------------
 	
 _pbm32:	
- link    a6,#0
+	link    a6,#0
     movem.l d0-d6/a0-a2,-(sp)
 
-    movea.l PLOT32_BASE(a6),a0
-    movea.l PLOT32_BITMAP(a6),a1
-    move.w  PLOT32_ROW(a6),d0
-    move.w  PLOT32_COL(a6),d1
-    move.w  PLOT32_HEIGHT(a6),d2
+    movea.l BM_BASE(a6),a0
+    movea.l BM_BITMAP(a6),a1
+    move.w  BM_ROW(a6),d0
+    move.w  BM_COL(a6),d1
+    move.w  BM_HEIGHT(a6),d2
 
     tst.w   d2
     beq     plot32_done
@@ -949,11 +1227,37 @@ plot32_done:
     unlk    a6
     rts
 
+;----------------------------------------------------
+; _plot_character:
+;
+; Purpose:
+;
+; - This function serves to plot a charcter as
+;   an 8-bit bitmap the screen at a given set 
+;   of coordinates. 
+;
+; Inputs:
+;
+; - FONT_BASE:  Pointer to physbase();
+; - FONT_ROW:   The row at which the char is
+;	        to be plotted
+; - FONT_COL:   The column at which the char 
+;	        is to be plotted
+; - FONT_CH:    Pointer to the char bitmap to
+;               be plotted
+; - FONT_TABLE: The table containing char bitmaps
+; 
+; Outpus:
+;
+; - None
+;----------------------------------------------------
+	
 FONT_BASE   equ 8
 FONT_ROW    equ 12
 FONT_COL    equ 14
 FONT_CH     equ 16
 FONT_TABLE  equ 18
+	
 _plot_character:
     link    a6,#0
     movem.l d0-3/a0-2,-(sp)
@@ -985,6 +1289,31 @@ glyph_loop:
     unlk    a6
     rts
 
+;----------------------------------------------------
+; _plot_string:
+;
+; Purpose:
+;
+; - This function serves to plot a string as
+;   a sequence of 8-bit bitmaps to the screen  
+;   at a given set of coordinates. 
+;
+; Inputs:
+;
+; - STR_BASE: Pointer to physbase();
+; - STR_ROW:  The row at which the string is
+;	      to be plotted
+; - STR_COL:  The column at which the string 
+;	      is to be plotted
+; - STR_PTR:  Pointer to the string bitmaps to
+;             be plotted
+; - STR_FONT: The table containing char bitmaps
+; 
+; Outpus:
+;
+; - None
+;----------------------------------------------------
+	
 STR_BASE        equ 8
 STR_ROW         equ 12
 STR_COL         equ 14

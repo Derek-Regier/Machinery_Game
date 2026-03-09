@@ -12,12 +12,14 @@
 #include "enemy.h"
 #include "boss.h"
 #include "item.h"
+#include "types.h"
 
 typedef struct {
     Player player;
     Enemy enemy[1]; /*Placeholder, actual enemies will depend on gameplay*/
     Boss boss;
     Item item[1]; /*Number of items will also depend on gameplay*/
+    bool quit;
 } Model;
 
 /*
@@ -30,5 +32,6 @@ typedef struct {
 void init_model(Model *model);
 
 #endif
+
 
 

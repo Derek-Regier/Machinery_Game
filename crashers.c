@@ -3,13 +3,13 @@
 /*Renamed file to castle_crashers.c*/
 #include "crashers.h"
 
-#define KEY_MOVE_UP    'w'
-#define KEY_MOVE_DOWN  's'
-#define KEY_MOVE_LEFT  'a'
+#define KEY_MOVE_UP 'w'
+#define KEY_MOVE_DOWN 's'
+#define KEY_MOVE_LEFT 'a'
 #define KEY_MOVE_RIGHT 'd'
-#define KEY_ATTACK     'j'
-#define KEY_USE_ITEM   'e'
-#define KEY_QUIT       '\x1B' /* ESC */
+#define KEY_ATTACK 'j'
+#define KEY_USE_ITEM 'e'
+#define KEY_QUIT '\x1B' /* ESC */
 
 UINT8 screenBuffer[32255]; /* allocated 32,000 Byte Buffer 256-Byte Alligned*/
 

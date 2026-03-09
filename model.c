@@ -60,5 +60,7 @@ void init_model(Model *model)
     model->item[0].w = 16;
     model->item[0].value = 30;
 
+    model.quit = FALSE;
+
     
 }

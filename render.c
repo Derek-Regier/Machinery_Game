@@ -19,13 +19,13 @@
 * Copy each structure as statics for saving coordinates of player, enemy, 
 * item, boss, healthbar, and utilize an int flag to declare a need for a 
 * redraw if the coordinates of the previous structure does not match the new 
-* structure. Where prev_drawn = 0 causes a redraw*/
+* structure. Where prev_drawn = FALSE causes redraw
 static Player prev_player;
 static Enemy prev_enemy;
 static Item prev_item;
 static Boss prev_boss;
 static Healthbar prev_healthbar;
-static int prev_drawn = 0;
+static int prev_drawn = FALSE;
 
 /* Function purpose: Display game snapshot
  * Input: Game objects (bitmaps and models)
@@ -39,7 +39,7 @@ void render(const Model *model, void *base){
   render_item(&model->item[0], base);
   render_boss(&model->boss, base);
 
-  prev_drawn = 1;
+  prev_drawn = TRUE;
   
 }
 

@@ -19,7 +19,7 @@
 * Copy each structure as statics for saving coordinates of player, enemy, 
 * item, boss, healthbar, and utilize an int flag to declare a need for a 
 * redraw if the coordinates of the previous structure does not match the new 
-* structure. Where prev_drawn = FALSE causes redraw
+* structure. Where prev_drawn = FALSE causes redraw*/
 static Player prev_player;
 static Enemy prev_enemy;
 static Item prev_item;
@@ -65,10 +65,20 @@ void render_player(const Player *player, UINT32 *base){
 }
 
 /* Function purpose: Displays enemy bitmap according to enemy's position
- * Input: Enemy bitmap and model
+    position and compares previous coordinates to new coordinates if enemy
+    needs to be redrawn
+ * Input: Enemy bitmap, model
  * Output: Enemy object displayed to screen
  * Assumptions: init_model initializes coordinates of model*/
 void render_enemy(const Enemy *enemy, UINT32 *base){
+
+  if (prev_drawn && (enemy->x == prev_enemy.x) && (enemy->y == prev_enemy.y)){
+    return;
+  }
+  if (prev_drawn){
+    clear_region(base, prev_enemy.x, prev_enemy.y, prev_enemy.h, prev_enemy.w);
+  }
+
   pbm32(base, enemy->y, enemy->x, enemy_bitmap, 64);
 }
 /* Function purpose: Displays boss bitmap according to boss's position

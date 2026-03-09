@@ -14,6 +14,8 @@
 
 #include "types.h"
 #include "model.h"
+#include "raster.h"
+#include "bitmaps.h"
 
 /* Function purpose: Display game snapshot
  * Input: Game objects (bitmaps and models)
@@ -49,6 +51,6 @@ void render_item(const Item *item, UINT16 *base);
  * Input: Player health
  * Output: Player health bar displayed to screen. Either being static, incrementing or decrementing. 
  * Assumptions: Damange decrements, Healing increments*/
-void render_health_bar(const Healthbar *health, UINT32 *base);
+void render_healthbar(const Healthbar *healthbar, UINT32 *base);
 
 #endif /* RENDER_H */

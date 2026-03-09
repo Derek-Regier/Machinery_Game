@@ -10,10 +10,7 @@
  * Course: COMP 2659, Winter 2026
  */
 
-
 #include "render.h"
-#include "raster.h"
-#include "bitmaps.h"
 
 /*
 * Copy each structure as statics for saving coordinates of player, enemy, 
@@ -35,7 +32,7 @@ void render(const Model *model, void *base){
 
   render_player(&model->player, base);
   render_enemy(&model->enemy[0], base);
-  render_health_bar(&model->healthbar, base);
+  render_healthbar(&model->healthbar, base);
   render_item(&model->item[0], base);
   render_boss(&model->boss, base);
 
@@ -80,6 +77,8 @@ void render_enemy(const Enemy *enemy, UINT32 *base){
   }
 
   pbm32(base, enemy->y, enemy->x, enemy_bitmap, 64);
+  
+  prev_enemy = *enemy;
 }
 /* Function purpose: Displays boss bitmap according to boss's position
  * Input: Boss bitmap and model 
@@ -104,8 +103,18 @@ void render_item(const Item *item, UINT16 *base){
  * Input: Player health
  * Output: Player health bar displayed to top left of screen. Proportionate to player health value. 
  * Assumptions: Damange decrements, Healing increments*/
-void render_health_bar(int health, UINT32 *base){
-    plot_rectangle(base, 4, 4, 12, health);
+void render_healthbar(const Healthbar *healthbar, UINT32 *base){
+    if (prev_drawn && (healthbar->value == prev_healthbar.value)){
+      return;
+    }
+
+    if (prev_drawn){
+      clear_region(base, prev_healthbar.y, prev_healthbar.x, prev_healthbar.x, prev_healthbar.w);
+    }
+    plot_rectangle(base, healthbar->y, healthbar->x, healthbar->h, healthbar->value );
+    
+    prev_healthbar = *healthbar;
+
 }
 
 

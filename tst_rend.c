@@ -15,6 +15,7 @@
 #include "model.h"
 #include "raster.h"
 
+
 /*
  * wait - halts until any key is pressed.
  */
@@ -31,32 +32,32 @@ int main()
     init_model(&model);
 
     /* STAGE 1: render player */
-    clear_screen(base);
+   
     render_player(&model.player, base);
     wait();
 
     /* STAGE 2: render enemy */
-    clear_screen(base);
+    
     render_enemy(&model.enemy[0], base);
     wait();
 
     /* STAGE 3: render boss */
-    clear_screen(base);
+    
     render_boss(&model.boss, base);
     wait();
 
     /* STAGE 4: render item */
-    clear_screen(base);
+    
     render_item(&model.item[0], base);
     wait();
 
     /* STAGE 5: render health bar */
-    clear_screen(base);
-    render_health_bar(model.player.health, base);
+    
+    /*render_healthbar(&model->healthbar, base);
     wait();
 
     /* STAGE 6: full render */
-    clear_screen(base);
+  
     render(&model, base);
     wait();
 

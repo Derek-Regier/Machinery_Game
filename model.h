@@ -13,9 +13,11 @@
 #include "boss.h"
 #include "item.h"
 #include "types.h"
+#include "health.h"
 
 typedef struct {
     Player player;
+    Healthbar healthbar;
     Enemy enemy[1]; /*Placeholder, actual enemies will depend on gameplay*/
     Boss boss;
     Item item[1]; /*Number of items will also depend on gameplay*/

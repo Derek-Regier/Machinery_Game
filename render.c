@@ -15,27 +15,53 @@
 #include "raster.h"
 #include "bitmaps.h"
 
+/*
+* Copy each structure as statics for saving coordinates of player, enemy, 
+* item, boss, healthbar, and utilize an int flag to declare a need for a 
+* redraw if the coordinates of the previous structure does not match the new 
+* structure. Where prev_drawn = 0 causes a redraw*/
+static Player prev_player;
+static Enemy prev_enemy;
+static Item prev_item;
+static Boss prev_boss;
+static Healthbar prev_healthbar;
+static int prev_drawn = 0;
 
 /* Function purpose: Display game snapshot
  * Input: Game objects (bitmaps and models)
  * Output: Game objects displayed to screen
  * Assumptions: init_model initializes*/
-
 void render(const Model *model, void *base){
 
   render_player(&model->player, base);
   render_enemy(&model->enemy[0], base);
-  render_health_bar(model->player.health, base);
+  render_health_bar(&model->healthbar, base);
   render_item(&model->item[0], base);
+  render_boss(&model->boss, base);
+
+  prev_drawn = 1;
   
 }
 
-/* Function purpose: Displays player bitmap according to player's position
- * Input: Player bitmap and models
+/* Function purpose: Displays player bitmap according to player's 
+    position and compares previous coordinates to new coordinates if player
+    needs to be redrawn
+ * Input: Player bitmap, models and prev_draw flag
  * Output: Player object displayed to screen
  * Assumptions: init_model initializes coordinates of model */
 void render_player(const Player *player, UINT32 *base){
-  pbm32(base, player->y, player->x, player_bitmap, 64); 
+
+  if (prev_drawn && (player->x == prev_player.x) && (player->y == prev_player.y)){
+    return;
+  }
+  
+  if (prev_drawn){
+    clear_region(base, prev_player.y, prev_player.x, prev_player.h, prev_player.w);
+  }
+
+  pbm32(base, player->y, player->x, player_bitmap, player->h); 
+  
+  prev_player  = *player;
 }
 
 /* Function purpose: Displays enemy bitmap according to enemy's position

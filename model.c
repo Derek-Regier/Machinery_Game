@@ -33,6 +33,12 @@ void init_model(Model *model)
     model->player.h = 32;
     model->player.w = 32;
 
+    model->healthbar.x = 4;
+    model->healthbar.y = 4;
+    model->healthbar.h = 12;
+    model->healthbar.w = model->player.health;
+    model->healthbar.value = model->player.health;
+
     model->enemy[0].x = 400;
     model->enemy[0].y = 200;
     model->enemy[0].delta_x = 0;

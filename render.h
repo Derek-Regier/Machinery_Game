@@ -49,6 +49,6 @@ void render_item(const Item *item, UINT16 *base);
  * Input: Player health
  * Output: Player health bar displayed to screen. Either being static, incrementing or decrementing. 
  * Assumptions: Damange decrements, Healing increments*/
-void render_health_bar(int health, UINT32 *base);
+void render_health_bar(const Healthbar *health, UINT32 *base);
 
 #endif /* RENDER_H */

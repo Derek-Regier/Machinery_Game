@@ -57,8 +57,8 @@ void init_model(Model *model)
     model->boss.max_health = 200;
     model->boss.damage = 15;
     model->boss.summoned = FALSE;
-    model->boss.w = 48;
-    model->boss.h = 48;
+    model->boss.w = 128;
+    model->boss.h = 128;
 
     model->item[0].x = 128;
     model->item[0].y = 4;

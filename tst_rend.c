@@ -53,7 +53,7 @@ int main()
 
     /* STAGE 5: render health bar */
     
-    /*render_healthbar(&model->healthbar, base);
+    render_healthbar(&model.healthbar, base);
     wait();
 
     /* STAGE 6: full render */

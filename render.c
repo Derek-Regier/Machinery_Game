@@ -86,20 +86,38 @@ void render_enemy(const Enemy *enemy, UINT32 *base){
  * Assumptions: init_model initializes coordinates of model, boss is also 128x128 requiring a loop to display full bitmap*/
 void render_boss(const Boss *boss, UINT32 *base){
   int r, w;
+  if (prev_drawn && (boss->x == prev_boss.x) && (boss->y == prev_boss.y)){
+    return;
+  }
+
+  if (prev_drawn){
+    clear_region(base, prev_boss.y, prev_boss.x, prev_boss.h, prev_boss.w);
+  }
    for (r = 0; r < 128; r++){
         for (w = 0; w < 4; w++){
             pbm32(base, boss->y + r, boss->x + (w * 32), &boss_bitmap[r][w], 1);}
         } 
+        prev_boss = *boss;
 }
 /* Function purpose: Displays item bitmap according to item's position
  * Input: Item bitmap and models
  * Output: Item object displayed to screen
  * Assumptions: init_model initializes coordinates of model, enemies drop items*/
 void render_item(const Item *item, UINT16 *base){
+
+  if (prev_drawn && (item->y == prev_item.y) && (item->x == prev_item.x)){
+    return;
+  }
+  if (prev_drawn){
+    clear_region(base, prev_item.y, prev_item.x, prev_item.h, prev_item.w);
+  }
+
   pbm16(base, item->y, item->x, hp_pot_bitmap, 16);
+
+  prev_item = *item;
 }
 
-/* Function purpose: Displays rectangle serving as a health_bar using player health to update display
+/* Function purpose: Displays rectangle serving as a healthbar using player health to update display
  * Input: Player health
  * Output: Player health bar displayed to top left of screen. Proportionate to player health value. 
  * Assumptions: Damange decrements, Healing increments*/

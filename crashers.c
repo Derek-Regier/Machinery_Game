@@ -48,10 +48,6 @@ void process_async_event(Model *model, char key)
             on_use_item(&model->player, &model->item[0]);
             break;
 
-        case KEY_CYCLE_ITEM:
-            /* TODO: cycle item handler (asynch) */
-            break;
-
         case KEY_QUIT:
             model->quit = TRUE;
             break;

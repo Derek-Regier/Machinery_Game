@@ -1,4 +1,10 @@
-#include <osbind.h>
+
+
+/*Renamed file to castle_crashers.c*/
+#include "crashers.h"
+
+
+UINT8 screenBuffer[32255]; /* allocated 32,000 Byte Buffer 256-Byte Alligned*/
 
 UINT32 get_time(){
     long old_ssp;
@@ -16,3 +22,6 @@ if (timeElapsed > 0) {
     /* render model */
     timeThen = timeNow;
 }
+
+
+

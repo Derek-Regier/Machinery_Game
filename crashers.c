@@ -92,6 +92,23 @@ static void process_sync_events(Model *model)
  */
 static void process_cond_events(Model *model)
 {
+
+    for (i = 0; i < model->enemy_count; i++)
+    {
+        if (model->enemy[i].active)
+        {
+            player_hits_enemy(&model->player, &model->enemy[i]);
+            enemy_hits_player(&model->enemy[i], &model->player);
+        }
+    }
+    if (model->boss.active)
+    {
+        player_hits_boss(&model->player, &model->boss);
+        boss_hits_player(&model->boss, &model->player);
+    }
+    update_health_HUD(&model->player);
+    model.quit = level_end(&model);
+
     /* TODO: check_enemy_attack, check_player_death, etc. */
     (void)model;
 }

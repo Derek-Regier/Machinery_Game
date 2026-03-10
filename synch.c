@@ -8,8 +8,45 @@
 #include "synch.h"
 #define MAX_X 608 /* 640 pixels - 32 pixels for player */ 
 #define MAX_Y 368 /*400 - 32*/
+#define ENGAGE_RANGE_X 32   /* pixels - touching player position bitmap */
+#define ENGAGE_RANGE_Y 16   /* pixels - vertical forgiveness */
 
+/* used for signed difference for enemy movement logic*/
+static int diff(int a, int b)
+{
+    return a - b;
+}
 
+/*
+ * Sets enemy delta_x and delta_y to move toward the player,
+ * but stops on each axis independently once inside engage range.
+ * Enemy will not move on an axis it is already close enough on.
+ *
+ * Input:  enemy  - the enemy to update velocity for
+ *         player - the player to move toward
+ * Output: modifies enemy->delta_x and enemy->delta_y only
+ */
+void update_enemy_velocity(Enemy *enemy, const Player *player)
+{
+    int dx = diff((int)player->x, (int)enemy->x);
+    int dy = diff((int)player->y, (int)enemy->y);
+
+    /* X axis - close enough? stop horizontal movement */
+    if (dx > ENGAGE_RANGE_X)
+        enemy->delta_x = 1;
+    else if (dx < -ENGAGE_RANGE_X)
+        enemy->delta_x = -1;
+    else
+        enemy->delta_x = 0;
+
+    /* Y axis - close enough? stop vertical movement */
+    if (dy > ENGAGE_RANGE_Y)
+        enemy->delta_y = 1;
+    else if (dy < -ENGAGE_RANGE_Y)
+        enemy->delta_y = -1;
+    else
+        enemy->delta_y = 0;
+}
 /* Function purpose: Moves the player according to the velocity
  * Input: The player object
  * Output: None, moves the player object position on the screen
@@ -47,7 +84,8 @@ void update_player_position(Player *player)
  * Output: None, moves the enemy object position on the screen
  * Assumptions: The enemy has an appropriate velocity */
 void update_enemy_position(Enemy *enemy, const Player *player) {
-    /* TODO: Calculate direction to player */
+    
+    update_enemy_velocity(enemy, player);
 
     if (enemy->delta_x != 0) {
         move_enemy_horizontal(enemy);

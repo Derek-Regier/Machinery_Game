@@ -48,6 +48,7 @@ void init_model(Model *model)
     model->enemy[0].w = 32;
     model->enemy[0].h = 64;
     model->enemy[0].is_attacking = FALSE;
+    model->enemy[0].active = FALSE;
 
     model->boss.x = 500;
     model->boss.y = 200;
@@ -69,4 +70,18 @@ void init_model(Model *model)
     model->quit = FALSE;
 
     
+}
+void reset_movement(Model *model){
+    model->player.delta_x = 0;
+    model->player.delta_y = 0;
+    int i;
+    for (i = 0; i < MAX_ENEMIES; i++){
+        if (model->enemy[i].active){
+            model->enemy[i].delta_x = 0;
+            model->enemy[i].delta_y = 0;
+        }
+    }
+    /*Is active check first but will do that once ready*/
+    model->boss.delta_x = 0;
+    model->boss.delta_y = 0;
 }

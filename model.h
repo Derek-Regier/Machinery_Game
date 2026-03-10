@@ -15,10 +15,13 @@
 #include "types.h"
 #include "health.h"
 
+#define MAX_ENEMIES 10
+
 typedef struct {
     Player player;
     Healthbar healthbar;
-    Enemy enemy[1]; /*Placeholder, actual enemies will depend on gameplay*/
+    Enemy enemy[MAX_ENEMIES];  /* define MAX_ENEMIES as a constant */
+    int enemy_count; 
     Boss boss;
     Item item[1]; /*Number of items will also depend on gameplay*/
     bool quit;
@@ -32,6 +35,7 @@ typedef struct {
  * Assumptions: All valid declarations
  */
 void init_model(Model *model);
+void reset_movement(Model *model);
 
 #endif
 

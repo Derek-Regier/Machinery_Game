@@ -1,5 +1,3 @@
-
-
 /*Renamed file to castle_crashers.c*/
 #include "crashers.h"
 
@@ -72,7 +70,13 @@ void process_async_event(Model *model, char key)
 static void process_sync_events(Model *model)
 {
     /* TODO: update_player_position, move_enemy, tick cooldowns */
-    (void)model;
+
+    update_player_cooldowns(&model->player);
+    update_player_position(&model->player)
+    for (int i = 0; i < some_number; i++){
+        update_enemy_position(&model->enemy[i], &model->player)
+    }
+    /*If boss is on screen, update boss position*/
 }
 
 /*

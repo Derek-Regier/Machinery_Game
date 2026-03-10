@@ -18,7 +18,8 @@ typedef struct {
     int health;
     int damage;
     unsigned int w, h;
-    bool is_attacking;  /* TRUE during enemy attack animation window */
+    bool is_attacking; 
+    bool active; /* TRUE during enemy attack animation window */
 } Enemy;
 
 

@@ -92,25 +92,41 @@ static void process_sync_events(Model *model)
  */
 static void process_cond_events(Model *model)
 {
+    int  i;
+    bool player_died;
 
     for (i = 0; i < model->enemy_count; i++)
     {
-        if (model->enemy[i].active)
+        if (!model->enemy[i].active) continue;
+
+        player_hits_enemy(&model->player, &model->enemy[i]);
+
+        player_died = enemy_hits_player(&model->enemy[i], &model->player);
+        if (player_died)
         {
-            player_hits_enemy(&model->player, &model->enemy[i]);
-            enemy_hits_player(&model->enemy[i], &model->player);
+            player_dies(); /* Stub, may not even be needed given how we are doing stuff */
+            model->quit = TRUE;
+            return;  /* no point checking further */
         }
     }
+
     if (model->boss.active)
     {
         player_hits_boss(&model->player, &model->boss);
-        boss_hits_player(&model->boss, &model->player);
+        boss_summon(&model->boss);
+
+        player_died = boss_hits_player(&model->boss, &model->player);
+        if (player_died)
+        {
+            player_dies();
+            model->quit = TRUE;
+            return;
+        }
     }
     update_health_HUD(&model->player);
     model.quit = level_end(&model);
 
-    /* TODO: check_enemy_attack, check_player_death, etc. */
-    (void)model;
+    /* TODO: check_enemy_attack, check_enemy_death, etc. */
 }
 
 int main(void)

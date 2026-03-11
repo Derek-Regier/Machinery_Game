@@ -1,5 +1,5 @@
-#ifndef CRASHERS.H
-#define CRASHERS.H
+#ifndef CRASHERS_H
+#define CRASHERS_H
 
 #include <stdio.h>
 #include <osbind.h>
@@ -34,4 +34,4 @@ void process_async_event(Model *model, char key);
 
 
 
-#endif /* CRASHERS.H */
+#endif /* CRASHERS_H */

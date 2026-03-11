@@ -49,16 +49,20 @@ void boss_summon(Boss *boss)
  */
 void player_hits_enemy(Player *player, Enemy *enemy)
 {
-    if (!player_is_attacking(player))  return;
-    if (enemy->health <= 0)            return;
+    bool died;
+
+    if (!player_is_attacking(player)) return;
+    if (!enemy->active)               return;  /* already dead, skip */
 
     if (player_hitbox_overlaps(player,
                                enemy->x, enemy->y,
                                enemy->w, enemy->h))
     {
         int damage = light_attack(player);
-        update_enemy_health(enemy, -damage);
-        /* TODO: play hit sound, trigger hit animation */
+        died = update_enemy_health(enemy, -damage);
+        if (died)
+            enemy->active = FALSE;
+        /* TODO: hit sound, animation */
     }
 }
 
@@ -95,6 +99,22 @@ bool enemy_hits_player(Enemy *enemy, Player *player)
                               player->w, player->h))
     {
         int damage = enemy_attack(enemy);
+        bool died  = player_take_damage(player, damage);
+        update_health_HUD(player);
+        return died;
+    }
+    return FALSE;
+}
+
+bool boss_hits_player(Boss *boss, Player *player)
+{
+    if (!boss->is_attacking) return FALSE;
+
+    if (enemy_hitbox_overlaps(boss,
+                              player->x, player->y,
+                              player->w, player->h))
+    {
+        int damage = boss_attack(boss);
         bool died  = player_take_damage(player, damage);
         update_health_HUD(player);
         return died;

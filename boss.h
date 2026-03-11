@@ -18,7 +18,9 @@ typedef struct {
     int health;
     int damage;
     bool summoned;
-    int max_health;     /* set once at init; treat as read-only afterward */
+    int max_health; /* set once at init; treat as read-only afterward */
+    bool is_attacking; 
+    bool active;     
     unsigned int w, h;
 } Boss;
 

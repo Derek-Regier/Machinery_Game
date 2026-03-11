@@ -58,6 +58,7 @@ void player_hits_boss(Player *player, Boss *boss);
  * Output: Returns TRUE if the player died from this hit.
  */
 bool enemy_hits_player(Enemy *enemy, Player *player);
+bool boss_hits_player(Boss *boss, Player *player);
 
 /*
  * Function purpose: Triggered when player health reaches 0. Handles game restart state.

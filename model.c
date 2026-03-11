@@ -49,6 +49,7 @@ void init_model(Model *model)
     model->enemy[0].h = 64;
     model->enemy[0].is_attacking = FALSE;
     model->enemy[0].active = FALSE;
+    
 
     model->boss.x = 500;
     model->boss.y = 200;

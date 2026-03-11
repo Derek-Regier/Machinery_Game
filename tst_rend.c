@@ -30,7 +30,7 @@ int main()
     Model model;
 
     init_model(&model);
-
+    clear_screen(base);
     /* STAGE 1: render player */
    
     render_player(&model.player, base);

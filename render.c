@@ -5,6 +5,7 @@
  * Draws player, enemy, boss, item, and healthbar to screen using
  * raster and bitmap modules.
  * 
+ * 
  *
  * Authors: Aydin Salonius, Chintan Thakor, Derek Regier
  * Course: COMP 2659, Winter 2026
@@ -13,7 +14,7 @@
 #include "render.h"
 
 /*
-* Copy each structure as statics for saving coordinates of player, enemy, 
+* Copy each structure for saving coordinates of player, enemy, 
 * item, boss, healthbar, and utilize an int flag to declare a need for a 
 * redraw if the coordinates of the previous structure does not match the new 
 * structure. Where prev_drawn = FALSE causes redraw*/
@@ -62,7 +63,7 @@ void render_player(const Player *player, UINT32 *base){
 }
 
 /* Function purpose: Displays enemy bitmap according to enemy's position
-    position and compares previous coordinates to new coordinates if enemy
+    and compares previous coordinates to new coordinates if enemy
     needs to be redrawn
  * Input: Enemy bitmap, model
  * Output: Enemy object displayed to screen
@@ -80,7 +81,9 @@ void render_enemy(const Enemy *enemy, UINT32 *base){
   
   prev_enemy = *enemy;
 }
-/* Function purpose: Displays boss bitmap according to boss's position
+/* Function purpose: Displays boss bitmap according to boss's position 
+    and compares previous coordinates to new coordinates if boss
+    needs to be redrawn
  * Input: Boss bitmap and model 
  * Output: Boss object displayed to screen
  * Assumptions: init_model initializes coordinates of model, boss is also 128x128 requiring a loop to display full bitmap*/
@@ -100,6 +103,8 @@ void render_boss(const Boss *boss, UINT32 *base){
         prev_boss = *boss;
 }
 /* Function purpose: Displays item bitmap according to item's position
+    and compares previous coordinates to new coordinates if item 
+    needs to be redrawn
  * Input: Item bitmap and models
  * Output: Item object displayed to screen
  * Assumptions: init_model initializes coordinates of model, enemies drop items*/
@@ -118,6 +123,7 @@ void render_item(const Item *item, UINT16 *base){
 }
 
 /* Function purpose: Displays rectangle serving as a healthbar using player health to update display
+    and also compares previous values if need to be redrawn
  * Input: Player health
  * Output: Player health bar displayed to top left of screen. Proportionate to player health value. 
  * Assumptions: Damange decrements, Healing increments*/

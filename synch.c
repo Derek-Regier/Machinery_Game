@@ -164,13 +164,13 @@ void spawn_enemy(Model *model, int stage)
     int index_offset;
 
     if (stage == 1) {
-        count        = 3;
+        count = 3;
         index_offset = 2;
     } else if (stage == 2) {
-        count        = 4;
+        count = 4;
         index_offset = 5;
     } else {
-        count        = 5;
+        count = 5;
         index_offset = 9;
     }
 
@@ -192,5 +192,6 @@ void spawn_enemy(Model *model, int stage)
 
     model->enemy_count = index_offset + count;
 }
+
 
 

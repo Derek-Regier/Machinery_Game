@@ -8,6 +8,7 @@
 
 #include "cond.h"
 
+
 /*
  * Subtracts damage from player health.
  * Returns TRUE if player health has reached zero (player died).
@@ -129,6 +130,55 @@ bool boss_hits_player(Boss *boss, Player *player)
 void player_dies(void)
 {
     /* TODO: transition game state to restart / main menu */
+}
+
+/* Called to check if player has defeated required number of
+   enemies to move on to next level. stage 1 requires defeating
+   2 enemies, stage 1 requires defeating 3 enemies, stage 2
+   requires defeating 4 enemies, and stage 3 requires defeating
+   5 enemies. Returns true if player has met any of these
+   conditions, otherwise returns false.
+   Input:  model - the live game model
+           stage - wave number (0, 1, 2, or 3)
+   Output: boolean flag indicating end of level
+*/
+bool next_level(const Model *model, int stage){
+    
+    bool flag_end = false;
+    int num_enemies;
+    int count = 0;
+    int i;
+    
+    if (stage == 0){
+        
+        num_enemies = 2;
+        
+    }else if (stage == 1){
+    
+        num_enemies = 3;
+        
+    }else if (stage == 2){
+        
+        num_enemies = 4;
+    
+    }else{
+        
+        num_enemies = 5;
+    }
+    
+    for (i = 0; i < num_enemies; i++){
+        
+        if (model->enemy[i].active){
+            
+            count++;
+        }
+    }
+        
+    if (count == 0){
+            
+        flag_end = true;
+    }
+    return flag;
 }
 
 /*

@@ -52,7 +52,15 @@ void update_item_cooldown(Player *player);
 
 void spawn_enemy(Model *model, int stage);
 
+/*
+ * Function purpose: Moves item[stage] to a visible screen position.
+ * Called once when the matching wave clears. Stage must be 0-3.
+ * Input: The model and the stage that just ended
+ * Output: Updates item[stage] position in the model
+ * Assumptions: stage is in range; item array has NUM_ITEMS slots
+ */
+void drop_item(Model *model, int stage);
+
 /* Animation functions TODO */
 
 #endif /* SYNCH_H */
-

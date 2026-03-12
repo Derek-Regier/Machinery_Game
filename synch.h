@@ -50,6 +50,8 @@ void update_attack_cooldown(Player *player);
  * Assumptions: The function is called at the appropriate timings */
 void update_item_cooldown(Player *player);
 
+void spawn_enemy(Model *model, int stage);
+
 /* Animation functions TODO */
 
 #endif /* SYNCH_H */

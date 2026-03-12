@@ -164,14 +164,17 @@ void spawn_enemy(Model *model, int stage)
     int index_offset;
 
     if (stage == 1) {
-        count = 3;
+        count        = 3;
         index_offset = 2;
     } else if (stage == 2) {
-        count = 4;
+        count        = 4;
         index_offset = 5;
-    } else {
-        count = 5;
+    } else if (stage == 3) {
+        count        = 5;
         index_offset = 9;
+    } else { /* stage 4: boss summon, two enemies from screen edges */
+        count        = 2;
+        index_offset = 14;
     }
 
     for (i = index_offset; i < index_offset + count; i++)
@@ -180,18 +183,42 @@ void spawn_enemy(Model *model, int stage)
         model->enemy[i].health = 50;
         model->enemy[i].damage = 8;
         model->enemy[i].w = 32;
-        model->enemy[i].h = 32;
+        model->enemy[i].h  = 32;
         model->enemy[i].delta_x = 0;
         model->enemy[i].delta_y = 0;
         model->enemy[i].is_attacking = FALSE;
 
-        /* Stagger spawn positions so they don't stack on top of each other */
-        model->enemy[i].x = 620;
-        model->enemy[i].y = 168 + ((i - index_offset) * 40); /*Arbitrary for now but staggered*/
+        /* Boss-summon pair spawns from opposite screen edges */
+        if (stage == 4) {
+            model->enemy[i].x = (i == index_offset) ? 0 : 608;
+            model->enemy[i].y = 200;
+        } else {
+            /* Stagger remaining waves down the right edge */
+            model->enemy[i].x = 608;
+            model->enemy[i].y = 168 + ((i - index_offset) * 40);
+        }
     }
 
     model->enemy_count = index_offset + count;
 }
 
+/*
+ * Places item[stage] at centre-screen so the player can collect it.
+ * Called once per wave when next_level() returns TRUE.
+ * All four items begin off-screen in init_model; this makes one visible.
+ *
+ * Input:  model - the live game model
+ *         stage - the wave that just cleared (0-3)
+ * Output: moves item[stage] to a visible screen position
+ * Assumptions: stage is in range 0-3; item array has NUM_ITEMS slots
+ */
+void drop_item(Model *model, int stage)
+{
+    if (stage < 0 || stage >= NUM_ITEMS) return;
 
-
+    model->item[stage].x = 304; /* roughly centre of 640-wide screen */
+    model->item[stage].y = 200;
+    model->item[stage].w = 16;
+    model->item[stage].h = 16;
+    model->item[stage].value = 30;
+}

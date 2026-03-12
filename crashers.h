@@ -30,6 +30,9 @@ UINT32 get_time(void);
  */
 void process_async_event(Model *model, char key);
 
+static void process_sync_events(Model *model);
+
+static void process_cond_events(Model *model);
 
 
 

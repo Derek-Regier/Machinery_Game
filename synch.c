@@ -146,4 +146,51 @@ void update_player_cooldowns(Player *player) {
     update_attack_cooldown(player);
     update_item_cooldown(player);
 }
+/*
+ * Activates and initializes a wave of enemies for the given stage.
+ * Stage 1 spawns 3 enemies, stage 2 spawns 4, stage 3 spawns 5.
+ * Enemies are placed off the right edge of the screen.
+ * Updates model->enemy_count to include the newly active enemies.
+ *
+ * Input:  model - the live game model
+ *         stage - wave number (1, 2, or 3)
+ * Output: modifies model->enemy array and enemy_count
+ * Assumptions: MAX_ENEMIES is large enough to hold all waves (14+)
+ */
+void spawn_enemy(Model *model, int stage)
+{
+    int i;
+    int count;
+    int index_offset;
+
+    if (stage == 1) {
+        count        = 3;
+        index_offset = 2;
+    } else if (stage == 2) {
+        count        = 4;
+        index_offset = 5;
+    } else {
+        count        = 5;
+        index_offset = 9;
+    }
+
+    for (i = index_offset; i < index_offset + count; i++)
+    {
+        model->enemy[i].active = TRUE;
+        model->enemy[i].health = 50;
+        model->enemy[i].damage = 8;
+        model->enemy[i].w = 32;
+        model->enemy[i].h = 32;
+        model->enemy[i].delta_x = 0;
+        model->enemy[i].delta_y = 0;
+        model->enemy[i].is_attacking = FALSE;
+
+        /* Stagger spawn positions so they don't stack on top of each other */
+        model->enemy[i].x = 620;
+        model->enemy[i].y = 168 + ((i - index_offset) * 40); /*Arbitrary for now but staggered*/
+    }
+
+    model->enemy_count = index_offset + count;
+}
+
 

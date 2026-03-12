@@ -30,11 +30,12 @@ void update_health_HUD(Player *player);
 
 /*
  * Function Purpose: Checks boss summon threshold and marks boss->summoned.
- * Input: The boss object
- * Output: None -> Updates boss object 
- * Assumptions: Must be called each tick; fires only once due to summoned flag.
+ * Spawns two enemies (stage 4) on first trigger; fires exactly once.
+ * Input: The boss and the full model (needed to call spawn_enemy)
+ * Output: None -> Updates boss and enemy array in model
+ * Assumptions: Must be called each tick while boss is active.
  */
-void boss_summon(Boss *boss);
+void boss_summon(Boss *boss, Model *model);
 
 /*
  * Function purpose: Checks if the player's attack hitbox overlaps a single enemy.
@@ -76,5 +77,3 @@ bool next_level(const Model *model, int stage);
 bool level_end(const Model *model);
 
 #endif /* COND_H */
-
-

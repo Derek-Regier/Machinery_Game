@@ -30,14 +30,15 @@ void update_health_HUD(Player *player)
 
 /*
  * Checks whether the boss has crossed the 50% health threshold and
- * has not yet summoned. Sets boss->summoned on first trigger so this
- * fires exactly once per boss encounter.
+ * has not yet summoned. On first trigger, activates two enemies from
+ * the boss-summon pool (stage 4 in spawn_enemy) and sets boss->summoned
+ * so this fires exactly once per encounter.
  */
-void boss_summon(Boss *boss)
+void boss_summon(Boss *boss, Model *model)
 {
     if (summon(boss) && !boss->summoned) {
         boss->summoned = TRUE;
-        /* TODO: spawn enemies from screen edges */
+        spawn_enemy(model, 4);
     }
 }
 
@@ -111,7 +112,7 @@ bool boss_hits_player(Boss *boss, Player *player)
 {
     if (!boss->is_attacking) return FALSE;
 
-    if (enemy_hitbox_overlaps(boss,
+    if (boss_hitbox_overlaps(boss,
                               player->x, player->y,
                               player->w, player->h))
     {
@@ -132,53 +133,44 @@ void player_dies(void)
     /* TODO: transition game state to restart / main menu */
 }
 
-/* Called to check if player has defeated required number of
-   enemies to move on to next level. stage 1 requires defeating
-   2 enemies, stage 1 requires defeating 3 enemies, stage 2
-   requires defeating 4 enemies, and stage 3 requires defeating
-   5 enemies. Returns true if player has met any of these
-   conditions, otherwise returns false.
-   Input:  model - the live game model
-           stage - wave number (0, 1, 2, or 3)
-   Output: boolean flag indicating end of level
-*/
-bool next_level(const Model *model, int stage){
-    
-    bool flag_end = false;
-    int num_enemies;
-    int count = 0;
+/*
+ * Returns TRUE when every enemy in the current wave has been defeated
+ * (active == FALSE). Index layout mirrors spawn_enemy:
+ *   stage 0 (tutorial) : indices 0-1   (set by init_model)
+ *   stage 1            : indices 2-4
+ *   stage 2            : indices 5-8
+ *   stage 3            : indices 9-13
+ * The boss stage (4) is not checked here; level_end() handles that.
+ *
+ * Input:  model - the live game model
+ *         stage - current wave number (0-3)
+ * Output: TRUE if all enemies in the wave are inactive
+ */
+bool next_level(const Model *model, int stage)
+{
+    int index_offset;
+    int count;
     int i;
-    
-    if (stage == 0){
-        
-        num_enemies = 2;
-        
-    }else if (stage == 1){
-    
-        num_enemies = 3;
-        
-    }else if (stage == 2){
-        
-        num_enemies = 4;
-    
-    }else{
-        
-        num_enemies = 5;
+
+    if (stage == 0) {
+        index_offset = 0;
+        count        = 2;
+    } else if (stage == 1) {
+        index_offset = 2;
+        count = 3;
+    } else if (stage == 2) {
+        index_offset = 5;
+        count = 4;
+    } else {
+        index_offset = 9;
+        count = 5;
     }
-    
-    for (i = 0; i < num_enemies; i++){
-        
-        if (model->enemy[i].active){
-            
-            count++;
-        }
+
+    for (i = index_offset; i < index_offset + count; i++)
+    {
+        if (model->enemy[i].active) return FALSE;
     }
-        
-    if (count == 0){
-            
-        flag_end = true;
-    }
-    return flag;
+    return TRUE;
 }
 
 /*
@@ -191,4 +183,3 @@ bool level_end(const Model *model)
     if (model->player.health <= 0)  return TRUE;  /* defeat    */
     return FALSE;
 }
-

@@ -66,6 +66,7 @@ bool boss_hits_player(Boss *boss, Player *player);
  */
 void player_dies(void);
 
+bool next_level(const Model *model, int stage);
 /*
  * Function Purpose: Checks win/lose conditions against the full model.
  * Input: The current game state
@@ -75,4 +76,5 @@ void player_dies(void);
 bool level_end(const Model *model);
 
 #endif /* COND_H */
+
 

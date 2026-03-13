@@ -56,8 +56,6 @@ void init_model(Model *model)
     model->enemy[0].h = 64;
     model->enemy[0].is_attacking = FALSE;
     model->enemy[0].active = TRUE;
-    model->enemy[0].attack_cooldown = 0;
-    model->enemy[0].y_offset = 0;
 
     model->enemy[1].x = 500;
     model->enemy[1].y = 200;
@@ -69,8 +67,6 @@ void init_model(Model *model)
     model->enemy[1].h = 64;
     model->enemy[1].is_attacking = FALSE;
     model->enemy[1].active = TRUE;
-    model->enemy[1].attack_cooldown = 0;
-    model->enemy[1].y_offset = 0;
 
     for (i = 2; i < MAX_ENEMIES; i++)
     {
@@ -84,8 +80,6 @@ void init_model(Model *model)
         model->enemy[i].h = 0;
         model->enemy[i].is_attacking = FALSE;
         model->enemy[i].active = FALSE;
-        model->enemy[i].attack_cooldown = 0;
-        model->enemy[i].y_offset = 0;
     }
 
     model->enemy_count = 2; /* only the two tutorial enemies are live */

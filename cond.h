@@ -13,9 +13,6 @@
 #include "model.h"
 #include "synch.h"
 
-
-void grab_item(Player *player, Item *item);
-
 /*
  * Function Purpose: Applies damage to the player. 
  * Input: The player and the damage to be taken

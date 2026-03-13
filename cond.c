@@ -9,6 +9,17 @@
 #include "cond.h"
 
 
+void grab_item(Player *player, Item *item){
+    
+    if (item_hitbox_overlaps(item, player->x, player->y, player->w, player->h)){
+        
+        on_use_item(player, item);
+        
+        item->grabbed = TRUE;
+        
+    }
+}
+
 /*
  * Subtracts damage from player health.
  * Returns TRUE if player health has reached zero (player died).
@@ -102,8 +113,6 @@ bool enemy_hits_player(Enemy *enemy, Player *player)
     {
         int damage = enemy_attack(enemy);
         bool died  = player_take_damage(player, damage);
-        enemy->attack_cooldown = ENEMY_ATTACK_COOLDOWN;
-        enemy->is_attacking = FALSE;
     
         return died;
     }

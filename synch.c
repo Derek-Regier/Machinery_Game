@@ -47,6 +47,10 @@ void update_enemy_velocity(Enemy *enemy, const Player *player)
     else
         enemy->delta_y = 0;
 }
+    if (enemy->delta_x == 0 && enemy->delta_y == 0)
+        enemy->is_attacking = TRUE;
+    else
+        enemy->is_attacking = FALSE;
 /* Function purpose: Moves the player according to the velocity
  * Input: The player object
  * Output: None, moves the player object position on the screen
@@ -224,3 +228,4 @@ void drop_item(Model *model, int stage)
     model->item[stage].h = 16;
     model->item[stage].value = 30;
 }
+

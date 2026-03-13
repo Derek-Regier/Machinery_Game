@@ -25,16 +25,6 @@ UINT32 getTime() {
     return currTime;
 }
 
-UINT32 timeThen, timeNow, timeElapsed;
- 
-timeNow = get_time();
-timeElapsed = timeNow - timeThen;
-if (timeElapsed > 0) {
-    /* trigger synchronous events based on timeElapsed */
-    /* render model */
-    timeThen = timeNow;
-}
-
 /*
  * Routes a single keypress to the correct async handler.
  * Sets velocity/request fields ONLY - never moves game objects.

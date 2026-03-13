@@ -16,12 +16,12 @@
 #include "model.h"
 #include "raster.h"
 #include "bitmaps.h"
-
+#include "font.h"
 /* Function purpose: Display game snapshot
  * Input: Game objects (bitmaps and models)
  * Output: Game objects displayed to screen
- * Assumptions: init_model initializes*/
-void render(const Model *model, void *base);
+ * Assumptions: init_model initializes*/ 
+void render(const Model *model, UINT32 *base);
 
 /* Function purpose: Displays player bitmap according to player's position
  * Input: Player bitmap and models
@@ -33,7 +33,8 @@ void render_player(const Player *player, UINT32 *base);
  * Input: Enemy bitmap and model
  * Output: Enemy object displayed to screen
  * Assumptions: init_model initializes coordinates of model*/
-void render_enemy(const Enemy *enemy, UINT32 *base);
+void render_enemy(const Enemy *enemy, Enemy *prev, UINT32 *base);
+
 
 /* Function purpose: Displays boss bitmap according to boss's position
  * Input: Boss bitmap and model 
@@ -45,7 +46,7 @@ void render_boss(const Boss *boss, UINT32 *base);
  * Input: Item bitmap and models
  * Output: Item object displayed to screen
  * Assumptions: init_model initializes coordinates of model, enemies drop items*/
-void render_item(const Item *item, UINT16 *base);
+void render_item(const Item *item, UINT32 *base);
 
 /* Function purpose: Displays rectangle serving as a health_bar using player health to update display
  * Input: Player health

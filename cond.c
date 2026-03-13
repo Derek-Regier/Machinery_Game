@@ -123,7 +123,8 @@ bool enemy_hits_player(Enemy *enemy, Player *player)
     {
         int damage = enemy_attack(enemy);
         bool died  = player_take_damage(player, damage);
-    
+        enemy->attack_cooldown = ENEMY_ATTACK_COOLDOWN;
+        enemy->is_attacking = FALSE;
         return died;
     }
     return FALSE;

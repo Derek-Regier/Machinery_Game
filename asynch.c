@@ -26,16 +26,16 @@ void on_light_attack(Player *player, int cooldown){
  * Assumptions: Proper values are passed from the game logic */
 void move_player(Player *player, char key){
     if (key == 'w'){
-        player->delta_y = 1; /* Arbitrary start value, animation will determine later*/
+        player->delta_y = -2; /* Arbitrary start value, animation will determine later*/
     }
     if (key == 's'){
-        player->delta_y = -1; 
+        player->delta_y = 2; 
     }
     if (key == 'a'){
-        player->delta_x = -1; 
+        player->delta_x = -2; 
     }
     if (key == 'd'){
-        player->delta_x = 1; 
+        player->delta_x = 2; 
     }
 }
 
@@ -46,4 +46,5 @@ void move_player(Player *player, char key){
 void on_use_item(Player *player, Item *item){
     player->health += item->value;
 }
+
 

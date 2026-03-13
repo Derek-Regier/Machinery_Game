@@ -13,9 +13,7 @@
  * Output: None, moves the player object position on the screen
  * Assumptions: The player has an appropriate velocity handled from the events modules*/
 void move_player_vertical(Player *player){
-    if(player->y < 125){
-        player->y += player->delta_y;
-    }
+    player->y += player->delta_y;
 }
 
 /* Function purpose: Moves the player horizontally

@@ -86,7 +86,7 @@ static void process_sync_events(Model *model)
  * Stub - to be implemented: enemy attack trigger,
  * player death check, boss summon, etc.
  */
-static void process_cond_events(Model *model)
+void process_cond_events(Model *model)
 {
     int  i;
     bool player_died;
@@ -148,7 +148,7 @@ int main(void)
     char key;
  
     init_model(&model);
-    render(&model, base);
+    
  
     model.quit = FALSE;
     time_then = get_time();
@@ -167,7 +167,7 @@ int main(void)
         if (time_elapsed > 0)
         {
             process_sync_events(&model);
-            process_cond_events(&model);
+            /*process_cond_events(&model);*/
             render(&model, base);
             time_then = time_now;
         }

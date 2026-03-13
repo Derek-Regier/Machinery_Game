@@ -13,11 +13,16 @@
 
 UINT8 screenBuffer[32255]; /* allocated 32,000 Byte Buffer 256-Byte Alligned*/
 
-UINT32 get_time(){
-    long old_ssp;
-    old_ssp = Super(0); /* enter privileged mode */
-    timeNow = *timer;
-    Super(old_ssp); /* exit privileged mode as soon as possible */
+UINT32 getTime() {
+    UINT32 *timer = (UINT32 *)0x462;
+    UINT32 currTime;
+    UINT32 oldSsp;
+
+    oldSsp = Super(0);
+    currTime = *timer;
+    Super(oldSsp);
+
+    return currTime;
 }
 
 UINT32 timeThen, timeNow, timeElapsed;

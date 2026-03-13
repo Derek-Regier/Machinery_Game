@@ -73,7 +73,7 @@ void render_enemy(const Enemy *enemy, UINT32 *base){
     return;
   }
   if (prev_drawn){
-    clear_region(base, prev_enemy.x, prev_enemy.y, prev_enemy.h, prev_enemy.w);
+    clear_region(base, prev_enemy.y, prev_enemy.x, prev_enemy.h, prev_enemy.w);
   }
 
   pbm32(base, enemy->y, enemy->x, enemy_bitmap, 64);

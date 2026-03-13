@@ -13,7 +13,7 @@
 
 UINT8 screenBuffer[32255]; /* allocated 32,000 Byte Buffer 256-Byte Alligned*/
 
-UINT32 getTime() {
+UINT32 get_time() {
     UINT32 *timer = (UINT32 *)0x462;
     UINT32 currTime;
     UINT32 oldSsp;

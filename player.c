@@ -13,7 +13,9 @@
  * Output: None, moves the player object position on the screen
  * Assumptions: The player has an appropriate velocity handled from the events modules*/
 void move_player_vertical(Player *player){
-    player->y += player->delta_y;
+    if(player->y < 125){
+        player->y += player->delta_y;
+    }
 }
 
 /* Function purpose: Moves the player horizontally
@@ -84,4 +86,5 @@ bool player_hitbox_overlaps(const Player *player, int x, int y, int width, int h
             player->y < y + height &&          /* Player's top edge is above enemy's bottom edge */
             player->y + player->h > y);        /* Player's bottom edge is below enemy's top edge */
 }
+
 

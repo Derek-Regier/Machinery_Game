@@ -8,7 +8,7 @@
  */
 
 #include "asynch.h"
-#define PLAYER_ATTACK_COOLDOWN 1
+#define PLAYER_ATTACK_COOLDOWN 10
 
 /* Function purpose: Initiates a light attack calling the player behaviour function 
  * Input: The player object and the cooldown time
@@ -46,5 +46,6 @@ void move_player(Player *player, char key){
 void on_use_item(Player *player, Item *item){
     player->health += item->value;
 }
+
 
 

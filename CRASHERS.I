@@ -823,10 +823,10 @@ int main(void)
     UINT32 time_now;
     UINT32 time_elapsed;
     char key;
-    init_model(&model);
     clear_screen(base);
-
+    init_model(&model);
     model.quit = 0 ;
+    render(&model, base);
     time_then = get_time();
 
     while (!model.quit)
@@ -844,7 +844,7 @@ int main(void)
         {
             process_sync_events(&model);
             process_cond_events(&model);
-            clear_screen(base);
+
             render(&model, base);
             time_then = time_now;
         }

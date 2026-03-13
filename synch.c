@@ -46,11 +46,12 @@ void update_enemy_velocity(Enemy *enemy, const Player *player)
         enemy->delta_y = -1;
     else
         enemy->delta_y = 0;
-}
-    if (enemy->delta_x == 0 && enemy->delta_y == 0)
+         if (enemy->delta_x == 0 && enemy->delta_y == 0)
         enemy->is_attacking = TRUE;
     else
         enemy->is_attacking = FALSE;
+}
+   
 /* Function purpose: Moves the player according to the velocity
  * Input: The player object
  * Output: None, moves the player object position on the screen

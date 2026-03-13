@@ -8,6 +8,16 @@
 
 #include "cond.h"
 
+void grab_item(Player *player, Item *item){
+    
+    if (item_hitbox_overlaps(item, player->x, player->y, player->w, player->h)){
+        
+        on_use_item(player, item);
+        
+        item->grabbed = TRUE;
+        
+    }
+}
 
 /*
  * Subtracts damage from player health.

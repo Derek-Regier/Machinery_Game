@@ -114,6 +114,7 @@ void init_model(Model *model)
         model->item[i].h = 16;
         model->item[i].w = 16;
         model->item[i].value = 30;
+        model->item[i].grabbed = FALSE;
     }
 
     /* Game state  */

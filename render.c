@@ -108,22 +108,26 @@ void render_healthbar(const Healthbar *healthbar, UINT32 *base)
     prev_healthbar = *healthbar;
 }
 
+
 /* Function purpose: Displays item bitmap according to item's position
  * Input: Item bitmap and models
  * Output: Item object displayed to screen
  * Assumptions: init_model initializes coordinates of model, enemies drop items */
 void render_item(const Item *item, UINT32 *base)
 {
-    if (prev_drawn && item->x == prev_item.x && item->y == prev_item.y){
-    return;
-    }
-    if (prev_drawn){
-        clear_region(base, prev_item.y, prev_item.x, prev_item.h, prev_item.w);
-    }
 
-    pbm16((UINT16 *)base, item->y, item->x, hp_pot_bitmap, item->h);
-
-    prev_item = *item;
+    if (!item->grabbed){
+        if (prev_drawn && item->x == prev_item.x && item->y == prev_item.y){
+            return;
+        }
+        if (prev_drawn){
+            clear_region(base, prev_item.y, prev_item.x, prev_item.h, prev_item.w);
+        }
+        
+        pbm16((UINT16 *)base, item->y, item->x, hp_pot_bitmap, item->h);
+        
+        prev_item = *item;
+    }
 }
 
 /* Function purpose: Displays boss bitmap according to boss's position

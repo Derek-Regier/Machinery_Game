@@ -8,8 +8,13 @@
 #ifndef COND_H
 #define COND_H
 
+#include "asynch.h"
+#include "types.h"
 #include "model.h"
 #include "synch.h"
+
+
+void grab_item(Player *player, Item *item);
 
 /*
  * Function Purpose: Applies damage to the player. 

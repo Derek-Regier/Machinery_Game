@@ -76,6 +76,8 @@ void update_player_position(Player *player)
             if (player->y > MAX_Y) player->y = MAX_Y;
         }
     }
+    player->delta_x=0;
+    player->delta_y=0;
 }
 
 

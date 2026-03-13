@@ -137,22 +137,22 @@ void process_cond_events(Model *model)
     update_health_HUD(&model->player);
     model->quit = level_end(model);
 }
- 
+
 int main(void)
 {
+    
     void *base = Physbase();
     Model model;
     UINT32 time_then;
     UINT32 time_now;
     UINT32 time_elapsed;
     char key;
- 
     init_model(&model);
-    
+    clear_screen(base);
  
     model.quit = FALSE;
     time_then = get_time();
- 
+    
     while (!model.quit)
     {
         if (has_input())
@@ -167,7 +167,8 @@ int main(void)
         if (time_elapsed > 0)
         {
             process_sync_events(&model);
-            /*process_cond_events(&model);*/
+            process_cond_events(&model);
+            /*clear_screen(base);*/ /* temp fix */
             render(&model, base);
             time_then = time_now;
         }

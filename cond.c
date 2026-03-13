@@ -102,7 +102,7 @@ bool enemy_hits_player(Enemy *enemy, Player *player)
     {
         int damage = enemy_attack(enemy);
         bool died  = player_take_damage(player, damage);
-        update_health_HUD(player);
+    
         return died;
     }
     return FALSE;

@@ -50,12 +50,9 @@ void render_player(const Player *player, UINT32 *base)
     }
 
 
-    if (prev_drawn)
-        clear_region(base,
-                     prev_player.y,
-                     prev_player.x,
-                     prev_player.h,
-                     prev_player.w);
+    if (prev_drawn){
+        clear_region(base, prev_player.y, prev_player.x, prev_player.h, prev_player.w);
+    }
 
     pbm32(base, player->y, player->x, player_bitmap, player->h);
 
@@ -77,11 +74,7 @@ void render_enemy(const Enemy *enemy, Enemy *prev, UINT32 *base)
         return;
 
     if (prev_drawn)
-        clear_region(base,
-                     prev->y,
-                     prev->x,
-                     prev->h,
-                     prev->w);
+        clear_region(base, prev->y, prev->x,prev->h, prev->w);
 
     pbm32(base, enemy->y, enemy->x, enemy_bitmap, enemy->h);
 
@@ -96,21 +89,14 @@ void render_enemy(const Enemy *enemy, Enemy *prev, UINT32 *base)
  * Assumptions: Damage decrements, Healing increments */
 void render_healthbar(const Healthbar *healthbar, UINT32 *base)
 {
-    if (prev_drawn && healthbar->value == prev_healthbar.value)
+    if (prev_drawn && healthbar->value == prev_healthbar.value){
         return;
+    }
+    if (prev_drawn){
+        clear_region(base, prev_healthbar.y, prev_healthbar.x, prev_healthbar.h, prev_healthbar.w);
+    }
 
-    if (prev_drawn)
-        clear_region(base,
-                     prev_healthbar.y,
-                     prev_healthbar.x,
-                     prev_healthbar.h,
-                     prev_healthbar.w);
-
-    plot_rectangle(base,
-                   healthbar->y,
-                   healthbar->x,
-                   healthbar->h,
-                   (UINT16)healthbar->value);
+    plot_rectangle(base,healthbar->y, healthbar->x, healthbar->h, (UINT16)healthbar->value);
 
     prev_healthbar = *healthbar;
 }
@@ -121,17 +107,12 @@ void render_healthbar(const Healthbar *healthbar, UINT32 *base)
  * Assumptions: init_model initializes coordinates of model, enemies drop items */
 void render_item(const Item *item, UINT32 *base)
 {
-    if (prev_drawn &&
-        item->x == prev_item.x &&
-        item->y == prev_item.y)
-        return;
-
-    if (prev_drawn)
-        clear_region(base,
-                     prev_item.y,
-                     prev_item.x,
-                     prev_item.h,
-                     prev_item.w);
+    if (prev_drawn && item->x == prev_item.x && item->y == prev_item.y){
+    return;
+    }
+    if (prev_drawn){
+        clear_region(base, prev_item.y, prev_item.x, prev_item.h, prev_item.w);
+    }
 
     pbm16((UINT16 *)base, item->y, item->x, hp_pot_bitmap, item->h);
 
@@ -151,36 +132,23 @@ void render_boss(const Boss *boss, UINT32 *base)
     {
         if (prev_drawn && prev_boss.active)
         {
-            clear_region(base,
-                         prev_boss.y,
-                         prev_boss.x,
-                         prev_boss.h,
-                         prev_boss.w);
+            clear_region(base, prev_boss.y, prev_boss.x,prev_boss.h, prev_boss.w);
             prev_boss.active = FALSE;
         }
         return;
     }
 
-    if (prev_drawn &&
-        boss->x == prev_boss.x &&
-        boss->y == prev_boss.y &&
-        prev_boss.active)
-        return;
+    if (prev_drawn && boss->x == prev_boss.x && boss->y == prev_boss.y && prev_boss.active){
+      return;
+    }
 
-    if (prev_drawn && prev_boss.active)
-        clear_region(base,
-                     prev_boss.y,
-                     prev_boss.x,
-                     prev_boss.h,
-                     prev_boss.w);
-
-    for (r = 0; r < 128; r++)
-        for (w = 0; w < 4; w++)
-            pbm32(base,
-                  boss->y + r,
-                  boss->x + (w * 32),
-                  &boss_bitmap[r][w],
-                  1);
-
+    if (prev_drawn && prev_boss.active){
+        clear_region(base, prev_boss.y, prev_boss.x, prev_boss.h,prev_boss.w);
+    }
+    for (r = 0; r < 128; r++){
+        for (w = 0; w < 4; w++){
+            pbm32(base, boss->y + r, boss->x + (w * 32), &boss_bitmap[r][w], 1);
+        }
+    }
     prev_boss = *boss;
 }

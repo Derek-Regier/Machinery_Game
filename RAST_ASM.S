@@ -200,6 +200,7 @@ length_loop:
     mulu.w  #20,d0              ; cur_row * 20 longs per row
     move.w  d1,d6
     lsr.w   #5,d6               ; cur_col / 32
+    and.l   #$FFFF,d6           ; zero upper word before add.l
     add.l   d6,d0               ; word_index in d0
 
     ; byte_offset = word_index * 4

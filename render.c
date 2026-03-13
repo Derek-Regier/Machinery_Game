@@ -12,7 +12,10 @@ static Enemy     prev_enemy1;
 static Item      prev_item;
 static Boss      prev_boss;
 static Healthbar prev_healthbar;
-static bool      prev_drawn = FALSE;
+static bool prev_drawn = FALSE;
+
+
+
 
 /* Function purpose: Display game snapshot
  * Input: Game objects (bitmaps and models)
@@ -20,18 +23,19 @@ static bool      prev_drawn = FALSE;
  * Assumptions: init_model initializes */
 void render(const Model *model, UINT32 *base)
 {
+  
     if(model->player.health <= 0){
       clear_screen(base);
       /*plot_string(base, 200, 200, "You are dead!", font);*/
       return;
     }
+   
     render_player    (&model->player,base);
     render_enemy     (&model->enemy[0], &prev_enemy0, base);
     render_enemy     (&model->enemy[1], &prev_enemy1, base);
     render_healthbar (&model->healthbar, base);
     render_item      (&model->item[0], base);
     render_boss      (&model->boss, base);
-     return;
     prev_drawn = TRUE;
 }
 
@@ -152,3 +156,4 @@ void render_boss(const Boss *boss, UINT32 *base)
     }
     prev_boss = *boss;
 }
+

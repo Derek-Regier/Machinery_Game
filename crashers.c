@@ -140,6 +140,7 @@ static void process_cond_events(Model *model)
  
 int main(void)
 {
+    void *base = Physbase();
     Model model;
     UINT32 time_then;
     UINT32 time_now;
@@ -167,7 +168,7 @@ int main(void)
         {
             process_sync_events(&model);
             process_cond_events(&model);
-            render(&model);
+            render(&model, base);
             time_then = time_now;
         }
     }

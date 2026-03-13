@@ -157,3 +157,7 @@ void render_boss(const Boss *boss, UINT32 *base)
     prev_boss = *boss;
 }
 
+void render_reset(void)
+{
+    prev_drawn = FALSE;
+}

@@ -37,10 +37,10 @@ void init_model(Model *model)
     model->player.w = 32;
 
     /* Health bar init */
-    model->healthbar.x     = 4;
-    model->healthbar.y     = 4;
-    model->healthbar.h     = 12;
-    model->healthbar.w     = model->player.health;
+    model->healthbar.x = 4;
+    model->healthbar.y = 4;
+    model->healthbar.h = 12;
+    model->healthbar.w = model->player.health;
     model->healthbar.value = model->player.health;
 
     /* Enemies init

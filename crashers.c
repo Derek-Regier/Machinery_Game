@@ -62,8 +62,10 @@ void process_sync_events(Model *model)
 
     for (i = 0; i < MAX_ENEMIES; i++)
     {
-        if (model->enemy[i].active)
+        if (model->enemy[i].active) {
             update_enemy_position(&model->enemy[i], &model->player);
+            update_enemy_cooldown(&model->enemy[i]);
+        }
     }
 
     if (model->boss.active)

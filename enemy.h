@@ -20,6 +20,8 @@ typedef struct {
     unsigned int w, h;
     bool is_attacking; 
     bool active; /* TRUE during enemy attack animation window */
+    int attack_cooldown;   /* ticks remaining before enemy can attack again */
+    int y_offset;
 } Enemy;
 
 

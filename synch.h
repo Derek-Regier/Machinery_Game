@@ -7,7 +7,7 @@
  */
 #ifndef SYNCH_H
 #define SYNCH_H
-
+#define ENEMY_ATTACK_COOLDOWN 60 
 #include "player.h"
 #include "enemy.h"
 #include "boss.h"
@@ -49,6 +49,8 @@ void update_attack_cooldown(Player *player);
  * Output: None, decrements the cooldown
  * Assumptions: The function is called at the appropriate timings */
 void update_item_cooldown(Player *player);
+
+void update_enemy_cooldown(Enemy *enemy);
 
 void spawn_enemy(Model *model, int stage);
 

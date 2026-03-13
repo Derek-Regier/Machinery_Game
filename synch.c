@@ -4,7 +4,7 @@
  * Authors: Aydin Salonius, Chintan Thakor, Derek Regier
  * Course: COMP 2659, Winter 2026
  */
-
+#include <stdlib.h>
 #include "synch.h"
 #define MAX_X 608 /* 640 pixels - 32 pixels for player */ 
 #define MAX_Y 368 /*400 - 32*/
@@ -29,7 +29,7 @@ static int diff(int a, int b)
 void update_enemy_velocity(Enemy *enemy, const Player *player)
 {
     int dx = diff((int)player->x, (int)enemy->x);
-    int dy = diff((int)player->y, (int)enemy->y);
+    int dy = diff((int)player->y + enemy->y_offset, (int)enemy->y);
 
     /* X axis - close enough? stop horizontal movement */
     if (dx > ENGAGE_RANGE_X)
@@ -46,7 +46,7 @@ void update_enemy_velocity(Enemy *enemy, const Player *player)
         enemy->delta_y = -1;
     else
         enemy->delta_y = 0;
-         if (enemy->delta_x == 0 && enemy->delta_y == 0)
+    if (enemy->delta_x == 0 && enemy->delta_y == 0 && enemy->attack_cooldown == 0)
         enemy->is_attacking = TRUE;
     else
         enemy->is_attacking = FALSE;
@@ -194,6 +194,7 @@ void spawn_enemy(Model *model, int stage)
         model->enemy[i].delta_x = 0;
         model->enemy[i].delta_y = 0;
         model->enemy[i].is_attacking = FALSE;
+        model->enemy[i].y_offset = (rand() % 65) - 32;
 
         /* Boss-summon pair spawns from opposite screen edges */
         if (stage == 4) {
@@ -201,12 +202,18 @@ void spawn_enemy(Model *model, int stage)
             model->enemy[i].y = 200;
         } else {
             /* Stagger remaining waves down the right edge */
-            model->enemy[i].x = 608;
+            model->enemy[i].x = MAX_X + (rand() % 33) - 32;
             model->enemy[i].y = 168 + ((i - index_offset) * 40);
         }
     }
 
     model->enemy_count = index_offset + count;
+}
+
+void update_enemy_cooldown(Enemy *enemy)
+{
+    if (enemy->attack_cooldown > 0)
+        enemy->attack_cooldown--;
 }
 
 /*

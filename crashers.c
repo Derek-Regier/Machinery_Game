@@ -148,7 +148,7 @@ int main(void)
     char key;
  
     init_model(&model);
-    render(&model);
+    render(&model, base);
  
     model.quit = FALSE;
     time_then = get_time();

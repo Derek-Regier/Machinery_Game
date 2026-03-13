@@ -60,7 +60,7 @@ void process_sync_events(Model *model)
     update_player_cooldowns(&model->player);
     update_player_position(&model->player);
 
-    for (i = 0; i < model->enemy_count; i++)
+    for (i = 0; i < MAX_ENEMIES; i++)
     {
         if (model->enemy[i].active)
             update_enemy_position(&model->enemy[i], &model->player);
@@ -75,7 +75,7 @@ void process_cond_events(Model *model)
     int  i;
     bool player_died;
 
-    for (i = 0; i < model->enemy_count; i++)
+    for (i = 0; i < MAX_ENEMIES; i++)
     {
         if (!model->enemy[i].active) continue;
 
@@ -148,9 +148,9 @@ int main(void)
     Super(old_ssp);
 
     /* swap so front is now displayed back_buf, back is orig_phys */
-    temp      = front_buf;
+    temp = front_buf;
     front_buf = back_buf;
-    back_buf  = temp;
+    back_buf = temp;
 
     time_then = get_time();
 
@@ -162,7 +162,7 @@ int main(void)
             process_async_event(&model, key);
         }
 
-        time_now     = get_time();
+        time_now = get_time();
         time_elapsed = time_now - time_then;
 
         if (time_elapsed > 0)

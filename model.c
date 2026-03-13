@@ -54,7 +54,7 @@ void init_model(Model *model)
     model->enemy[0].damage = 8;
     model->enemy[0].w = 32;
     model->enemy[0].h = 64;
-    model->enemy[0].is_attacking = TRUE;
+    model->enemy[0].is_attacking = FALSE;
     model->enemy[0].active = TRUE;
 
     model->enemy[1].x = 500;

@@ -8,7 +8,6 @@
  */
 static Player    prev_player;
 static Enemy     prev_enemy0;
-static Enemy     prev_enemy1;
 static Item      prev_item;
 static Boss      prev_boss;
 static Healthbar prev_healthbar;
@@ -23,16 +22,18 @@ static bool prev_drawn = FALSE;
  * Assumptions: init_model initializes */
 void render(const Model *model, UINT32 *base)
 {
-  
+    int i;
     if(model->player.health <= 0){
       clear_screen(base);
       /*plot_string(base, 200, 200, "You are dead!", font);*/
       return;
     }
+
    
     render_player    (&model->player,base);
-    render_enemy     (&model->enemy[0], &prev_enemy0, base);
-    render_enemy     (&model->enemy[1], &prev_enemy1, base);
+    for (i = 0; i < MAX_ENEMIES; i ++){
+        render_enemy     (&model->enemy[i], &prev_enemy0, base);
+    }
     render_healthbar (&model->healthbar, base);
     render_item      (&model->item[0], base);
     render_boss      (&model->boss, base);
@@ -72,17 +73,19 @@ void render_player(const Player *player, UINT32 *base)
  * Assumptions: init_model initializes coordinates of model */
 void render_enemy(const Enemy *enemy, Enemy *prev, UINT32 *base)
 {
-    if (prev_drawn &&
-        enemy->x == prev->x &&
-        enemy->y == prev->y)
-        return;
+    if (enemy->active){
+            if (prev_drawn &&
+                enemy->x == prev->x &&
+                enemy->y == prev->y)
+                return;
 
-    if (prev_drawn)
-        clear_region(base, prev->y, prev->x,prev->h, prev->w);
+            if (prev_drawn)
+                clear_region(base, prev->y, prev->x,prev->h, prev->w);
 
-    pbm32(base, enemy->y, enemy->x, enemy_bitmap, enemy->h);
+            pbm32(base, enemy->y, enemy->x, enemy_bitmap, enemy->h);
 
-    *prev = *enemy;
+            prev =enemy;
+        }
 }
 
 /* Function purpose: Displays rectangle serving as a healthbar using player

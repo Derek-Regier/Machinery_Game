@@ -109,7 +109,7 @@ void render_item(const Item *item, UINT16 *base){
     return;
   }
   if (prev_drawn){
-    clear_region(base, prev_item.y, prev_item.x, prev_item.h, prev_item.w);
+    /*clear_region(base, prev_item.y, prev_item.x, prev_item.h, prev_item.w);*/
   }
 
   pbm16(base, item->y, item->x, hp_pot_bitmap, 16);

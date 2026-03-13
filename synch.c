@@ -8,7 +8,7 @@
 #include "synch.h"
 #define MAX_X 608 /* 640 pixels - 32 pixels for player */ 
 #define MAX_Y 368 /*400 - 32*/
-#define ENGAGE_RANGE_X 32   /* pixels - touching player position bitmap */
+#define ENGAGE_RANGE_X 31   /* pixels - touching player position bitmap */
 #define ENGAGE_RANGE_Y 16   /* pixels - vertical forgiveness */
 
 /* used for signed difference for enemy movement logic*/
@@ -46,12 +46,19 @@ void update_enemy_velocity(Enemy *enemy, const Player *player)
         enemy->delta_y = -1;
     else
         enemy->delta_y = 0;
+<<<<<<< HEAD
+    if (enemy->delta_x == 0 && enemy->delta_y == 0)
+=======
          if (enemy->delta_x == 0 && enemy->delta_y == 0)
+>>>>>>> 286db39876f3f1c641f12ff7d35b29347b5c104b
         enemy->is_attacking = TRUE;
     else
         enemy->is_attacking = FALSE;
 }
+<<<<<<< HEAD
+=======
    
+>>>>>>> 286db39876f3f1c641f12ff7d35b29347b5c104b
 /* Function purpose: Moves the player according to the velocity
  * Input: The player object
  * Output: None, moves the player object position on the screen

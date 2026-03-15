@@ -108,6 +108,11 @@ void process_cond_events(Model *model)
         }
     }
 
+    /* Item pickup: must run before next_level/drop_item so a freshly
+     * dropped item cannot be grabbed the same tick it appears */
+    for (i = 0; i < NUM_ITEMS; i++)
+        grab_item(&model->player, &model->item[i]);
+
     if (!model->boss.active && next_level(model, model->stage))
     {
         drop_item(model, model->stage);
@@ -118,10 +123,6 @@ void process_cond_events(Model *model)
         else
             model->boss.active = TRUE;
     }
-
-    /* Item pickup: check all items each tick */
-    for (i = 0; i < NUM_ITEMS; i++)
-        grab_item(&model->player, &model->item[i]);
 
     model->healthbar.value = model->player.health;
     model->quit = level_end(model);

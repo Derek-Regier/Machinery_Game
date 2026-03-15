@@ -13,7 +13,7 @@
 #define MIN_ENEMY_SEP 36
 #define SPAWN_DELAY 70      /* ticks between each staggered enemy release (~1 s) */
 /* Boss is 128x128; stop when visually adjacent to the 32x64 player */
-#define BOSS_ENGAGE_X 96    /* 128 - 32: boss right edge meets player left edge */
+#define BOSS_ENGAGE_X 31   
 #define BOSS_ENGAGE_Y 64    /* 128 - 64: boss bottom edge meets player top edge */
 
 /*
@@ -281,16 +281,16 @@ void spawn_enemy(Model *model, int stage)
 
     for (i = index_offset; i < index_offset + count; i++)
     {
-        model->enemy[i].active = FALSE; /* queue, don't activate yet */
-        model->enemy[i].health = 50;
-        model->enemy[i].damage = 8;
-        model->enemy[i].w = 32;
-        model->enemy[i].h = 64;
-        model->enemy[i].delta_x = 0;
-        model->enemy[i].delta_y  = 0;
+        model->enemy[i].active       = FALSE; /* queue, don't activate yet */
+        model->enemy[i].health       = 50;
+        model->enemy[i].damage       = 8;
+        model->enemy[i].w            = 32;
+        model->enemy[i].h            = 64;
+        model->enemy[i].delta_x      = 0;
+        model->enemy[i].delta_y      = 0;
         model->enemy[i].is_attacking = FALSE;
         model->enemy[i].attack_cooldown = 0;
-        model->enemy[i].y_offset = (rand() % 65) - 32;
+        model->enemy[i].y_offset     = (rand() % 65) - 32;
 
         if (stage == 4) {
             model->enemy[i].x = (i == index_offset) ? 0 : 608;
@@ -305,10 +305,10 @@ void spawn_enemy(Model *model, int stage)
 
     /* Stage 4 activates both summons immediately; others stagger */
     if (stage == 4) {
-        model->enemy[index_offset].active = TRUE;
+        model->enemy[index_offset].active     = TRUE;
         model->enemy[index_offset + 1].active = TRUE;
         model->spawn_start = index_offset + count; /* queue empty */
-        model->spawn_end = index_offset + count;
+        model->spawn_end   = index_offset + count;
     } else {
         model->enemy[index_offset].active = TRUE;  /* first one live now */
         model->spawn_start = index_offset + 1;     /* rest queued */
@@ -342,4 +342,5 @@ void drop_item(Model *model, int stage)
     model->item[stage].w = 16;
     model->item[stage].h = 16;
     model->item[stage].value = 30;
+    model->item[stage].grabbed = FALSE; /* now live and collectable */
 }

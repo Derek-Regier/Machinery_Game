@@ -30,8 +30,8 @@ void init_model(Model *model)
     model->player.delta_y = 0;
     model->player.health = 100;
     model->player.damage = 10;
-    model->player.is_attacking = FALSE;
-    model->player.item_cooldown = 0;
+    model->player.is_attacking  = FALSE;
+    model->player.item_cooldown  = 0;
     model->player.attack_cooldown = 0;
     model->player.h = 64;
     model->player.w = 32;
@@ -117,7 +117,7 @@ void init_model(Model *model)
         model->item[i].h = 16;
         model->item[i].w = 16;
         model->item[i].value = 30;
-        model->item[i].grabbed = FALSE;
+        model->item[i].grabbed = TRUE; /* inert until drop_item activates it */
     }
 
     /* Game state  */

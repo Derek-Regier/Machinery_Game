@@ -17,6 +17,7 @@ typedef struct {
     int delta_y;
     int health;
     int damage;
+    int facing; /*-1 = facing left and 1 = facing right*/
     bool is_attacking;
     unsigned int item_cooldown;
     unsigned int attack_cooldown;

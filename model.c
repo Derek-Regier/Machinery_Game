@@ -35,6 +35,7 @@ void init_model(Model *model)
     model->player.attack_cooldown = 0;
     model->player.h = 64;
     model->player.w = 32;
+    model->player.facing = 1;
 
     /* Health bar init */
     model->healthbar.x = 4;

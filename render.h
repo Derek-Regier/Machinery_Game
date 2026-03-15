@@ -17,6 +17,7 @@
 #include "raster.h"
 #include "bitmaps.h"
 #include "font.h"
+#include "asynch.h"
 /* Function purpose: Display game snapshot
  * Input: Game objects (bitmaps and models)
  * Output: Game objects displayed to screen

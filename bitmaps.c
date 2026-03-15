@@ -64,7 +64,7 @@ UINT32 tri_bitmap[16] = {
     0x80000000
 };
 
-UINT32 player_bitmap[64] = {
+UINT32 player_bitmap_right[64] = {
     0x00000000,
     0x00000000,
     0x00000000,
@@ -131,6 +131,72 @@ UINT32 player_bitmap[64] = {
     0x00000000
 };
 
+UINT32 player_bitmap_left[64] = {
+    0x00000000, 
+    0x00000000, 
+    0x00000000, 
+    0x00000000,
+    0x0C0000C0, 
+    0x0FFFFFC0, 
+    0x0EFFFBC0, 
+    0x0E3FF3C0,
+    0x0E1FE3C0, 
+    0x0E0F83C0, 
+    0x0E0703C0, 
+    0x0E0203C0,
+    0x0E0003C0, 
+    0x0E0003C0, 
+    0x0E0003C0, 
+    0x0E0003C0,
+    0x0E0003C0, 
+    0x0E0003C0, 
+    0x0E0003C0, 
+    0x0E0003C0,
+    0x0E0003C0, 
+    0x0EF1F3C0, 
+    0x0E0003C0, 
+    0x0E0003C0,
+    0x0E0003C0, 
+    0x0E0003C0, 
+    0x0E0003C0, 
+    0x0E0003C0,
+    0x0FE07FC0, 
+    0x0FE07FC0, 
+    0x0FE07FC0, 
+    0x0FE07FC0,
+    0x01FFFE00, 
+    0x07FFFF80, 
+    0x07FFFF80, 
+    0x07FFFF80,
+    0x0FFFFFC0, 
+    0x1FFFFFE0, 
+    0x1FFFFFE0, 
+    0x3FFFFFF0,
+    0x3FFFFFF0, 
+    0x3FFFFFF0, 
+    0x3FFFFFF0, 
+    0x3FFFFFF0,
+    0x3FFFFFF0, 
+    0x3BFFFF70, 
+    0x3BFFFF70, 
+    0x33555530,
+    0x32AAAB30, 
+    0x3BFFFF70, 
+    0x3BFFFF70, 
+    0x03FFFF00,
+    0x01FFFE00, 
+    0x01FFFE00, 
+    0x01FFFE00, 
+    0x01F87E00,
+    0x01F03E00, 
+    0x01E01E00, 
+    0x01E01E00, 
+    0x01E01E00,
+    0x03E03E00, 
+    0x03E03E00, 
+    0x00000000, 
+    0x00000000
+};
 
 
 UINT32 health_bar_bitmap[12] = {

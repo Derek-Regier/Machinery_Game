@@ -20,7 +20,7 @@ void on_light_attack(Player *player, int cooldown){
     }
 }
 
-/* Function purpose: Starts the movement process by setting the appropriate velocity for the given keypress 
+/* Function purpose: Starts the movement process by setting the appropriate velocity for the given keypress, dictates player facing direction
  * Input: The player object and the input key
  * Output: None, included as part of the movement sequence
  * Assumptions: Proper values are passed from the game logic */
@@ -33,9 +33,11 @@ void move_player(Player *player, char key){
     }
     if (key == 'a'){
         player->delta_x = -2; 
+        player->facing = -1;
     }
     if (key == 'd'){
         player->delta_x = 2; 
+        player->facing = 1;
     }
 }
 

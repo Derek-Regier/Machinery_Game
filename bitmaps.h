@@ -24,7 +24,9 @@ extern UINT16 rect_bitmap[16];
 
 extern UINT32 tri_bitmap[32];
 
-extern UINT32 player_bitmap[64];
+extern UINT32 player_bitmap_right[64];
+
+extern UINT32 player_bitmap_left[64];
 
 extern UINT32 health_bar_bitmap[12];
 

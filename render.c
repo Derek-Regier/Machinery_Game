@@ -25,7 +25,6 @@ void render(const Model *model, UINT32 *base)
     int i;
     if(model->player.health <= 0){
       clear_screen(base);
-      /*plot_string(base, 200, 200, "You are dead!", font);*/
       return;
     }
     render_player    (&model->player,base);
@@ -46,21 +45,21 @@ void render(const Model *model, UINT32 *base)
  * Assumptions: init_model initializes coordinates of model */
 void render_player(const Player *player, UINT32 *base)
 {
-  
+    if (prev_drawn && 
+        player->x == prev_player.x && 
+        player->y == prev_player.y &&
+        player->facing == prev_player.facing)
+        return;
 
-    if (prev_drawn && player->x == prev_player.x && player->y == prev_player.y){
-      return;
-    }
-
-
-    if (prev_drawn){
+    if (prev_drawn)
         clear_region(base, prev_player.y, prev_player.x, prev_player.h, prev_player.w);
-    }
 
-    pbm32(base, player->y, player->x, player_bitmap, player->h);
+    if (player->facing < 0)
+        pbm32(base, player->y, player->x, player_bitmap_left, player->h);
+    else
+        pbm32(base, player->y, player->x, player_bitmap_right, player->h);
 
     prev_player = *player;
-
 }
 
 /* Function purpose: Displays enemy bitmap according to enemy's position

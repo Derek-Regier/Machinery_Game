@@ -93,14 +93,17 @@ void render_enemy(const Enemy *enemy, Enemy *prev, UINT32 *base)
  * Assumptions: Damage decrements, Healing increments */
 void render_healthbar(const Healthbar *healthbar, UINT32 *base)
 {
+    int i;
+    plot_rectangle(base,healthbar->y, healthbar->x, healthbar->h, 100);
     if (prev_drawn && healthbar->value == prev_healthbar.value){
         return;
     }
     if (prev_drawn){
         clear_region(base, prev_healthbar.y, prev_healthbar.x, prev_healthbar.h, prev_healthbar.w);
     }
-
-    plot_rectangle(base,healthbar->y, healthbar->x, healthbar->h, (UINT16)healthbar->value);
+    for(i = 0; i<=10; i++)
+    plot_horizontal_line(base, healthbar->y+i, healthbar->x, (UINT16)healthbar->value);
+  
 
     prev_healthbar = *healthbar;
 }

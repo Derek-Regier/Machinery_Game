@@ -52,9 +52,9 @@ void separate_enemies(Model *model) {
             dyi = ey_j - ey_i; if (dyi < 0) dyi = -dyi;
             if (dxi < MIN_ENEMY_SEP && dyi < MIN_ENEMY_SEP) {
                 if (ex_j >= ex_i && ex_j < MAX_X) model->enemy[j].x++;
-                else if (ex_j > 0)                model->enemy[j].x--;
+                else if (ex_j > 0) model->enemy[j].x--;
                 if (ey_j >= ey_i && ey_j < MAX_Y) model->enemy[j].y++;
-                else if (ey_j > 0)                model->enemy[j].y--;
+                else if (ey_j > 0) model->enemy[j].y--;
             }
         }
     }
@@ -281,16 +281,16 @@ void spawn_enemy(Model *model, int stage)
 
     for (i = index_offset; i < index_offset + count; i++)
     {
-        model->enemy[i].active       = FALSE; /* queue, don't activate yet */
-        model->enemy[i].health       = 50;
-        model->enemy[i].damage       = 8;
-        model->enemy[i].w            = 32;
-        model->enemy[i].h            = 64;
-        model->enemy[i].delta_x      = 0;
-        model->enemy[i].delta_y      = 0;
+        model->enemy[i].active = FALSE; /* queue, don't activate yet */
+        model->enemy[i].health = 50;
+        model->enemy[i].damage = 8;
+        model->enemy[i].w = 32;
+        model->enemy[i].h = 64;
+        model->enemy[i].delta_x = 0;
+        model->enemy[i].delta_y = 0;
         model->enemy[i].is_attacking = FALSE;
         model->enemy[i].attack_cooldown = 0;
-        model->enemy[i].y_offset     = (rand() % 65) - 32;
+        model->enemy[i].y_offset = (rand() % 65) - 32;
 
         if (stage == 4) {
             model->enemy[i].x = (i == index_offset) ? 0 : 608;
@@ -308,11 +308,11 @@ void spawn_enemy(Model *model, int stage)
         model->enemy[index_offset].active     = TRUE;
         model->enemy[index_offset + 1].active = TRUE;
         model->spawn_start = index_offset + count; /* queue empty */
-        model->spawn_end   = index_offset + count;
+        model->spawn_end = index_offset + count;
     } else {
         model->enemy[index_offset].active = TRUE;  /* first one live now */
         model->spawn_start = index_offset + 1;     /* rest queued */
-        model->spawn_end   = index_offset + count;
+        model->spawn_end = index_offset + count;
         model->spawn_timer = SPAWN_DELAY;
     }
 }

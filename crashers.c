@@ -15,9 +15,9 @@ static volatile long *timer = (volatile long *)0x462L;
 UINT32 get_time(void)
 {
     UINT32 currTime;
-    long   oldSsp;
+    long oldSsp;
 
-    oldSsp   = Super(0);
+    oldSsp = Super(0);
     currTime = *timer;
     Super(oldSsp);
 
@@ -130,17 +130,17 @@ void process_cond_events(Model *model)
 
 int main(void)
 {
-    void   *orig_phys = Physbase();
-    void   *back_buf  = (void *)(((UINT32)screenBuffer + 255L) & ~255L);
-    void   *front_buf = orig_phys;
-    void   *temp;
-    long    old_ssp;
-    long    vbl_now;
-    Model   model;
-    UINT32  time_then;
-    UINT32  time_now;
-    UINT32  time_elapsed;
-    char    key;
+    void *orig_phys = Physbase();
+    void *back_buf  = (void *)(((UINT32)screenBuffer + 255L) & ~255L);
+    void *front_buf = orig_phys;
+    void *temp;
+    long old_ssp;
+    long vbl_now;
+    Model model;
+    UINT32 time_then;
+    UINT32 time_now;
+    UINT32 time_elapsed;
+    char key;
 
     init_model(&model);
 

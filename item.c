@@ -17,9 +17,9 @@ int get_value(Item *item){
 
 }
 
-bool item_hitbox_overlaps(Item *item, int x, int y, int width, int height){
-    
-    return (item->x == x &&       /* Enemy's right edge is right of player's left edge */
-            item->y == y);        /* Enemy's bottom edge is below player's top edge */
-
+bool item_hitbox_overlaps(const Item *item, int x, int y, int width, int height){
+    return (item->x < (unsigned int)(x + width)  &&
+            item->x + item->w > (unsigned int)x  &&
+            item->y < (unsigned int)(y + height) &&
+            item->y + item->h > (unsigned int)y);
 }

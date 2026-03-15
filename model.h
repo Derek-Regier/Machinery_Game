@@ -26,6 +26,9 @@ typedef struct {
     Boss boss;
     Item item[NUM_ITEMS];   /* item[stage] is dropped when that wave clears */
     int stage;              /* current wave: 0=tutorial, 1-3=waves, 4=boss */
+    int spawn_start;        /* index of next queued enemy to activate       */
+    int spawn_end;          /* index just past the last queued enemy        */
+    int spawn_timer;        /* ticks until next enemy is released           */
     bool quit;
 } Model;
 

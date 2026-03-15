@@ -15,9 +15,17 @@
 #include "item.h"
 
 /* Asynchronous event handlers */
-void on_light_attack(Player *player,int cooldown);
+void on_light_attack(Player *player, int cooldown);
 void move_player(Player *player, char key);
-void on_use_item(Player *player, Item *item);
+
+/*
+ * Function purpose: Consume one potion from the player's inventory.
+ * Heals the player by POTION_HEAL_VALUE, capped at PLAYER_MAX_HEALTH.
+ * Does nothing if potions == 0 or item_cooldown > 0.
+ * Input: The player object
+ * Output: None, modifies player->health, potions, item_cooldown
+ * Assumptions: Called from async key handler only
+ */
+void consume_potion(Player *player);
 
 #endif /* ASYNCH_H */
-

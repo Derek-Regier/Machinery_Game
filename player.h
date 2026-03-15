@@ -22,6 +22,7 @@ typedef struct {
     unsigned int item_cooldown;
     unsigned int attack_cooldown;
     unsigned int h,w;
+    int potions; /* number of health potions in inventory */
 } Player;
 
 /* Function purpose: Moves the player vertically
@@ -75,5 +76,3 @@ void player_set_attacking(Player *player, bool attacking, const int cooldown);
 bool player_hitbox_overlaps(const Player *player, int x, int y, int width, int height);
 
 #endif /* PLAYER_H */
-
-

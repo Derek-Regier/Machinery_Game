@@ -8,14 +8,20 @@
 
 #include "cond.h"
 
+/*
+ * Checks if the player overlaps an item and collects it into inventory.
+ * Increments player->potions by 1 and marks item->grabbed so it is not
+ * picked up again. Does nothing if the item is already grabbed.
+ */
 void grab_item(Player *player, Item *item){
-    
-    if (item_hitbox_overlaps(item, player->x, player->y, player->w, player->h)){
-        
-        on_use_item(player, item);
-        
+    if (item->grabbed) return;
+
+    if (item_hitbox_overlaps(item,
+                             (int)player->x, (int)player->y,
+                             (int)player->w, (int)player->h))
+    {
+        player->potions++;
         item->grabbed = TRUE;
-        
     }
 }
 

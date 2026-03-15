@@ -10,9 +10,30 @@
 #define MAX_Y 368 /*400 - 32*/
 #define ENGAGE_RANGE_X 31   /* pixels - touching player position bitmap */
 #define ENGAGE_RANGE_Y 16   /* pixels - vertical forgiveness */
-
-
 #define MIN_ENEMY_SEP 36
+#define SPAWN_DELAY 70      /* ticks between each staggered enemy release (~1 s) */
+
+/*
+ * Releases one queued enemy every SPAWN_DELAY ticks.
+ * Called once per tick from process_sync_events.
+ * Does nothing when the queue is empty (spawn_start >= spawn_end).
+ *
+ * Input:  model - the live game model
+ * Output: may activate model->enemy[spawn_start] and advance spawn_start
+ */
+void update_spawn_queue(Model *model)
+{
+    if (model->spawn_start >= model->spawn_end) return;
+
+    if (model->spawn_timer > 0) {
+        model->spawn_timer--;
+        return;
+    }
+
+    model->enemy[model->spawn_start].active = TRUE;
+    model->spawn_start++;
+    model->spawn_timer = SPAWN_DELAY;
+}
 
 void separate_enemies(Model *model) {
     int i, j, dxi, dyi, ex_i, ey_i, ex_j, ey_j;
@@ -188,6 +209,13 @@ void update_player_cooldowns(Player *player) {
  * Output: modifies model->enemy array and enemy_count
  * Assumptions: MAX_ENEMIES is large enough to hold all waves (14+)
  */
+/*
+ * Initialises the enemies for the given stage but activates only the first
+ * one immediately. The remaining enemies sit inactive in the spawn queue
+ * (model->spawn_start .. model->spawn_end-1); update_spawn_queue releases
+ * them one per SPAWN_DELAY ticks.
+ * Stage 4 (boss summon) always activates both enemies at once.
+ */
 void spawn_enemy(Model *model, int stage)
 {
     int i;
@@ -203,35 +231,47 @@ void spawn_enemy(Model *model, int stage)
     } else if (stage == 3) {
         count = 5;
         index_offset = 9;
-    } else { /* stage 4: boss summon, two enemies from screen edges */
+    } else { /* stage 4: boss summon */
         count = 2;
         index_offset = 14;
     }
 
     for (i = index_offset; i < index_offset + count; i++)
     {
-        model->enemy[i].active = TRUE;
-        model->enemy[i].health = 50;
-        model->enemy[i].damage = 8;
-        model->enemy[i].w = 32;
-        model->enemy[i].h = 64;
-        model->enemy[i].delta_x = 0;
-        model->enemy[i].delta_y = 0;
+        model->enemy[i].active       = FALSE; /* queue, don't activate yet */
+        model->enemy[i].health       = 50;
+        model->enemy[i].damage       = 8;
+        model->enemy[i].w            = 32;
+        model->enemy[i].h            = 64;
+        model->enemy[i].delta_x      = 0;
+        model->enemy[i].delta_y      = 0;
         model->enemy[i].is_attacking = FALSE;
-        model->enemy[i].y_offset = (rand() % 65) - 32;
+        model->enemy[i].attack_cooldown = 0;
+        model->enemy[i].y_offset     = (rand() % 65) - 32;
 
-        /* Boss-summon pair spawns from opposite screen edges */
         if (stage == 4) {
             model->enemy[i].x = (i == index_offset) ? 0 : 608;
             model->enemy[i].y = 200;
         } else {
-            /* Stagger remaining waves down the right edge */
             model->enemy[i].x = MAX_X + (rand() % 33) - 32;
             model->enemy[i].y = 168 + ((i - index_offset) * 40);
         }
     }
 
     model->enemy_count = index_offset + count;
+
+    /* Stage 4 activates both summons immediately; others stagger */
+    if (stage == 4) {
+        model->enemy[index_offset].active     = TRUE;
+        model->enemy[index_offset + 1].active = TRUE;
+        model->spawn_start = index_offset + count; /* queue empty */
+        model->spawn_end   = index_offset + count;
+    } else {
+        model->enemy[index_offset].active = TRUE;  /* first one live now */
+        model->spawn_start = index_offset + 1;     /* rest queued */
+        model->spawn_end   = index_offset + count;
+        model->spawn_timer = SPAWN_DELAY;
+    }
 }
 
 void update_enemy_cooldown(Enemy *enemy)

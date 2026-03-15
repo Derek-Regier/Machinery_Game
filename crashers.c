@@ -41,7 +41,7 @@ void process_async_event(Model *model, char key)
             break;
 
         case KEY_USE_ITEM:
-            on_use_item(&model->player, &model->item[0]);
+            consume_potion(&model->player);
             break;
 
         case KEY_QUIT:
@@ -59,6 +59,7 @@ void process_sync_events(Model *model)
 
     update_player_cooldowns(&model->player);
     update_player_position(&model->player);
+    update_spawn_queue(model);
 
     for (i = 0; i < MAX_ENEMIES; i++)
     {
@@ -117,6 +118,10 @@ void process_cond_events(Model *model)
         else
             model->boss.active = TRUE;
     }
+
+    /* Item pickup: check all items each tick */
+    for (i = 0; i < NUM_ITEMS; i++)
+        grab_item(&model->player, &model->item[i]);
 
     model->healthbar.value = model->player.health;
     model->quit = level_end(model);

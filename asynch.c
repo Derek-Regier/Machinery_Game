@@ -8,7 +8,9 @@
  */
 
 #include "asynch.h"
+#include "item.h"
 #define PLAYER_ATTACK_COOLDOWN 10
+#define ITEM_USE_COOLDOWN 35  /* ~0.5 s at 70 Hz; prevents potion spam */
 
 /* Function purpose: Initiates a light attack calling the player behaviour function 
  * Input: The player object and the cooldown time
@@ -41,13 +43,20 @@ void move_player(Player *player, char key){
     }
 }
 
-/* Function purpose: use an item
- * Input: The player object and the Item object
- * Output: None
- * Assumptions: Correct objects are passed */
-void on_use_item(Player *player, Item *item){
-    player->health += item->value;
+/* Function purpose: Consume one potion from the player's inventory.
+ * Heals the player by POTION_HEAL_VALUE, capped at PLAYER_MAX_HEALTH.
+ * Does nothing if the player has no potions or item_cooldown is active.
+ * Input: The player object
+ * Output: None, modifies player->health, potions, item_cooldown
+ * Assumptions: Called from async key handler only */
+void consume_potion(Player *player){
+    if (player->potions <= 0)        return;
+    if (player->item_cooldown > 0)   return;
+
+    player->health += POTION_HEAL_VALUE;
+    if (player->health > PLAYER_MAX_HEALTH)
+        player->health = PLAYER_MAX_HEALTH;
+
+    player->potions--;
+    player->item_cooldown = ITEM_USE_COOLDOWN;
 }
-
-
-

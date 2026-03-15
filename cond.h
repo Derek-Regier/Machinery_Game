@@ -70,6 +70,16 @@ bool boss_hits_player(Boss *boss, Player *player);
 void player_dies(void);
 
 bool next_level(const Model *model, int stage);
+
+/*
+ * Function Purpose: Checks if the player walks over an item and collects it.
+ * Increments player->potions and marks item->grabbed on overlap.
+ * Does nothing if the item is already grabbed.
+ * Input: The player and an item object
+ * Output: None -> updates player->potions and item->grabbed
+ * Assumptions: item_hitbox_overlaps is a proper AABB check
+ */
+void grab_item(Player *player, Item *item);
 /*
  * Function Purpose: Checks win/lose conditions against the full model.
  * Input: The current game state

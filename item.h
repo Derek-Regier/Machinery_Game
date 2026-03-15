@@ -11,6 +11,9 @@
 
 #include "types.h"
 
+#define POTION_HEAL_VALUE 30  /* HP restored when a potion is consumed */
+#define PLAYER_MAX_HEALTH 100 /* cap for consume_potion heal */
+
 typedef struct {
     unsigned int x, y;
     int h,w;
@@ -24,9 +27,6 @@ typedef struct {
  * Assumptions: None */
 int get_value(Item *item);
 
-bool item_hitbox_overlaps(Item *item, int x, int y, int width, int height);
+bool item_hitbox_overlaps(const Item *item, int x, int y, int width, int height);
 
 #endif /* ITEM_H */
-
-
-

@@ -11,6 +11,30 @@
 #define ENGAGE_RANGE_X 31   /* pixels - touching player position bitmap */
 #define ENGAGE_RANGE_Y 16   /* pixels - vertical forgiveness */
 
+
+#define MIN_ENEMY_SEP 36
+
+void separate_enemies(Model *model) {
+    int i, j, dxi, dyi, ex_i, ey_i, ex_j, ey_j;
+    for (i = 0; i < MAX_ENEMIES - 1; i++) {
+        if (!model->enemy[i].active) continue;
+        ex_i = (int)model->enemy[i].x;
+        ey_i = (int)model->enemy[i].y;
+        for (j = i + 1; j < MAX_ENEMIES; j++) {
+            if (!model->enemy[j].active) continue;
+            ex_j = (int)model->enemy[j].x;
+            ey_j = (int)model->enemy[j].y;
+            dxi = ex_j - ex_i; if (dxi < 0) dxi = -dxi;
+            dyi = ey_j - ey_i; if (dyi < 0) dyi = -dyi;
+            if (dxi < MIN_ENEMY_SEP && dyi < MIN_ENEMY_SEP) {
+                if (ex_j >= ex_i && ex_j < MAX_X) model->enemy[j].x++;
+                else if (ex_j > 0)                model->enemy[j].x--;
+                if (ey_j >= ey_i && ey_j < MAX_Y) model->enemy[j].y++;
+                else if (ey_j > 0)                model->enemy[j].y--;
+            }
+        }
+    }
+}
 /* used for signed difference for enemy movement logic*/
 static int diff(int a, int b)
 {
@@ -190,7 +214,7 @@ void spawn_enemy(Model *model, int stage)
         model->enemy[i].health = 50;
         model->enemy[i].damage = 8;
         model->enemy[i].w = 32;
-        model->enemy[i].h  = 32;
+        model->enemy[i].h = 64;
         model->enemy[i].delta_x = 0;
         model->enemy[i].delta_y = 0;
         model->enemy[i].is_attacking = FALSE;

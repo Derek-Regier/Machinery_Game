@@ -13,7 +13,7 @@
 #include "boss.h"
 #include "model.h"
 
-
+void separate_enemies(Model *model);
 /* Function purpose: Moves the player according to the velocity
  * Input: The player object
  * Output: None, moves the player object position on the screen

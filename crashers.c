@@ -70,6 +70,7 @@ void process_sync_events(Model *model)
 
     if (model->boss.active)
         update_boss_position(&model->boss, &model->player);
+    separate_enemies(model);
 }
 
 void process_cond_events(Model *model)
@@ -117,7 +118,7 @@ void process_cond_events(Model *model)
             model->boss.active = TRUE;
     }
 
-    update_health_HUD(&model->player);
+    model->healthbar.value = model->player.health;
     model->quit = level_end(model);
 }
 

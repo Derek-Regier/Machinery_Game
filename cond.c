@@ -135,21 +135,13 @@ bool boss_hits_player(Boss *boss, Player *player)
     {
         int damage = boss_attack(boss);
         bool died  = player_take_damage(player, damage);
+        boss->attack_cooldown = BOSS_ATTACK_COOLDOWN;
+        boss->is_attacking = FALSE;
         update_health_HUD(player);
         return died;
     }
     return FALSE;
 }
-
-/*
- * Called when the player's health reaches zero.
- * Will trigger game-state change to restart. TODO: game state.
- */
-void player_dies(void)
-{
-    /* TODO: transition game state to restart / main menu */
-}
-
 /*
  * Returns TRUE when every enemy in the current wave has been defeated
  * (active == FALSE). Index layout mirrors spawn_enemy:
@@ -168,6 +160,9 @@ bool next_level(const Model *model, int stage)
     int index_offset;
     int count;
     int i;
+
+    /* Spawn queue not empty: more enemies still to arrive this wave */
+    if (model->spawn_start < model->spawn_end) return FALSE;
 
     if (stage == 0) {
         index_offset = 0;

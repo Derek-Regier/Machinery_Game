@@ -12,6 +12,9 @@
 #define ENGAGE_RANGE_Y 16   /* pixels - vertical forgiveness */
 #define MIN_ENEMY_SEP 36
 #define SPAWN_DELAY 70      /* ticks between each staggered enemy release (~1 s) */
+/* Boss is 128x128; stop when visually adjacent to the 32x64 player */
+#define BOSS_ENGAGE_X 96    /* 128 - 32: boss right edge meets player left edge */
+#define BOSS_ENGAGE_Y 64    /* 128 - 64: boss bottom edge meets player top edge */
 
 /*
  * Releases one queued enemy every SPAWN_DELAY ticks.
@@ -149,12 +152,46 @@ void update_enemy_position(Enemy *enemy, const Player *player) {
 }
 
 
+/*
+ * Sets boss delta_x and delta_y to move toward the player,
+ * stopping on each axis independently once inside engage range.
+ * Sets is_attacking when the boss is in range and the cooldown is clear.
+ *
+ * Input:  boss   - the boss to update
+ *         player - the player to move toward
+ * Output: modifies boss->delta_x, delta_y, and is_attacking
+ */
+void update_boss_velocity(Boss *boss, const Player *player)
+{
+    int dx = diff((int)player->x, (int)boss->x);
+    int dy = diff((int)player->y, (int)boss->y);
+
+    if (dx > BOSS_ENGAGE_X)
+        boss->delta_x = 1;
+    else if (dx < -BOSS_ENGAGE_X)
+        boss->delta_x = -1;
+    else
+        boss->delta_x = 0;
+
+    if (dy > BOSS_ENGAGE_Y)
+        boss->delta_y = 1;
+    else if (dy < -BOSS_ENGAGE_Y)
+        boss->delta_y = -1;
+    else
+        boss->delta_y = 0;
+
+    if (boss->delta_x == 0 && boss->delta_y == 0 && boss->attack_cooldown == 0)
+        boss->is_attacking = TRUE;
+    else
+        boss->is_attacking = FALSE;
+}
+
 /* Function purpose: Moves the boss according to the velocity
  * Input: The boss object
  * Output: None, moves the boss object position on the screen
  * Assumptions: The boss has an appropriate velocity */
 void update_boss_position(Boss *boss, const Player *player) {
-    /* TODO: Calculate direction to player */
+    update_boss_velocity(boss, player);
 
     if (boss->delta_x != 0) {
         move_boss_horizontal(boss);
@@ -163,6 +200,12 @@ void update_boss_position(Boss *boss, const Player *player) {
     if (boss->delta_y != 0) {
         move_boss_vertical(boss);
     }
+}
+
+void update_boss_cooldown(Boss *boss)
+{
+    if (boss->attack_cooldown > 0)
+        boss->attack_cooldown--;
 }
 
 /* Function purpose: updates the player cooldowns together
@@ -238,16 +281,16 @@ void spawn_enemy(Model *model, int stage)
 
     for (i = index_offset; i < index_offset + count; i++)
     {
-        model->enemy[i].active       = FALSE; /* queue, don't activate yet */
-        model->enemy[i].health       = 50;
-        model->enemy[i].damage       = 8;
-        model->enemy[i].w            = 32;
-        model->enemy[i].h            = 64;
-        model->enemy[i].delta_x      = 0;
-        model->enemy[i].delta_y      = 0;
+        model->enemy[i].active = FALSE; /* queue, don't activate yet */
+        model->enemy[i].health = 50;
+        model->enemy[i].damage = 8;
+        model->enemy[i].w = 32;
+        model->enemy[i].h = 64;
+        model->enemy[i].delta_x = 0;
+        model->enemy[i].delta_y  = 0;
         model->enemy[i].is_attacking = FALSE;
         model->enemy[i].attack_cooldown = 0;
-        model->enemy[i].y_offset     = (rand() % 65) - 32;
+        model->enemy[i].y_offset = (rand() % 65) - 32;
 
         if (stage == 4) {
             model->enemy[i].x = (i == index_offset) ? 0 : 608;
@@ -262,10 +305,10 @@ void spawn_enemy(Model *model, int stage)
 
     /* Stage 4 activates both summons immediately; others stagger */
     if (stage == 4) {
-        model->enemy[index_offset].active     = TRUE;
+        model->enemy[index_offset].active = TRUE;
         model->enemy[index_offset + 1].active = TRUE;
         model->spawn_start = index_offset + count; /* queue empty */
-        model->spawn_end   = index_offset + count;
+        model->spawn_end = index_offset + count;
     } else {
         model->enemy[index_offset].active = TRUE;  /* first one live now */
         model->spawn_start = index_offset + 1;     /* rest queued */

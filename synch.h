@@ -7,7 +7,9 @@
  */
 #ifndef SYNCH_H
 #define SYNCH_H
-#define ENEMY_ATTACK_COOLDOWN 60 
+#define ENEMY_ATTACK_COOLDOWN 60
+#define BOSS_ATTACK_COOLDOWN  90  /* ticks between boss attacks (~1.3 s at 70 Hz) */
+#define SPAWN_DELAY 70  /* ticks between staggered enemy releases */
 #include "player.h"
 #include "enemy.h"
 #include "boss.h"
@@ -52,7 +54,34 @@ void update_item_cooldown(Player *player);
 
 void update_enemy_cooldown(Enemy *enemy);
 
+/*
+ * Function purpose: Sets boss delta_x/delta_y to move toward the player,
+ * stopping on each axis once inside engage range. Sets is_attacking when
+ * both deltas are zero and attack_cooldown is clear.
+ * Input: The boss and player objects
+ * Output: Modifies boss->delta_x, delta_y, is_attacking
+ * Assumptions: Boss is active; called from update_boss_position
+ */
+void update_boss_velocity(Boss *boss, const Player *player);
+
+/*
+ * Function purpose: Decrements boss attack_cooldown each tick.
+ * Input: The boss object
+ * Output: None, decrements attack_cooldown toward zero
+ * Assumptions: Called once per tick from process_sync_events
+ */
+void update_boss_cooldown(Boss *boss);
+
 void spawn_enemy(Model *model, int stage);
+
+/*
+ * Function purpose: Releases one queued enemy every SPAWN_DELAY ticks.
+ * Call once per tick from process_sync_events.
+ * Input: The live game model
+ * Output: May activate an enemy and advance spawn_start
+ * Assumptions: spawn_start/end/timer were set by spawn_enemy
+ */
+void update_spawn_queue(Model *model);
 
 /*
  * Function purpose: Moves item[stage] to a visible screen position.

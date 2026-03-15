@@ -69,8 +69,10 @@ void process_sync_events(Model *model)
         }
     }
 
-    if (model->boss.active)
+    if (model->boss.active) {
         update_boss_position(&model->boss, &model->player);
+        update_boss_cooldown(&model->boss);
+    }
     separate_enemies(model);
 }
 
@@ -88,7 +90,6 @@ void process_cond_events(Model *model)
         player_died = enemy_hits_player(&model->enemy[i], &model->player);
         if (player_died)
         {
-            player_dies();
             model->quit = TRUE;
             return;
         }
@@ -102,7 +103,6 @@ void process_cond_events(Model *model)
         player_died = boss_hits_player(&model->boss, &model->player);
         if (player_died)
         {
-            player_dies();
             model->quit = TRUE;
             return;
         }

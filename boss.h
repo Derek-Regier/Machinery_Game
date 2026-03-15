@@ -22,6 +22,7 @@ typedef struct {
     bool is_attacking; 
     bool active;     
     unsigned int w, h;
+    int attack_cooldown; /* ticks remaining before boss can attack again */
 } Boss;
 
 /* Function purpose: Moves the boss vertically
@@ -69,5 +70,3 @@ bool boss_hitbox_overlaps(const Boss *boss, int x, int y, int width, int height)
 
 
 #endif /* BOSS_H */
-
-

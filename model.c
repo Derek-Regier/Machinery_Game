@@ -30,12 +30,13 @@ void init_model(Model *model)
     model->player.delta_y = 0;
     model->player.health = 100;
     model->player.damage = 10;
-    model->player.is_attacking  = FALSE;
-    model->player.item_cooldown  = 0;
+    model->player.is_attacking = FALSE;
+    model->player.item_cooldown = 0;
     model->player.attack_cooldown = 0;
     model->player.h = 64;
     model->player.w = 32;
     model->player.facing = 1;
+    model->player.potions = 0;
 
     /* Health bar init */
     model->healthbar.x = 4;
@@ -104,6 +105,7 @@ void init_model(Model *model)
     model->boss.active = FALSE; /* activated when stage reaches 4 */
     model->boss.w = 128;
     model->boss.h = 128;
+    model->boss.attack_cooldown = 0;
 
     /* create items
      * All four items start off-screen (x=700 is past the right edge).
@@ -120,6 +122,9 @@ void init_model(Model *model)
 
     /* Game state  */
     model->stage = 0;
+    model->spawn_start = 0;
+    model->spawn_end   = 0;
+    model->spawn_timer = 0;
     model->quit = FALSE;
 }
 void reset_movement(Model *model){

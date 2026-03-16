@@ -39,7 +39,9 @@ void render(const Model *model, UINT32 *base)
     }
     
     render_healthbar(&model->healthbar, base);
-    render_item(&model->item[0], base);
+    for (i = 0; i < NUM_ITEMS; i ++){
+        render_item (&model->item[i], base);
+    }
     render_boss(&model->boss, base);
     render_item_count(base, font, &model->player);
     render_player_slash(&model->player, base);

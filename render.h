@@ -55,6 +55,8 @@ void render_item(const Item *item, UINT32 *base);
  * Assumptions: Damange decrements, Healing increments*/
 void render_healthbar(const Healthbar *healthbar, UINT32 *base);
 
+void render_item_count(UINT32 *base, const UINT8 *font, const Player *player);
+
 void render_reset(void);
 
 #endif /* RENDER_H */

@@ -1,4 +1,5 @@
 #include "render.h"
+#include "font.h"
 
 /*
  * Copy each structure as statics for saving coordinates of player, enemy,
@@ -12,9 +13,6 @@ static Item      prev_item;
 static Boss      prev_boss;
 static Healthbar prev_healthbar;
 static bool prev_drawn = FALSE;
-
-
-
 
 /* Function purpose: Display game snapshot
  * Input: Game objects (bitmaps and models)
@@ -34,6 +32,7 @@ void render(const Model *model, UINT32 *base)
     render_healthbar (&model->healthbar, base);
     render_item      (&model->item[0], base);
     render_boss      (&model->boss, base);
+    render_item_count(base, font_table, &model->player);
     prev_drawn = TRUE;
 }
 
@@ -180,6 +179,17 @@ void render_boss(const Boss *boss, UINT32 *base)
             pbm32(base, boss->y + r, boss->x + (w * 32), &bitmap[r][w], 1);
 
     prev_boss = *boss;
+}
+
+void render_item_count(UINT32 *base, const UINT8 *font, const Player *player){
+    
+    int p = (int)player->potions + '0';
+    char s = (char)p;
+    plot_string(base, 4, 150, "Potions:", font);
+    
+    plot_character(base, 4, 250, s, font);
+    
+    p--;
 }
 
 void render_reset(void)

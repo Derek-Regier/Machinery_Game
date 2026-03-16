@@ -28,6 +28,7 @@ void render(const Model *model, UINT32 *base)
     if (model->player.health <= 0)
     {
         clear_screen(base);
+        render_death_screen(base);
         return;
     }
 
@@ -272,6 +273,17 @@ void render_enemy_slash(const Enemy *enemy, UINT32 *base){
 void render_background(UINT32 *base){
     pbm32(base, 30, 300, building_1, 32);
 
+}
+
+void render_death_screen(UINT32 *base)
+{
+    int r, w;
+    UINT16 x = (640 - DEAD_W) / 2;  /* 208 */
+    UINT16 y = (400 - DEAD_H) / 2;  /* 189 */
+
+    for (r = 0; r < DEAD_H; r++)
+        for (w = 0; w < 7; w++)
+            pbm32(base, y + r, x + (w * 32), &dead_bitmap[r][w], 1);
 }
 
 void render_reset(void){

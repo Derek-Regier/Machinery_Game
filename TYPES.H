@@ -19,6 +19,9 @@ typedef char bool;
 #define TRUE  1
 #define FALSE 0
 
+#define DEAD_W 224
+#define DEAD_H 21
+
 #define LONGS_PER_ROW 20
 
 #endif

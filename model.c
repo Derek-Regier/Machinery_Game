@@ -30,6 +30,7 @@ void init_model(Model *model)
     model->player.delta_y = 0;
     model->player.health = 100;
     model->player.damage = 10;
+    model->player.potions = 4;
     model->player.is_attacking  = FALSE;
     model->player.item_cooldown  = 0;
     model->player.attack_cooldown = 0;

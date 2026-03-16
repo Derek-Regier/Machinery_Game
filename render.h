@@ -61,6 +61,8 @@ void render_player_slash(const Player *player, UINT32 *base);
 
 void render_enemy_slash(const Enemy *enemy, UINT32 *base);
 
+void render_background(UINT32 *base);
+
 void render_reset(void);
 
 #endif /* RENDER_H */

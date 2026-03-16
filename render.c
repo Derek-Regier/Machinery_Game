@@ -36,13 +36,14 @@ void render(const Model *model, UINT32 *base)
     for (i = 0; i < MAX_ENEMIES; i++){
         render_enemy(&model->enemy[i], &prev_enemy[i], base);
     }
-
+    
     render_healthbar(&model->healthbar, base);
     render_item(&model->item[0], base);
     render_boss(&model->boss, base);
     render_item_count(base, font, &model->player);
     render_player_slash(&model->player, base);
-
+    render_background(base);    
+    
     for (i = 0; i < model->enemy_count; i++){
         if (model->enemy[i].active){
             render_enemy_slash(&model->enemy[i], base);
@@ -266,6 +267,11 @@ void render_enemy_slash(const Enemy *enemy, UINT32 *base){
     bitmap = (enemy->facing > 0) ? slash_bitmap_right : slash_bitmap_left;
 
     pbm32(base, (UINT16)slash_y, (UINT16)slash_x, bitmap, 32);
+}
+
+void render_background(UINT32 *base){
+    pbm32(base, 30, 300, building_1, 32);
+
 }
 
 void render_reset(void){

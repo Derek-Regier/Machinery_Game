@@ -55,4 +55,6 @@ extern UINT16 hp_pot_bitmap[16];
 extern UINT32 slash_bitmap_right[32];  /* 32x32 slash effect */
 
 extern UINT32 slash_bitmap_left[32];  /* 32x32 slash effect */
+
+extern UINT32 building_1[32];
 #endif /* BITMAPS_H */

@@ -32,7 +32,7 @@ void render(const Model *model, UINT32 *base)
     render_healthbar (&model->healthbar, base);
     render_item      (&model->item[0], base);
     render_boss      (&model->boss, base);
-    render_item_count(base, font_table, &model->player);
+    render_item_count(base, font, &model->player);
     prev_drawn = TRUE;
 }
 

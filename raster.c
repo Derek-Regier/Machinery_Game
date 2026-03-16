@@ -285,6 +285,45 @@ void pbm32(UINT32 *base, UINT16 row, UINT16 col,
 }
 
 /* ------------------------------------------------------------------ */
+/* plot_bitmap_128                                                       */
+/* ------------------------------------------------------------------ */
+
+void pbm128(UINT32 *base, UINT16 row, UINT16 col, UINT32 bitmap[][4], UINT16 height)
+{
+    UINT16 r;
+    UINT16 shift     = col % 32;
+    UINT16 word_col  = col / 32;
+    UINT32 screen_index;
+    UINT32 d0, d1, d2, d3;
+
+    for (r = 0; r < height; r++)
+    {
+        screen_index = (UINT32)(row + r) * LONGS_PER_ROW + word_col;
+
+        d0 = bitmap[r][0];
+        d1 = bitmap[r][1];
+        d2 = bitmap[r][2];
+        d3 = bitmap[r][3];
+
+        if (shift == 0)
+        {
+            base[screen_index]     |= d0;
+            base[screen_index + 1] |= d1;
+            base[screen_index + 2] |= d2;
+            base[screen_index + 3] |= d3;
+        }
+        else
+        {
+            base[screen_index]     |= (d0 >> shift);
+            base[screen_index + 1] |= (d0 << (32 - shift)) | (d1 >> shift);
+            base[screen_index + 2] |= (d1 << (32 - shift)) | (d2 >> shift);
+            base[screen_index + 3] |= (d2 << (32 - shift)) | (d3 >> shift);
+            base[screen_index + 4] |= (d3 << (32 - shift));
+        }
+    }
+}
+
+/* ------------------------------------------------------------------ */
 /* plot_character                                                     */
 /*                                                                    */
 /* Font table layout (TOS / 8x8 convention used here):                */

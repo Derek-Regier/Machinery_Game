@@ -57,6 +57,8 @@ void pbm16(UINT16 *base, UINT16 row, UINT16 col,
 void pbm32(UINT32 *base, UINT16 row, UINT16 col,
                     const UINT32 *bitmap, UINT16 height);
 
+void pbm128(UINT32 *base, UINT16 row, UINT16 col, 
+                    const UINT32 bitmap[][4], UINT16 height);
 /*
  * font_table: pointer to a 256-glyph 8x8 font table.
  *             Row N of char C is at font_table[C * 8 + N].

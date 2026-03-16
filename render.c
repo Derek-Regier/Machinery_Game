@@ -160,14 +160,17 @@ void render_item(const Item *item, UINT32 *base)
     128x128 requiring a loop to display full bitmap */
 void render_boss(const Boss *boss, UINT32 *base)
 {
-    int r, w;
     UINT32 (*bitmap)[4];
 
     if (!boss->active)
     {
         if (prev_drawn && prev_boss.active)
         {
-            clear_region(base, prev_boss.y, prev_boss.x, prev_boss.h, prev_boss.w);
+            clear_region(base,
+                         (UINT16)prev_boss.y,
+                         (UINT16)prev_boss.x,
+                         (UINT16)prev_boss.h,
+                         (UINT16)prev_boss.w);
             prev_boss.active = FALSE;
         }
         return;
@@ -181,13 +184,15 @@ void render_boss(const Boss *boss, UINT32 *base)
         return;
 
     if (prev_drawn && prev_boss.active)
-        clear_region(base, prev_boss.y, prev_boss.x, prev_boss.h, prev_boss.w);
+        clear_region(base,
+                     (UINT16)prev_boss.y,
+                     (UINT16)prev_boss.x,
+                     (UINT16)prev_boss.h,
+                     (UINT16)prev_boss.w);
 
     bitmap = (boss->facing < 0) ? boss_bitmap_left : boss_bitmap_right;
 
-    for (r = 0; r < 128; r++)
-        for (w = 0; w < 4; w++)
-            pbm32(base, boss->y + r, boss->x + (w * 32), &bitmap[r][w], 1);
+    pbm128(base, (UINT16)boss->y, (UINT16)boss->x, bitmap, 128);
 
     prev_boss = *boss;
 }

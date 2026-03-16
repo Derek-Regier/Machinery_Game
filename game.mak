@@ -1,8 +1,11 @@
-crashers.prg: crashers.o render.o raster.o model.o synch.o asynch.o cond.o input.o bitmaps.o player.o enemy.o boss.o item.o health.o rast_asm.o
-	cc68x -g -o crashers.prg crashers.o render.o raster.o model.o synch.o asynch.o cond.o input.o bitmaps.o player.o enemy.o boss.o item.o health.o rast_asm.o
+crashers.prg: crashers.o font.o render.o raster.o model.o synch.o asynch.o cond.o input.o bitmaps.o player.o enemy.o boss.o item.o health.o rast_asm.o
+	cc68x -g -o crashers.prg crashers.o font.o render.o raster.o model.o synch.o asynch.o cond.o input.o bitmaps.o player.o enemy.o boss.o item.o health.o rast_asm.o
 
 crashers.o: crashers.c crashers.h
 	cc68x -g -c crashers.c
+	
+font.o: font.c font.h
+	cc68x -g -c font.c
 
 render.o: render.c render.h raster.h bitmaps.h
 	cc68x -g -c render.c
@@ -45,6 +48,8 @@ health.o: health.c health.h
 
 rast_asm.o: rast_asm.s
 	gen -D -L2 rast_asm.s
+	
+
 
 clean:
 	rm *.o crashers.prg

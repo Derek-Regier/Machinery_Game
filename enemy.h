@@ -19,6 +19,8 @@ typedef struct {
     int damage;
     int facing; /*left = -1 and right = 1*/
     unsigned int w, h;
+    unsigned int anim_frame;
+    unsigned int anim_counter;  
     bool is_attacking; 
     bool active; /* TRUE during enemy attack animation window */
     int attack_cooldown;   /* ticks remaining before enemy can attack again */

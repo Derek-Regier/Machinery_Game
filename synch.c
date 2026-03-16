@@ -137,19 +137,33 @@ void update_player_position(Player *player)
  * Input: The enemy object
  * Output: None, moves the enemy object position on the screen
  * Assumptions: The enemy has an appropriate velocity */
-void update_enemy_position(Enemy *enemy, const Player *player) {
-    
+void update_enemy_position(Enemy *enemy, const Player *player)
+{
+    unsigned int prev_x = enemy->x;
+    unsigned int prev_y = enemy->y;
+
     update_enemy_velocity(enemy, player);
 
-    if (enemy->delta_x != 0) {
+    if (enemy->delta_x != 0)
         move_enemy_horizontal(enemy);
-    }
-    
-    if (enemy->delta_y != 0) {
+
+    if (enemy->delta_y != 0)
         move_enemy_vertical(enemy);
+
+    if (enemy->x != prev_x || enemy->y != prev_y)
+    {
+        enemy->anim_counter++;
+        if (enemy->anim_counter >= 4)
+        {
+            enemy->anim_frame = !enemy->anim_frame;
+            enemy->anim_counter = 0;
+        }
+    }
+    else
+    {
+        enemy->anim_frame = 0;
     }
 }
-
 
 /*
  * Sets boss delta_x and delta_y to move toward the player,

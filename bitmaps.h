@@ -36,7 +36,11 @@ extern UINT32 health_bar_bitmap[12];
 
 extern UINT32 enemy_bitmap_right[64];
 
+extern UINT32 enemy_bitmap_right_walk1[64];
+
 extern UINT32 enemy_bitmap_left[64];
+
+extern UINT32 enemy_bitmap_left_walk1[64];
 
 extern UINT32 boss_bitmap_right[128][4];
 

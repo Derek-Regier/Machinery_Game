@@ -76,6 +76,8 @@ void render_player(const Player *player, UINT32 *base)
  * Assumptions: init_model initializes coordinates of model */
 void render_enemy(const Enemy *enemy, Enemy *prev, UINT32 *base)
 {
+    UINT32 *bitmap;
+
     if (!enemy->active)
     {
         if (prev_drawn && prev->active)
@@ -86,13 +88,22 @@ void render_enemy(const Enemy *enemy, Enemy *prev, UINT32 *base)
         return;
     }
 
-    if (prev_drawn && enemy->x == prev->x && enemy->y == prev->y)
+    if (prev_drawn &&
+        enemy->x == prev->x &&
+        enemy->y == prev->y &&
+        enemy->facing == prev->facing &&
+        enemy->anim_frame == prev->anim_frame)
         return;
 
     if (prev_drawn)
         clear_region(base, prev->y, prev->x, prev->h, prev->w);
 
-    pbm32(base, enemy->y, enemy->x, (enemy->facing < 0) ? enemy_bitmap_left : enemy_bitmap_right, enemy->h);
+    if (enemy->anim_frame == 0)
+        bitmap = (enemy->facing < 0) ? enemy_bitmap_left : enemy_bitmap_right;
+    else
+        bitmap = (enemy->facing < 0) ? enemy_bitmap_left_walk1 : enemy_bitmap_right_walk1;
+
+    pbm32(base, enemy->y, enemy->x, bitmap, enemy->h);
 
     *prev = *enemy;
 }

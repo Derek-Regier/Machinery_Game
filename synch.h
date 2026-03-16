@@ -9,7 +9,6 @@
 #define SYNCH_H
 #define ENEMY_ATTACK_COOLDOWN 60
 #define BOSS_ATTACK_COOLDOWN  90  /* ticks between boss attacks (~1.3 s at 70 Hz) */
-#define SPAWN_DELAY 70  /* ticks between staggered enemy releases */
 #include "player.h"
 #include "enemy.h"
 #include "boss.h"
@@ -71,27 +70,5 @@ void update_boss_velocity(Boss *boss, const Player *player);
  * Assumptions: Called once per tick from process_sync_events
  */
 void update_boss_cooldown(Boss *boss);
-
-void spawn_enemy(Model *model, int stage);
-
-/*
- * Function purpose: Releases one queued enemy every SPAWN_DELAY ticks.
- * Call once per tick from process_sync_events.
- * Input: The live game model
- * Output: May activate an enemy and advance spawn_start
- * Assumptions: spawn_start/end/timer were set by spawn_enemy
- */
-void update_spawn_queue(Model *model);
-
-/*
- * Function purpose: Moves item[stage] to a visible screen position.
- * Called once when the matching wave clears. Stage must be 0-3.
- * Input: The model and the stage that just ended
- * Output: Updates item[stage] position in the model
- * Assumptions: stage is in range; item array has NUM_ITEMS slots
- */
-void drop_item(Model *model, int stage);
-
-/* Animation functions TODO */
 
 #endif /* SYNCH_H */

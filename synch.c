@@ -11,32 +11,9 @@
 #define ENGAGE_RANGE_X 31   /* pixels - touching player position bitmap */
 #define ENGAGE_RANGE_Y 16   /* pixels - vertical forgiveness */
 #define MIN_ENEMY_SEP 36
-#define SPAWN_DELAY 70      /* ticks between each staggered enemy release (~1 s) */
 /* Boss is 128x128; stop when visually adjacent to the 32x64 player */
 #define BOSS_ENGAGE_X 31   
 #define BOSS_ENGAGE_Y 64    /* 128 - 64: boss bottom edge meets player top edge */
-
-/*
- * Releases one queued enemy every SPAWN_DELAY ticks.
- * Called once per tick from process_sync_events.
- * Does nothing when the queue is empty (spawn_start >= spawn_end).
- *
- * Input:  model - the live game model
- * Output: may activate model->enemy[spawn_start] and advance spawn_start
- */
-void update_spawn_queue(Model *model)
-{
-    if (model->spawn_start >= model->spawn_end) return;
-
-    if (model->spawn_timer > 0) {
-        model->spawn_timer--;
-        return;
-    }
-
-    model->enemy[model->spawn_start].active = TRUE;
-    model->spawn_start++;
-    model->spawn_timer = SPAWN_DELAY;
-}
 
 void separate_enemies(Model *model) {
     int i, j, dxi, dyi, ex_i, ey_i, ex_j, ey_j;
@@ -241,106 +218,9 @@ void update_player_cooldowns(Player *player) {
     update_attack_cooldown(player);
     update_item_cooldown(player);
 }
-/*
- * Activates and initializes a wave of enemies for the given stage.
- * Stage 1 spawns 3 enemies, stage 2 spawns 4, stage 3 spawns 5.
- * Enemies are placed off the right edge of the screen.
- * Updates model->enemy_count to include the newly active enemies.
- *
- * Input:  model - the live game model
- *         stage - wave number (1, 2, or 3)
- * Output: modifies model->enemy array and enemy_count
- * Assumptions: MAX_ENEMIES is large enough to hold all waves (14+)
- */
-/*
- * Initialises the enemies for the given stage but activates only the first
- * one immediately. The remaining enemies sit inactive in the spawn queue
- * (model->spawn_start .. model->spawn_end-1); update_spawn_queue releases
- * them one per SPAWN_DELAY ticks.
- * Stage 4 (boss summon) always activates both enemies at once.
- */
-void spawn_enemy(Model *model, int stage)
-{
-    int i;
-    int count;
-    int index_offset;
-
-    if (stage == 1) {
-        count = 3;
-        index_offset = 2;
-    } else if (stage == 2) {
-        count = 4;
-        index_offset = 5;
-    } else if (stage == 3) {
-        count = 5;
-        index_offset = 9;
-    } else { /* stage 4: boss summon */
-        count = 2;
-        index_offset = 14;
-    }
-
-    for (i = index_offset; i < index_offset + count; i++)
-    {
-        model->enemy[i].active = FALSE; /* queue, don't activate yet */
-        model->enemy[i].health = 50;
-        model->enemy[i].damage = 8;
-        model->enemy[i].w = 32;
-        model->enemy[i].h = 64;
-        model->enemy[i].delta_x = 0;
-        model->enemy[i].delta_y = 0;
-        model->enemy[i].is_attacking = FALSE;
-        model->enemy[i].attack_cooldown = 0;
-        model->enemy[i].y_offset = (rand() % 65) - 32;
-
-        if (stage == 4) {
-            model->enemy[i].x = (i == index_offset) ? 0 : 608;
-            model->enemy[i].y = 200;
-        } else {
-            model->enemy[i].x = MAX_X + (rand() % 33) - 32;
-            model->enemy[i].y = 168 + ((i - index_offset) * 40);
-        }
-    }
-
-    model->enemy_count = index_offset + count;
-
-    /* Stage 4 activates both summons immediately; others stagger */
-    if (stage == 4) {
-        model->enemy[index_offset].active     = TRUE;
-        model->enemy[index_offset + 1].active = TRUE;
-        model->spawn_start = index_offset + count; /* queue empty */
-        model->spawn_end = index_offset + count;
-    } else {
-        model->enemy[index_offset].active = TRUE;  /* first one live now */
-        model->spawn_start = index_offset + 1;     /* rest queued */
-        model->spawn_end = index_offset + count;
-        model->spawn_timer = SPAWN_DELAY;
-    }
-}
 
 void update_enemy_cooldown(Enemy *enemy)
 {
     if (enemy->attack_cooldown > 0)
         enemy->attack_cooldown--;
-}
-
-/*
- * Places item[stage] at centre-screen so the player can collect it.
- * Called once per wave when next_level() returns TRUE.
- * All four items begin off-screen in init_model; this makes one visible.
- *
- * Input:  model - the live game model
- *         stage - the wave that just cleared (0-3)
- * Output: moves item[stage] to a visible screen position
- * Assumptions: stage is in range 0-3; item array has NUM_ITEMS slots
- */
-void drop_item(Model *model, int stage)
-{
-    if (stage < 0 || stage >= NUM_ITEMS) return;
-
-    model->item[stage].x = 304; /* roughly centre of 640-wide screen */
-    model->item[stage].y = 200;
-    model->item[stage].w = 16;
-    model->item[stage].h = 16;
-    model->item[stage].value = 30;
-    model->item[stage].grabbed = FALSE; /* now live and collectable */
 }

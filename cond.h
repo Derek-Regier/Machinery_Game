@@ -7,7 +7,7 @@
 
 #ifndef COND_H
 #define COND_H
-
+#define SPAWN_DELAY 70  /* ticks between staggered enemy releases */
 #include "asynch.h"
 #include "types.h"
 #include "model.h"
@@ -61,6 +61,13 @@ void player_hits_boss(Player *player, Boss *boss);
  * Output: Returns TRUE if the player died from this hit.
  */
 bool enemy_hits_player(Enemy *enemy, Player *player);
+
+/*
+ * Function Purpose: Checks if the boss' hitbox overlaps the player during its
+ * attack window. Applies damage and updates HUD if hit.
+ * Input: The boss and player objects
+ * Output: Returns TRUE if the player died from this hit.
+ */
 bool boss_hits_player(Boss *boss, Player *player);
 
 bool next_level(const Model *model, int stage);
@@ -82,4 +89,23 @@ void grab_item(Player *player, Item *item);
  */
 bool level_end(const Model *model);
 
+/*
+ * Function purpose: Moves item[stage] to a visible screen position.
+ * Called once when the matching wave clears. Stage must be 0-3.
+ * Input: The model and the stage that just ended
+ * Output: Updates item[stage] position in the model
+ * Assumptions: stage is in range; item array has NUM_ITEMS slots
+ */
+void drop_item(Model *model, int stage);
+
+void spawn_enemy(Model *model, int stage);
+
+/*
+ * Function purpose: Releases one queued enemy every SPAWN_DELAY ticks.
+ * Call once per tick from process_sync_events.
+ * Input: The live game model
+ * Output: May activate an enemy and advance spawn_start
+ * Assumptions: spawn_start/end/timer were set by spawn_enemy
+ */
+void update_spawn_queue(Model *model);
 #endif /* COND_H */

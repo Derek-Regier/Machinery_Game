@@ -17,6 +17,7 @@ typedef struct {
     int delta_y;
     int health;
     int damage;
+    int facing; /*left = -1 and right = 1*/
     unsigned int w, h;
     bool is_attacking; 
     bool active; /* TRUE during enemy attack animation window */

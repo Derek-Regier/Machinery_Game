@@ -45,19 +45,26 @@ void render(const Model *model, UINT32 *base)
  * Assumptions: init_model initializes coordinates of model */
 void render_player(const Player *player, UINT32 *base)
 {
-    if (prev_drawn && 
-        player->x == prev_player.x && 
+    UINT32 *bitmap;
+
+    if (prev_drawn &&
+        player->x == prev_player.x &&
         player->y == prev_player.y &&
-        player->facing == prev_player.facing)
+        player->facing == prev_player.facing &&
+        player->anim_frame == prev_player.anim_frame)
         return;
 
     if (prev_drawn)
         clear_region(base, prev_player.y, prev_player.x, prev_player.h, prev_player.w);
 
-    if (player->facing < 0)
-        pbm32(base, player->y, player->x, player_bitmap_left, player->h);
+    if (player->anim_frame == 0)
+        bitmap = (player->facing < 0) ? player_bitmap_left : player_bitmap_right;
     else
-        pbm32(base, player->y, player->x, player_bitmap_right, player->h);
+        bitmap = (player->facing < 0) ? player_bitmap_left_walk1 : player_bitmap_right_walk1;
+
+    
+
+    pbm32(base, player->y, player->x, bitmap, player->h);
 
     prev_player = *player;
 }
@@ -70,19 +77,25 @@ void render_player(const Player *player, UINT32 *base)
  * Assumptions: init_model initializes coordinates of model */
 void render_enemy(const Enemy *enemy, Enemy *prev, UINT32 *base)
 {
-    if (enemy->active){
-        if (prev_drawn &&
-            enemy->x == prev->x &&
-            enemy->y == prev->y)
-            return;
-        
-        if (prev_drawn)
-            clear_region(base, prev->y, prev->x,prev->h, prev->w);
-        
-        pbm32(base, enemy->y, enemy->x, enemy_bitmap, enemy->h);
-        
-        *prev = *enemy;
+    if (!enemy->active)
+    {
+        if (prev_drawn && prev->active)
+        {
+            clear_region(base, prev->y, prev->x, prev->h, prev->w);
+            prev->active = FALSE;
+        }
+        return;
     }
+
+    if (prev_drawn && enemy->x == prev->x && enemy->y == prev->y)
+        return;
+
+    if (prev_drawn)
+        clear_region(base, prev->y, prev->x, prev->h, prev->w);
+
+    pbm32(base, enemy->y, enemy->x, (enemy->facing < 0) ? enemy_bitmap_left : enemy_bitmap_right, enemy->h);
+
+    *prev = *enemy;
 }
 
 /* Function purpose: Displays rectangle serving as a healthbar using player
@@ -138,29 +151,34 @@ void render_item(const Item *item, UINT32 *base)
 void render_boss(const Boss *boss, UINT32 *base)
 {
     int r, w;
+    UINT32 (*bitmap)[4];
 
     if (!boss->active)
     {
         if (prev_drawn && prev_boss.active)
         {
-            clear_region(base, prev_boss.y, prev_boss.x,prev_boss.h, prev_boss.w);
+            clear_region(base, prev_boss.y, prev_boss.x, prev_boss.h, prev_boss.w);
             prev_boss.active = FALSE;
         }
         return;
     }
 
-    if (prev_drawn && boss->x == prev_boss.x && boss->y == prev_boss.y && prev_boss.active){
-      return;
-    }
+    if (prev_drawn &&
+        boss->x == prev_boss.x &&
+        boss->y == prev_boss.y &&
+        boss->facing == prev_boss.facing &&
+        prev_boss.active)
+        return;
 
-    if (prev_drawn && prev_boss.active){
-        clear_region(base, prev_boss.y, prev_boss.x, prev_boss.h,prev_boss.w);
-    }
-    for (r = 0; r < 128; r++){
-        for (w = 0; w < 4; w++){
-            pbm32(base, boss->y + r, boss->x + (w * 32), &boss_bitmap[r][w], 1);
-        }
-    }
+    if (prev_drawn && prev_boss.active)
+        clear_region(base, prev_boss.y, prev_boss.x, prev_boss.h, prev_boss.w);
+
+    bitmap = (boss->facing < 0) ? boss_bitmap_left : boss_bitmap_right;
+
+    for (r = 0; r < 128; r++)
+        for (w = 0; w < 4; w++)
+            pbm32(base, boss->y + r, boss->x + (w * 32), &bitmap[r][w], 1);
+
     prev_boss = *boss;
 }
 

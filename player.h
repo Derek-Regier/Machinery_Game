@@ -19,6 +19,8 @@ typedef struct {
     int damage;
     int facing; /*-1 = facing left and 1 = facing right*/
     bool is_attacking;
+    unsigned int anim_frame;
+    unsigned int anim_counter;
     unsigned int item_cooldown;
     unsigned int attack_cooldown;
     unsigned int h,w;

@@ -17,6 +17,7 @@ typedef struct {
     int delta_y;
     int health;
     int damage;
+    int facing; /*left = -1 and right = 1*/
     bool summoned;
     int max_health; /* set once at init; treat as read-only afterward */
     bool is_attacking; 

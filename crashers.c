@@ -9,6 +9,17 @@
 #define KEY_USE_ITEM 'e'
 #define KEY_QUIT '\x1B' /* ESC */
 
+typedef struct {
+    Player player;
+    Enemy  enemy[MAX_ENEMIES];
+    Boss   boss;
+    Item   item[NUM_ITEMS];
+    Healthbar healthbar;
+} Snapshot;
+
+static Snapshot snap[2];  /* one per buffer */
+static int snap_idx = 0;  /* which snapshot pairs with current back buffer */
+
 static UINT8 screenBuffer[32255];
 static volatile long *timer = (volatile long *)0x462L;
 
@@ -130,6 +141,7 @@ void process_cond_events(Model *model)
 
 int main(void)
 {
+    
     void *orig_phys = Physbase();
     void *back_buf  = (void *)(((UINT32)screenBuffer + 255L) & ~255L);
     void *front_buf = orig_phys;
@@ -142,13 +154,19 @@ int main(void)
     UINT32 time_elapsed;
     char key;
 
-    init_model(&model);
+   
+init_model(&model);
 
-    /* render first frame into back buffer */
+    /* initialise both buffers */
     clear_screen(back_buf);
+    render_reset();
     render(&model, back_buf);
 
-    /* flip to back buffer, wait for VBL inside Super */
+    clear_screen(front_buf);
+    render_reset();
+    render(&model, front_buf);
+
+    /* flip to back buffer */
     old_ssp = Super(0);
     Setscreen(-1L, (long)back_buf, -1L);
     vbl_now = *timer;
@@ -156,15 +174,15 @@ int main(void)
         ;
     Super(old_ssp);
 
-    /* swap so front is now displayed back_buf, back is orig_phys */
-    temp = front_buf;
+    temp      = front_buf;
     front_buf = back_buf;
-    back_buf = temp;
+    back_buf  = temp;
 
     time_then = get_time();
 
     while (!model.quit)
     {
+        
         if (has_input())
         {
             key = get_input();
@@ -174,17 +192,15 @@ int main(void)
         time_now = get_time();
         time_elapsed = time_now - time_then;
 
-        if (time_elapsed > 0)
+       if (time_elapsed > 0)
         {
             process_sync_events(&model);
             process_cond_events(&model);
 
-            /* clear and render into back buffer (not being displayed) */
             clear_screen(back_buf);
             render_reset();
-            render(&model, back_buf);   
+            render(&model, back_buf);
 
-            /* flip back buffer to screen, wait for VBL */
             old_ssp = Super(0);
             Setscreen(-1L, (long)back_buf, -1L);
             vbl_now = *timer;
@@ -192,7 +208,6 @@ int main(void)
                 ;
             Super(old_ssp);
 
-            /* swap buffers */
             temp      = front_buf;
             front_buf = back_buf;
             back_buf  = temp;

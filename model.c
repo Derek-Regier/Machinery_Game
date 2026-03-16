@@ -36,7 +36,10 @@ void init_model(Model *model)
     model->player.h = 64;
     model->player.w = 32;
     model->player.facing = 1;
+    model->player.anim_frame = 0;
+    model->player.anim_counter = 0;
     model->player.potions = 0;
+ 
 
     /* Health bar init */
     model->healthbar.x = 4;
@@ -60,6 +63,7 @@ void init_model(Model *model)
     model->enemy[0].active = TRUE;
     model->enemy[0].attack_cooldown = 0;
     model->enemy[0].y_offset = 0;
+    model->enemy[0].facing = -1;    
 
     model->enemy[1].x = 500;
     model->enemy[1].y = 200;
@@ -73,6 +77,7 @@ void init_model(Model *model)
     model->enemy[1].active = TRUE;
     model->enemy[1].attack_cooldown = 0;
     model->enemy[1].y_offset = 0;
+    model->enemy[1].facing = -1;
 
     for (i = 2; i < MAX_ENEMIES; i++)
     {
@@ -88,6 +93,7 @@ void init_model(Model *model)
         model->enemy[i].active = FALSE;
         model->enemy[i].attack_cooldown = 0;
         model->enemy[i].y_offset = 0;
+        model->enemy[i].facing = -1;
     }
 
     model->enemy_count = 2; /* only the two tutorial enemies are live */
@@ -106,6 +112,7 @@ void init_model(Model *model)
     model->boss.w = 128;
     model->boss.h = 128;
     model->boss.attack_cooldown = 0;
+    model->boss.facing = -1;
 
     /* create items
      * All four items start off-screen (x=700 is past the right edge).

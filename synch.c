@@ -57,11 +57,13 @@ void update_enemy_velocity(Enemy *enemy, const Player *player)
     int dy = diff((int)player->y + enemy->y_offset, (int)enemy->y);
 
     /* X axis - close enough? stop horizontal movement */
-    if (dx > ENGAGE_RANGE_X)
+    if (dx > ENGAGE_RANGE_X){
         enemy->delta_x = 1;
-    else if (dx < -ENGAGE_RANGE_X)
+        enemy->facing = 1;
+    }else if (dx < -ENGAGE_RANGE_X){
         enemy->delta_x = -1;
-    else
+        enemy->facing = -1;
+    }else
         enemy->delta_x = 0;
 
     /* Y axis - close enough? stop vertical movement */
@@ -83,16 +85,20 @@ void update_enemy_velocity(Enemy *enemy, const Player *player)
  * Assumptions: The player has an appropriate velocity */
 void update_player_position(Player *player)
 {
+    unsigned int prev_x = player->x;
+    unsigned int prev_y = player->y;
+
     /* Horizontal: guard underflow before moving, clamp max after */
     if (player->delta_x != 0) {
         if (player->delta_x < 0 &&
             player->x < (unsigned int)(-player->delta_x))
         {
-            player->x = 0;  /* would underflow — clamp to left edge */
+            player->x = 0;
         } else {
             move_player_horizontal(player);
             if (player->x > MAX_X) player->x = MAX_X;
         }
+        player->facing = (player->delta_x < 0) ? -1 : 1;
     }
 
     /* Vertical: same pattern */
@@ -100,15 +106,31 @@ void update_player_position(Player *player)
         if (player->delta_y < 0 &&
             player->y < (unsigned int)(-player->delta_y))
         {
-            player->y = 0;  /* would underflow — clamp to top edge */
+            player->y = 0;
         } else {
             move_player_vertical(player);
             if (player->y > MAX_Y) player->y = MAX_Y;
         }
     }
-    player->delta_x=0;
-    player->delta_y=0;
+    /* Animation — flip frame every 4 pixels of movement */
+    if (player->x != prev_x || player->y != prev_y)
+    {
+        player->anim_counter++;
+        if (player->anim_counter >= 4)
+        {
+            player->anim_frame = !player->anim_frame;
+            player->anim_counter = 0;
+        }
+    }
+    else
+        player->anim_frame = 0;
+    /* note: do NOT reset anim_counter to 0 in the else branch */
+
+    player->delta_x = 0;
+    player->delta_y = 0;
 }
+
+
 
 
 /* Function purpose: Moves the enemy according to the velocity
@@ -143,10 +165,13 @@ void update_boss_velocity(Boss *boss, const Player *player)
     int dx = diff((int)player->x, (int)boss->x);
     int dy = diff((int)player->y, (int)boss->y);
 
-    if (dx > BOSS_ENGAGE_X)
+    if (dx > BOSS_ENGAGE_X){
         boss->delta_x = 1;
-    else if (dx < -BOSS_ENGAGE_X)
+        boss->facing = 1;
+    }else if (dx < -BOSS_ENGAGE_X){
         boss->delta_x = -1;
+        boss->facing = -1;
+    }
     else
         boss->delta_x = 0;
 

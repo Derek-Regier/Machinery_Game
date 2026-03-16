@@ -44,8 +44,15 @@ extern UINT32 enemy_bitmap_left_walk1[64];
 
 extern UINT32 boss_bitmap_right[128][4];
 
+extern UINT32 boss_bitmap_right_walk1[128][4];
+
 extern UINT32 boss_bitmap_left[128][4];
+
+extern UINT32 boss_bitmap_left_walk1[128][4];
 
 extern UINT16 hp_pot_bitmap[16];
 
+extern UINT32 slash_bitmap_right[32];  /* 32x32 slash effect */
+
+extern UINT32 slash_bitmap_left[32];  /* 32x32 slash effect */
 #endif /* BITMAPS_H */

@@ -23,6 +23,8 @@ typedef struct {
     bool is_attacking; 
     bool active;     
     unsigned int w, h;
+    unsigned int anim_frame;
+    unsigned int anim_counter;
     int attack_cooldown; /* ticks remaining before boss can attack again */
 } Boss;
 

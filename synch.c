@@ -77,6 +77,8 @@ void update_enemy_velocity(Enemy *enemy, const Player *player)
         enemy->is_attacking = TRUE;
     else
         enemy->is_attacking = FALSE;
+
+        
 }
    
 /* Function purpose: Moves the player according to the velocity
@@ -206,16 +208,30 @@ void update_boss_velocity(Boss *boss, const Player *player)
  * Input: The boss object
  * Output: None, moves the boss object position on the screen
  * Assumptions: The boss has an appropriate velocity */
-void update_boss_position(Boss *boss, const Player *player) {
+void update_boss_position(Boss *boss, const Player *player)
+{
+    unsigned int prev_x = boss->x;
+    unsigned int prev_y = boss->y;
+
     update_boss_velocity(boss, player);
 
-    if (boss->delta_x != 0) {
+    if (boss->delta_x != 0)
         move_boss_horizontal(boss);
-    }
-    
-    if (boss->delta_y != 0) {
+
+    if (boss->delta_y != 0)
         move_boss_vertical(boss);
+
+    if (boss->x != prev_x || boss->y != prev_y)
+    {
+        boss->anim_counter++;
+        if (boss->anim_counter >= 6)
+        {
+            boss->anim_frame = !boss->anim_frame;
+            boss->anim_counter = 0;
+        }
     }
+    else
+        boss->anim_frame = 0;
 }
 
 void update_boss_cooldown(Boss *boss)

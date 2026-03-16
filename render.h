@@ -57,6 +57,10 @@ void render_healthbar(const Healthbar *healthbar, UINT32 *base);
 
 void render_item_count(UINT32 *base, const UINT8 *font, const Player *player);
 
+void render_player_slash(const Player *player, UINT32 *base);
+
+void render_enemy_slash(const Enemy *enemy, UINT32 *base);
+
 void render_reset(void);
 
 #endif /* RENDER_H */

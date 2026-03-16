@@ -28,7 +28,7 @@ void init_model(Model *model)
     model->player.y = 200;
     model->player.delta_x = 0;
     model->player.delta_y = 0;
-    model->player.health = 1000;
+    model->player.health = 100;
     model->player.damage = 10;
     model->player.potions = 4;
     model->player.is_attacking  = FALSE;
@@ -115,11 +115,13 @@ void init_model(Model *model)
     model->boss.damage = 15;
     model->boss.summoned = FALSE;
     model->boss.is_attacking = FALSE;
-    model->boss.active = TRUE; /* activated when stage reaches 4 */
+    model->boss.active = FALSE; /* activated when stage reaches 4 */
     model->boss.w = 128;
     model->boss.h = 128;
     model->boss.attack_cooldown = 0;
     model->boss.facing = -1;
+    model->boss.anim_frame = 0;
+    model->boss.anim_counter = 0;
 
     /* create items
      * All four items start off-screen (x=700 is past the right edge).

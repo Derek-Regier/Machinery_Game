@@ -6,8 +6,10 @@
  */
 #include <stdlib.h>
 #include "synch.h"
-#define MAX_X 608 /* 640 pixels - 32 pixels for player */ 
-#define MAX_Y 368 /*400 - 32*/
+#define MAX_X 608       /* 640 - 32 (player/enemy width) */
+#define MAX_Y 336       /* 400 - 64 (player/enemy height); bottom clamp so entity stays on screen */
+#define MAX_Y_BOSS 272  /* 400 - 128 (boss height) */
+#define MIN_Y_WALK 189  /* top of walkable lane: old 264 - 75 extra pixels = 189 */
 #define ENGAGE_RANGE_X 31   /* pixels - touching player position bitmap */
 #define ENGAGE_RANGE_Y 16   /* pixels - vertical forgiveness */
 #define MIN_ENEMY_SEP 36
@@ -28,14 +30,24 @@ void separate_enemies(Model *model) {
             dxi = ex_j - ex_i; if (dxi < 0) dxi = -dxi;
             dyi = ey_j - ey_i; if (dyi < 0) dyi = -dyi;
             if (dxi < MIN_ENEMY_SEP && dyi < MIN_ENEMY_SEP) {
+                /* Separate j from i along X */
                 if (ex_j >= ex_i && ex_j < MAX_X) model->enemy[j].x++;
                 else if (ex_j > 0) model->enemy[j].x--;
-                if (ey_j >= ey_i && ey_j < MAX_Y) model->enemy[j].y++;
-                else if (ey_j > 0) model->enemy[j].y--;
+
+                /* Spread both i and j along Y so enemies route around each other.
+                 * Pushing only j caused column stacking; spreading both unblocks the lane. */
+                if (ey_j >= ey_i) {
+                    if (ey_j < MAX_Y)      model->enemy[j].y++;
+                    if (ey_i > MIN_Y_WALK) model->enemy[i].y--;
+                } else {
+                    if (ey_j > MIN_Y_WALK) model->enemy[j].y--;
+                    if (ey_i < MAX_Y)      model->enemy[i].y++;
+                }
             }
         }
     }
 }
+
 /* used for signed difference for enemy movement logic*/
 static int diff(int a, int b)
 {
@@ -103,17 +115,20 @@ void update_player_position(Player *player)
         player->facing = (player->delta_x < 0) ? -1 : 1;
     }
 
-    /* Vertical: same pattern */
+    /* Vertical: clamp to walkable lane (MIN_Y_WALK..MAX_Y).
+     * Guard unsigned underflow before moving, clamp both bounds after. */
     if (player->delta_y != 0) {
         if (player->delta_y < 0 &&
             player->y < (unsigned int)(-player->delta_y))
         {
-            player->y = 0;
+            player->y = MIN_Y_WALK;
         } else {
             move_player_vertical(player);
-            if (player->y > MAX_Y) player->y = MAX_Y;
+            if (player->y > MAX_Y)      player->y = MAX_Y;
+            if (player->y < MIN_Y_WALK) player->y = MIN_Y_WALK;
         }
     }
+
     /* Animation — flip frame every 4 pixels of movement */
     if (player->x != prev_x || player->y != prev_y)
     {
@@ -126,15 +141,10 @@ void update_player_position(Player *player)
     }
     else
         player->anim_frame = 0;
-    /* note: do NOT reset anim_counter to 0 in the else branch */
 
     player->delta_x = 0;
     player->delta_y = 0;
 }
-
-
-
-
 /* Function purpose: Moves the enemy according to the velocity
  * Input: The enemy object
  * Output: None, moves the enemy object position on the screen
@@ -152,6 +162,9 @@ void update_enemy_position(Enemy *enemy, const Player *player)
     if (enemy->delta_y != 0)
         move_enemy_vertical(enemy);
 
+    /* Keep enemy within the walkable lane */
+    if (enemy->y > MAX_Y)      enemy->y = MAX_Y;
+    if (enemy->y < MIN_Y_WALK) enemy->y = MIN_Y_WALK;
     if (enemy->x != prev_x || enemy->y != prev_y)
     {
         enemy->anim_counter++;
@@ -220,6 +233,9 @@ void update_boss_position(Boss *boss, const Player *player)
 
     if (boss->delta_y != 0)
         move_boss_vertical(boss);
+
+    /* Boss is 128px tall; clamp to MAX_Y_BOSS so bottom edge stays on screen */
+    if (boss->y > MAX_Y_BOSS) boss->y = MAX_Y_BOSS;
 
     if (boss->x != prev_x || boss->y != prev_y)
     {

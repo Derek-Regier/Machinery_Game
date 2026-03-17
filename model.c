@@ -25,7 +25,7 @@ void init_model(Model *model)
 
     /* Player init */
     model->player.x = 64;
-    model->player.y = 200;
+    model->player.y = 316; /* center of walkable lane (264-368) */
     model->player.delta_x = 0;
     model->player.delta_y = 0;
     model->player.health = 100;
@@ -52,8 +52,8 @@ void init_model(Model *model)
     /* Enemies init
      * Indices 0-1 are the two start enemies; active from the start.
      * All remaining slots start inactive; spawn_enemy activates them. */
-    model->enemy[0].x = 350;
-    model->enemy[0].y = 200;
+    model->enemy[0].x = 530;
+    model->enemy[0].y = 296; /* upper part of walkable lane */
     model->enemy[0].delta_x = 0;
     model->enemy[0].delta_y = 0;
     model->enemy[0].health = 50;
@@ -63,13 +63,13 @@ void init_model(Model *model)
     model->enemy[0].is_attacking = FALSE;
     model->enemy[0].active = TRUE;
     model->enemy[0].attack_cooldown = 0;
-    model->enemy[0].y_offset = 0;
+    model->enemy[0].y_offset = -20; /* targets 20px above player — breaks column stacking */
     model->enemy[0].facing = -1; 
     model->enemy[0].anim_frame = 0;
     model->enemy[0].anim_counter = 0;      
 
-    model->enemy[1].x = 500;
-    model->enemy[1].y = 200;
+    model->enemy[1].x = 560;
+    model->enemy[1].y = 336; /* lower part of walkable lane */
     model->enemy[1].delta_x = 0;
     model->enemy[1].delta_y = 0;
     model->enemy[1].health = 50;
@@ -79,7 +79,7 @@ void init_model(Model *model)
     model->enemy[1].is_attacking = FALSE;
     model->enemy[1].active = TRUE;
     model->enemy[1].attack_cooldown = 0;
-    model->enemy[1].y_offset = 0;
+    model->enemy[1].y_offset = 20; /* targets 20px below player — ensures different path */
     model->enemy[1].facing = -1;
     model->enemy[1].anim_frame = 0;
     model->enemy[1].anim_counter = 0;
@@ -107,7 +107,7 @@ void init_model(Model *model)
 
     /* Boss init */
     model->boss.x = 500;
-    model->boss.y = 150;
+    model->boss.y = 240; /* boss is 128px tall; y=240 puts bottom at 368 = MAX_Y */
     model->boss.delta_x = 0;
     model->boss.delta_y = 0;
     model->boss.health = 200;
@@ -129,7 +129,7 @@ void init_model(Model *model)
     for (i = 0; i < NUM_ITEMS; i++)
     {
         model->item[i].x = 700;
-        model->item[i].y = 200;
+        model->item[i].y = 316; /* off-screen but within lane height */
         model->item[i].h = 16;
         model->item[i].w = 16;
         model->item[i].value = 30;

@@ -9,8 +9,9 @@
 #include "cond.h"
 #include "synch.h"
 #include <stdlib.h>
-#define MAX_X 608 /* 640 pixels - 32 pixels for player */ 
-#define MAX_Y 368 /*400 - 32*/
+#define MAX_X 608       /* 640 - 32 (player/enemy width) */
+#define MAX_Y 336       /* 400 - 64 (player/enemy height) */
+#define MIN_Y_WALK 189  /* top of walkable lane */
 
 /*
  * Checks if the player overlaps an item and collects it into inventory.
@@ -215,7 +216,7 @@ void drop_item(Model *model, int stage)
     if (stage < 0 || stage >= NUM_ITEMS) return;
 
     model->item[stage].x = 304; /* roughly centre of 640-wide screen */
-    model->item[stage].y = 200;
+    model->item[stage].y = 263; /* centre of walkable lane (189-336) */
     model->item[stage].w = 16;
     model->item[stage].h = 16;
     model->item[stage].value = 30;
@@ -295,11 +296,19 @@ void spawn_enemy(Model *model, int stage)
         model->enemy[i].y_offset = (rand() % 65) - 32;
 
         if (stage == 4) {
+            /* Boss summon: one from each side, centred in lane */
             model->enemy[i].x = (i == index_offset) ? 0 : 608;
-            model->enemy[i].y = 200;
+            model->enemy[i].y = 263;
         } else {
+            /* Regular wave: spawn from right edge, spread Y across walkable
+             * lane (189-336).  Base 209 + slot*32 gives:
+             *   slot 0 -> 209, 1 -> 241, 2 -> 273, 3 -> 305, 4 -> 337 (clamped)
+             * All within or at the lane boundary. */
+            int slot    = i - index_offset;
+            int spawn_y = 209 + slot * 32;
+            if (spawn_y > MAX_Y) spawn_y = MAX_Y;
             model->enemy[i].x = MAX_X + (rand() % 33) - 32;
-            model->enemy[i].y = 168 + ((i - index_offset) * 40);
+            model->enemy[i].y = spawn_y;
         }
     }
 

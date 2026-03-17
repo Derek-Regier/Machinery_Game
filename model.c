@@ -151,6 +151,8 @@ void init_model(Model *model)
     model->spawn_timer = 0;
     model->quit = FALSE;
 }
+
+/* Unused function, intended to work with continous input/key releases */
 void reset_movement(Model *model){
     int i;
     model->player.delta_x = 0;

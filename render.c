@@ -314,15 +314,66 @@ void render_dash_trail(const Player *player, UINT32 *base){
  * Assumptions: none */
 void render_background(UINT32 *base){
     int i;
+    /*
     pbm32(base, 180, 300, building_1, 32);
     pbm32(base, 180, 320, castle, 32);
     pbm32(base, 180, 280, mountain_1, 32);
     pbm32(base, 180, 260, building_2, 32);
     pbm32(base, 180, 220, building_3, 32);
     pbm32(base, 180, 240, mountain_1, 32);
-    plot_horizontal_line(base, 220, 0, 639);
+   
   
+    pbm32(base, 180, 300, tree_1, 32);
+    pbm32(base, 180, 332, tree_1, 32);
+    pbm32(base, 180, 340, tree_1, 32);
+    pbm32(base, 180, 380, tree_1, 32);
+    pbm32(base, 180, 80, tree_1, 32);
 
+    pbm32(base, 180, 100, building_1, 32);
+    pbm32(base, 180, 120, castle, 32);
+    pbm32(base, 180, 140, mountain_1, 32);
+    pbm32(base, 180, 160, building_2, 32);
+    pbm32(base, 180, 180, building_3, 32);
+    pbm32(base, 180, 200, mountain_1, 32);
+    */
+
+    /*horizontal line across screen*/
+    plot_horizontal_line(base, 220, 0, 640);
+    
+    /*top most castle tips*/
+    plot_horizontal_line(base, 70, 100, 50);
+    plot_horizontal_line(base, 70, 200, 50);
+    plot_horizontal_line(base, 70, 300, 50);
+    plot_horizontal_line(base, 70, 400, 50);
+    plot_horizontal_line(base, 70, 500, 50);
+
+    /*bottom most castle tips*/
+    plot_horizontal_line(base, 60, 50, 50);
+    plot_horizontal_line(base, 60, 150, 50);
+    plot_horizontal_line(base, 60, 250, 50);
+    plot_horizontal_line(base, 60, 350, 50);
+    plot_horizontal_line(base, 60, 450, 50);
+    plot_horizontal_line(base, 60, 550, 50);
+    
+    /*door*/
+    plot_vertical_line(base, 120, 270, 100);
+    plot_horizontal_line(base, 120, 270, 110);
+    plot_vertical_line(base, 120, 380, 100);
+
+    /*castle vertical lines*/
+    plot_vertical_line(base, 60, 50, 160);
+    plot_vertical_line(base, 60, 100, 30);
+    plot_vertical_line(base, 60, 150, 30);
+    plot_vertical_line(base, 60, 200, 30);
+    plot_vertical_line(base, 60, 250, 30);
+    plot_vertical_line(base, 60, 300, 30);
+    plot_vertical_line(base, 60, 350, 30);
+    plot_vertical_line(base, 60, 400, 30);
+    plot_vertical_line(base, 60, 450, 30);
+    plot_vertical_line(base, 60, 500, 30);
+    plot_vertical_line(base, 60, 550, 30);
+    plot_vertical_line(base, 60, 600, 160);
+    
 
 }
 /* Function purpose: On player death show renders "YOU ARE DEAD"

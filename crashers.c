@@ -24,6 +24,11 @@ static int snap_idx = 0;  /* which snapshot pairs with current back buffer */
 static UINT8 screenBuffer[32255];
 static volatile long *timer = (volatile long *)0x462L;
 
+/*
+ * Reads and returns the current 70Hz TOS timer value at 0x462.
+ * Enters privileged mode only long enough to read the longword,
+ * then immediately exits. Returns the tick count as UINT32.
+ */
 UINT32 get_time(void)
 {
     UINT32 currTime;
@@ -36,8 +41,18 @@ UINT32 get_time(void)
     return currTime;
 }
 
+/*
+ * Dispatches a single key press to the appropriate async handler.
+ * Updates request/velocity fields on the model only - does NOT
+ * move anything. Movement happens on the clock tick in synch.
+ *
+ * Input:  model - pointer to the live game model
+ *         key   - character read from get_input()
+ * Output: sets model->quit = TRUE if ESC is pressed
+ */
 void process_async_event(Model *model, char key)
 {
+    /* Choose which key to pass */
     switch (key)
     {
         case KEY_MOVE_UP:
@@ -66,14 +81,24 @@ void process_async_event(Model *model, char key)
     }
 }
 
+
+/*
+ * Function Purpose: Process all synch events
+ * Updates positions, calculates and updates enemy velocity, etc.
+ *
+ * Input:  model - pointer to the live game model
+ * Output: None, updates model fields
+ * Assumptions: Time has been handled correctly to call this function
+ */
 void process_sync_events(Model *model)
 {
     int i;
-
+    /* Upate cooldowns and queue + player position */
     update_player_cooldowns(&model->player);
     update_player_position(&model->player);
     update_spawn_queue(model);
 
+    /* Update all enemy positions and cooldowns */
     for (i = 0; i < MAX_ENEMIES; i++)
     {
         if (model->enemy[i].active) {
@@ -81,7 +106,7 @@ void process_sync_events(Model *model)
             update_enemy_cooldown(&model->enemy[i]);
         }
     }
-
+    /* Update boss events */
     if (model->boss.active) {
         update_boss_position(&model->boss, &model->player);
         update_boss_cooldown(&model->boss);
@@ -89,25 +114,33 @@ void process_sync_events(Model *model)
     separate_enemies(model);
 }
 
+
+/* Function purpose: Processes all conditional (state-based) game events each tick.
+ * Checks player-enemy and player-boss collisions, handles wave progression,
+ * item drops and pickups, and evaluates win/lose conditions.
+ * Input: The game model
+ * Output: None, updates model state directly
+ * Assumptions: process_sync_events has already run this tick so positions
+ *              and cooldowns are current */
 void process_cond_events(Model *model)
 {
     int  i;
     bool player_died;
-
+    /* attack enemies that are active */
     for (i = 0; i < MAX_ENEMIES; i++)
     {
         if (!model->enemy[i].active) continue;
 
         player_hits_enemy(&model->player, &model->enemy[i]);
-
+        /* hit player, check if dead */
         player_died = enemy_hits_player(&model->enemy[i], &model->player);
-        if (player_died)
+        if (player_died) /* if dead, quit */
         {
             model->quit = TRUE;
             return;
         }
     }
-
+    /* repeat enemy logic for boss */
     if (model->boss.active)
     {
         player_hits_boss(&model->player, &model->boss);
@@ -130,7 +163,7 @@ void process_cond_events(Model *model)
     {
         drop_item(model, model->stage);
         model->stage++;
-
+        /* Spawn waves */
         if (model->stage < 4)
             spawn_enemy(model, model->stage);
         else
@@ -144,7 +177,7 @@ void process_cond_events(Model *model)
 
 int main(void)
 {
-    
+    /* set buffers, frame buffer, stack pointer, time, etc */
     void *orig_phys = Physbase();
     void *back_buf  = (void *)(((UINT32)screenBuffer + 255L) & ~255L);
     void *front_buf = orig_phys;
@@ -157,10 +190,10 @@ int main(void)
     UINT32 time_elapsed;
     char key;
 
-   
-init_model(&model);
+    /* Initalize model */
+    init_model(&model);
 
-    /* initialise both buffers */
+    /* initialise both buffers, and render first frame */
     clear_screen(back_buf);
     render_reset();
     render(&model, back_buf);
@@ -176,30 +209,33 @@ init_model(&model);
     while (*timer == vbl_now)
         ;
     Super(old_ssp);
-
+    
     temp = front_buf;
     front_buf = back_buf;
     back_buf = temp;
 
+    /* start clock */
     time_then = get_time();
 
     while (!model.quit)
     {
-        
+        /* if input process the asynch events*/
         if (has_input())
         {
             key = get_input();
             process_async_event(&model, key);
         }
-
+        /* get clock timings */
         time_now = get_time();
         time_elapsed = time_now - time_then;
 
        if (time_elapsed > 0)
         {
+            /* process events */
             process_sync_events(&model);
             process_cond_events(&model);
 
+            /* Render current state */
             clear_screen(back_buf);
             render_reset();
             render(&model, back_buf);

@@ -357,6 +357,8 @@ void render_background(UINT32 *base){
     
     /*door*/
     plot_vertical_line(base, 120, 270, 100);
+        /*door mid point*/
+        plot_vertical_line(base, 120, 325, 100);
     plot_horizontal_line(base, 120, 270, 110);
     plot_vertical_line(base, 120, 380, 100);
 
@@ -375,15 +377,15 @@ void render_background(UINT32 *base){
     plot_vertical_line(base, 60, 600, 160);
 
     /*left window*/
-    plot_vertical_line(base, 100, 100, 60);
-    plot_vertical_line(base, 100, 150, 60);
-    plot_horizontal_line(base, 100, 100, 50);
+    plot_vertical_line(base, 120, 100, 40);
+    plot_vertical_line(base, 120, 150, 40);
+    plot_horizontal_line(base, 120, 100, 50);
     plot_horizontal_line(base, 160, 100, 50);
 
     /*right window*/
-    plot_vertical_line(base, 100, 500, 60);
-    plot_vertical_line(base, 100, 550, 60);
-    plot_horizontal_line(base, 100, 500, 50);
+    plot_vertical_line(base, 120, 500, 40);
+    plot_vertical_line(base, 120, 550, 40);
+    plot_horizontal_line(base, 120, 500, 50);
     plot_horizontal_line(base, 160, 500, 50);
 
    

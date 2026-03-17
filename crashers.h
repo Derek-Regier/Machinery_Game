@@ -30,8 +30,24 @@ UINT32 get_time(void);
  */
 void process_async_event(Model *model, char key);
 
+
+/*
+ * Function Purpose: Process all synch events
+ * Updates positions, calculates and updates enemy velocity, etc.
+ *
+ * Input:  model - pointer to the live game model
+ * Output: None, updates model fields
+ * Assumptions: Time has been handled correctly to call this function
+ */
 void process_sync_events(Model *model);
 
+/* Function purpose: Processes all conditional (state-based) game events each tick.
+ * Checks player-enemy and player-boss collisions, handles wave progression,
+ * item drops and pickups, and evaluates win/lose conditions.
+ * Input: The game model
+ * Output: None, updates model state directly
+ * Assumptions: process_sync_events has already run this tick so positions
+ *              and cooldowns are current */
 void process_cond_events(Model *model);
 
 

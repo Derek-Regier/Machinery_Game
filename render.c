@@ -407,36 +407,13 @@ void render_dash_trail(const Player *player, UINT32 *base){
         plot_horizontal_line(base, base_y + 44, start_x + 14, (UINT16)(length - 14));
 }
 
-/* Function purpose: Renders background
+
+   /* Function purpose: Renders background
  * Input: framebuffer base
  * Output: displays background elements and vertical line
  * Assumptions: none */
 void render_background(UINT32 *base){
-    int i;
-    /*
-    pbm32(base, 180, 300, building_1, 32);
-    pbm32(base, 180, 320, castle, 32);
-    pbm32(base, 180, 280, mountain_1, 32);
-    pbm32(base, 180, 260, building_2, 32);
-    pbm32(base, 180, 220, building_3, 32);
-    pbm32(base, 180, 240, mountain_1, 32);
-   
-  
-    pbm32(base, 180, 300, tree_1, 32);
-    pbm32(base, 180, 332, tree_1, 32);
-    pbm32(base, 180, 340, tree_1, 32);
-    pbm32(base, 180, 380, tree_1, 32);
-    pbm32(base, 180, 80, tree_1, 32);
-
-    pbm32(base, 180, 100, building_1, 32);
-    pbm32(base, 180, 120, castle, 32);
-    pbm32(base, 180, 140, mountain_1, 32);
-    pbm32(base, 180, 160, building_2, 32);
-    pbm32(base, 180, 180, building_3, 32);
-    pbm32(base, 180, 200, mountain_1, 32);
-    */
-
-    /*horizontal line across screen*/
+   /*horizontal line across screen*/
     plot_horizontal_line(base, 220, 0, 640);
     
     /*top most castle tips*/
@@ -475,30 +452,52 @@ void render_background(UINT32 *base){
     plot_vertical_line(base, 60, 550, 30);
     plot_vertical_line(base, 60, 600, 160);
 
-    /*left window*/
+    /*left window 1*/
     plot_vertical_line(base, 120, 100, 40);
     plot_vertical_line(base, 120, 150, 40);
     plot_horizontal_line(base, 120, 100, 50);
     plot_horizontal_line(base, 160, 100, 50);
     plot_rectangle(base, 125, 105, 30, 40);
+    /*left window 2*/
+    plot_vertical_line(base, 120, 200, 40);
+    plot_vertical_line(base, 120, 250, 40);
+    plot_horizontal_line(base, 120, 200, 50);
+    plot_horizontal_line(base, 160, 200, 50);
+    plot_rectangle(base, 125, 205, 30, 40);
 
-    /*right window*/
+    /*right window 1*/
     plot_vertical_line(base, 120, 500, 40);
     plot_vertical_line(base, 120, 550, 40);
     plot_horizontal_line(base, 120, 500, 50);
     plot_horizontal_line(base, 160, 500, 50);
     plot_rectangle(base, 125, 505, 30, 40);
-   
+
+    /*right window 2*/
+    plot_vertical_line(base, 120, 400, 40);
+    plot_vertical_line(base, 120, 450, 40);
+    plot_horizontal_line(base, 120, 400, 50);
+    plot_horizontal_line(base, 160, 400, 50);
+    plot_rectangle(base, 125, 405, 30, 40);
+
     /*left triangle tip*/
     plot_line(base, 20, 75, 60, 100);
     plot_line(base, 20, 75, 60, 50);
-    
+
 
     /*right triangle tip*/
     plot_line(base, 20, 575, 60, 600);
     plot_line(base, 20, 575, 60, 550);
 
+    /*door handles*/
+
+    plot_rectangle(base, 160, 305, 10, 10);
+    plot_rectangle(base, 160, 335, 10, 10);
+
+
+  
 }
+
+
 /* Function purpose: On player death show renders "YOU ARE DEAD"
  * Input: framebuffer base
  * Output: "YOU ARE DEAD"

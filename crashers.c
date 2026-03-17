@@ -6,6 +6,7 @@
 #define KEY_MOVE_LEFT 'a'
 #define KEY_MOVE_RIGHT 'd'
 #define KEY_ATTACK 'j'
+#define KEY_DASH 'l'
 #define KEY_USE_ITEM 'e'
 #define KEY_QUIT '\x1B' /* ESC */
 
@@ -43,6 +44,7 @@ void process_async_event(Model *model, char key)
         case KEY_MOVE_DOWN:
         case KEY_MOVE_LEFT:
         case KEY_MOVE_RIGHT:
+        case KEY_DASH:
             move_player(&model->player, key);
             break;
 

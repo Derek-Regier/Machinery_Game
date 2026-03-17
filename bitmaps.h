@@ -1,15 +1,6 @@
 
 /*
  * Header summary: Bitmap header to reduce redundant extern calls.
- * - square
- * - rectangle
- * - triangle
- * - player
- * - health_bar
- * - enemy
- * - boss
- * - hp_pot
- *
  * Authors: Aydin Salonius, Chintan Thakor, Derek Regier
  * Course: COMP 2659, Winter 2026
  */

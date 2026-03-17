@@ -1,5 +1,6 @@
 #include "render.h"
 #include "font.h"
+#include "synch.h"
 
 /*
  * Copy each structure as statics for saving coordinates of player, enemy,
@@ -50,8 +51,24 @@ void render(const Model *model, UINT32 *base){
     for (i = 0; i < model->enemy_count; i++){
         if (model->enemy[i].active){
             render_enemy_slash(&model->enemy[i], base);
+            render_hit_flash(model->enemy[i].x, model->enemy[i].y,
+                             model->enemy[i].w, model->enemy[i].h,
+                             model->enemy[i].hit_flash_timer, base);
         }
     }
+
+    render_hit_flash(model->player.x, model->player.y,
+                     model->player.w, model->player.h,
+                     model->player.hit_flash_timer, base);
+
+    if (model->boss.active)
+    {
+        render_boss_stomp(&model->boss, base);
+        render_hit_flash(model->boss.x, model->boss.y,
+                         model->boss.w, model->boss.h,
+                         model->boss.hit_flash_timer, base);
+    }
+
     prev_drawn = TRUE;
 }
 
@@ -203,7 +220,11 @@ void render_boss(const Boss *boss, UINT32 *base){
                     }
 
     if (boss->anim_frame == 0){
-        bitmap = (boss->facing < 0) ? boss_bitmap_left : boss_bitmap_right;
+        if (boss->stomp_frame > STOMP_DURATION / 2)
+            bitmap = (boss->facing < 0) ? boss_bitmap_left_stomp
+                                        : boss_bitmap_right_stomp;
+        else
+            bitmap = (boss->facing < 0) ? boss_bitmap_left : boss_bitmap_right;
     }else{
         bitmap = (boss->facing < 0) ? boss_bitmap_left_walk1 : boss_bitmap_right_walk1;
     }
@@ -236,12 +257,12 @@ void render_player_slash(const Player *player, UINT32 *base){
     unsigned int slash_y;
     UINT32 *bitmap;
 
-    if (!player->is_attacking){
+    if (player->attack_cooldown == 0){
         return;
     }
     slash_x = (player->facing > 0)
               ? player->x + 16
-              : (unsigned int)((int)player->x - 16);
+              : (unsigned int)((int)player->x - 24);
     slash_y = player->y + 24;
 
     bitmap = (player->facing > 0) ? slash_bitmap_right : slash_bitmap_left;
@@ -271,6 +292,84 @@ void render_enemy_slash(const Enemy *enemy, UINT32 *base){
     bitmap = (enemy->facing > 0) ? slash_bitmap_right : slash_bitmap_left;
 
     pbm32(base, (UINT16)slash_y, (UINT16)slash_x, bitmap, 32);
+}
+
+/* Function purpose: Draws a 16x16 impact star centred on an entity when
+ *   its hit_flash_timer is active. Works for player, enemy, and boss.
+ * Input: entity top-left x/y, entity w/h, hit_flash_timer, framebuffer base
+ * Output: Impact star bitmap drawn centred on entity; nothing if timer is 0
+ * Assumptions: hit_flash_timer is decremented by the cooldown update path */
+void render_hit_flash(unsigned int ex, unsigned int ey,
+                      unsigned int ew, unsigned int eh,
+                      int hit_flash_timer, UINT32 *base)
+{
+    unsigned int cx;
+    unsigned int cy;
+
+    if (hit_flash_timer <= 0) return;
+
+    /* Centre the 16x16 star on the entity */
+    cx = ex + (ew / 2) - 8;
+    cy = ey + (eh / 2) - 8;
+
+    pbm16((UINT16 *)base, (UINT16)cy, (UINT16)cx, hit_star_bitmap, 16);
+}
+
+/* Function purpose: Renders three growing shockwave arcs radiating from the
+ *   boss during the second half of the stomp (leg coming down).
+ *   Arc size and spacing grow with distance from the boss.
+ *   sm arc at 8px, md arc at 28px, lg arc at 56px from the boss edge.
+ * Input: Boss object and framebuffer base
+ * Output: Three arc bitmaps drawn to the facing side; nothing if stomp is
+ *   in the leg-raise phase or is not active
+ * Assumptions: boss->facing is -1 or 1; stomp_frame ticks down from
+ *   STOMP_DURATION set in synch.h */
+void render_boss_stomp(const Boss *boss, UINT32 *base)
+{
+    unsigned int base_x;
+    unsigned int wave_y;
+    UINT32 *sm;
+    UINT32 *md;
+    UINT32 *lg;
+
+    /* Only draw shockwaves in the second half (leg coming down) */
+    if (boss->stomp_frame <= 0 || boss->stomp_frame > STOMP_DURATION / 2)
+        return;
+
+    /* Waves emit from the boss foot toward the facing direction */
+    if (boss->facing > 0) {
+        base_x = boss->x + boss->w;  /* right edge of boss */
+        sm = shockwave_sm_r;
+        md = shockwave_md_r;
+        lg = shockwave_lg_r;
+    } else {
+        /* Left-facing: arcs sit to the left; shift leftward by arc width */
+        base_x = (unsigned int)((int)boss->x - 32);
+        sm = shockwave_sm_l;
+        md = shockwave_md_l;
+        lg = shockwave_lg_l;
+    }
+
+    /* Vertically centre waves on the bottom third of the boss (foot level) */
+    wave_y = boss->y + boss->h - 32;
+
+    /* sm: closest, 8 rows tall */
+    pbm32(base, (UINT16)wave_y + 12,
+          (UINT16)base_x, sm, 8);
+
+    /* md: 20px further out, 16 rows tall */
+    pbm32(base, (UINT16)wave_y + 8,
+          (UINT16)((boss->facing > 0)
+              ? base_x + 20
+              : (unsigned int)((int)base_x - 20)),
+          md, 16);
+
+    /* lg: 48px further out, 32 rows tall */
+    pbm32(base, (UINT16)wave_y,
+          (UINT16)((boss->facing > 0)
+              ? base_x + 48
+              : (unsigned int)((int)base_x - 48)),
+          lg, 32);
 }
 
 /* Function purpose: Draws speed-lines behind the player for the duration of a dash trail.

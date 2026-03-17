@@ -108,6 +108,9 @@ void player_hits_boss(Player *player, Boss *boss)
     {
         int damage = light_attack(player);
         update_boss_health(boss, -damage);
+        /* Clear attack flag so damage is applied exactly once per swing.
+         * attack_cooldown keeps ticking, preventing rapid re-attack. */
+        player->is_attacking = FALSE;
         /* TODO: play hit sound, trigger hit animation */
     }
 }

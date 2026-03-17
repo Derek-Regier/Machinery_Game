@@ -305,7 +305,7 @@ void spawn_enemy(Model *model, int stage)
             if (rand()%2 == 0){
                 model->enemy[i].x = MAX_X + (rand() % 33) - 32;
             } else {
-               model->enemy[i].x = (rand() % 33) 
+               model->enemy[i].x = (rand() % 33);
             }
             model->enemy[i].y = spawn_y;
         }

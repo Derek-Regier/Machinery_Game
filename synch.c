@@ -341,7 +341,7 @@ void update_player_cooldowns(Player *player) {
 /* Function purpose: updates the enemy cooldowns
  * Input: The enemy object
  * Output: None, just updates the cooldowns
- * Assumptions: None
+ * Assumptions: None */
 void update_enemy_cooldown(Enemy *enemy)
 {
     if (enemy->attack_cooldown > 0)

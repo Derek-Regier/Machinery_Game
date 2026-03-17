@@ -11,6 +11,8 @@
 #include "item.h"
 #define PLAYER_ATTACK_COOLDOWN 10
 #define ITEM_USE_COOLDOWN 35  /* ~0.5 s at 70 Hz; prevents potion spam */
+#define PLAYER_SPEED 2
+#define DASH_SPEED 75
 
 /* Function purpose: Initiates a light attack calling the player behaviour function 
  * Input: The player object and the cooldown time
@@ -28,24 +30,24 @@ void on_light_attack(Player *player, int cooldown){
  * Assumptions: Proper values are passed from the game logic */
 void move_player(Player *player, char key){
     if (key == 'w'){
-        player->delta_y = -2; /* Arbitrary start value, animation will determine later*/
+        player->delta_y = -PLAYER_SPEED;
     }
     if (key == 's'){
-        player->delta_y = 2; 
+        player->delta_y = PLAYER_SPEED;
     }
     if (key == 'a'){
-        player->delta_x = -2; 
+        player->delta_x = -PLAYER_SPEED;
         player->facing = -1;
     }
     if (key == 'd'){
-        player->delta_x = 2; 
+        player->delta_x = PLAYER_SPEED;
         player->facing = 1;
     }
     if (key == 'l'){
         if (player->facing == 1){
-            player->delta_x = 75;
+            player->delta_x = DASH_SPEED;
         }else{
-            player->delta_x = -75;
+            player->delta_x = -DASH_SPEED;
         }
     }
 }

@@ -28,7 +28,7 @@ void init_model(Model *model)
     model->player.y = 316; /* center of walkable lane (264-368) */
     model->player.delta_x = 0;
     model->player.delta_y = 0;
-    model->player.health = 120;
+    model->player.health = 100;
     model->player.damage = 8;
     model->player.potions = 4;
     model->player.is_attacking = FALSE;

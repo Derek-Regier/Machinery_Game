@@ -41,6 +41,13 @@ void move_player(Player *player, char key){
         player->delta_x = 2; 
         player->facing = 1;
     }
+    if (key == 'l'){
+        if (player->facing == 1){
+            player->delta_x = 75;
+        }else{
+            player->delta_x = -75;
+        }
+    }
 }
 
 /* Function purpose: Consume one potion from the player's inventory.

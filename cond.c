@@ -293,6 +293,7 @@ void spawn_enemy(Model *model, int stage)
         model->enemy[i].delta_y = 0;
         model->enemy[i].is_attacking = FALSE;
         model->enemy[i].attack_cooldown = 0;
+        model->enemy[i].attack_windup = 0;
         model->enemy[i].y_offset = (rand() % 65) - 32;
 
         if (stage == 4) {

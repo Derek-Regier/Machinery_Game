@@ -138,7 +138,8 @@ void process_cond_events(Model *model)
     }
 
     model->healthbar.value = model->player.health;
-    model->quit = level_end(model);
+    if (!model->quit)
+        model->quit = level_end(model);
 }
 
 int main(void)

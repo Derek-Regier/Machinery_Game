@@ -13,6 +13,8 @@
 #define ITEM_USE_COOLDOWN 35  /* ~0.5 s at 70 Hz; prevents potion spam */
 #define PLAYER_SPEED 2
 #define DASH_SPEED 75
+#define DASH_COOLDOWN 70          /* ~1 s at 70 Hz; prevents dash spam      */
+#define DASH_TRAIL_DURATION 14   /* ticks the speed-lines remain visible   */
 
 /* Function purpose: Initiates a light attack calling the player behaviour function 
  * Input: The player object and the cooldown time
@@ -44,11 +46,17 @@ void move_player(Player *player, char key){
         player->facing = 1;
     }
     if (key == 'l'){
+        if (player->dash_cooldown > 0) return;
+        player->trail_x      = player->x;
+        player->trail_y      = player->y;
+        player->trail_facing = player->facing;
+        player->trail_timer  = DASH_TRAIL_DURATION;
         if (player->facing == 1){
             player->delta_x = DASH_SPEED;
         }else{
             player->delta_x = -DASH_SPEED;
         }
+        player->dash_cooldown = DASH_COOLDOWN;
     }
 }
 

@@ -85,12 +85,18 @@ void update_enemy_velocity(Enemy *enemy, const Player *player)
         enemy->delta_y = -1;
     else
         enemy->delta_y = 0;
-    if (enemy->delta_x == 0 && enemy->delta_y == 0 && enemy->attack_cooldown == 0)
-        enemy->is_attacking = TRUE;
-    else
+    if (enemy->delta_x == 0 && enemy->delta_y == 0 && enemy->attack_cooldown == 0) {
+        /* In range and cooled down: charge up before striking */
+        enemy->attack_windup++;
+        if (enemy->attack_windup >= ENEMY_WINDUP)
+            enemy->is_attacking = TRUE;
+        else
+            enemy->is_attacking = FALSE;
+    } else {
+        /* Moving or on cooldown: reset the windup so it telegraphs fresh each time */
+        enemy->attack_windup = 0;
         enemy->is_attacking = FALSE;
-
-        
+    }
 }
    
 /* Function purpose: Moves the player according to the velocity
@@ -288,6 +294,10 @@ void update_item_cooldown(Player *player) {
 void update_player_cooldowns(Player *player) {
     update_attack_cooldown(player);
     update_item_cooldown(player);
+    if (player->dash_cooldown > 0)
+        player->dash_cooldown--;
+    if (player->trail_timer > 0)
+        player->trail_timer--;
 }
 
 void update_enemy_cooldown(Enemy *enemy)

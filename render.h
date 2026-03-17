@@ -63,6 +63,11 @@ void render_enemy_slash(const Enemy *enemy, UINT32 *base);
 
 void render_background(UINT32 *base);
 
+/* Function purpose: Draws speed-lines behind player after a dash
+ * Input: Player object and framebuffer base
+ * Output: Horizontal trail lines; nothing if trail_timer <= 0 */
+void render_dash_trail(const Player *player, UINT32 *base);
+
 void render_reset(void);
 
 #endif /* RENDER_H */

@@ -24,6 +24,7 @@ typedef struct {
     bool is_attacking; 
     bool active; /* TRUE during enemy attack animation window */
     int attack_cooldown;   /* ticks remaining before enemy can attack again */
+    int attack_windup;     /* ticks spent in engage range before striking */
     int y_offset;
 } Enemy;
 
@@ -67,4 +68,3 @@ int enemy_attack(const Enemy *enemy);
 bool enemy_hitbox_overlaps(const Enemy *enemy, int x, int y, int width, int height);
 
 #endif /* ENEMY_H */
-

@@ -34,6 +34,11 @@ void init_model(Model *model)
     model->player.is_attacking  = FALSE;
     model->player.item_cooldown  = 0;
     model->player.attack_cooldown = 0;
+    model->player.dash_cooldown  = 0;
+    model->player.trail_x      = 0;
+    model->player.trail_y      = 0;
+    model->player.trail_facing = 1;
+    model->player.trail_timer  = 0;
     model->player.h = 64;
     model->player.w = 32;
     model->player.facing = 1;
@@ -63,6 +68,7 @@ void init_model(Model *model)
     model->enemy[0].is_attacking = FALSE;
     model->enemy[0].active = TRUE;
     model->enemy[0].attack_cooldown = 0;
+    model->enemy[0].attack_windup = 0;
     model->enemy[0].y_offset = -20; /* targets 20px above player — breaks column stacking */
     model->enemy[0].facing = -1; 
     model->enemy[0].anim_frame = 0;
@@ -79,6 +85,7 @@ void init_model(Model *model)
     model->enemy[1].is_attacking = FALSE;
     model->enemy[1].active = TRUE;
     model->enemy[1].attack_cooldown = 0;
+    model->enemy[1].attack_windup = 0;
     model->enemy[1].y_offset = 20; /* targets 20px below player — ensures different path */
     model->enemy[1].facing = -1;
     model->enemy[1].anim_frame = 0;
@@ -97,6 +104,7 @@ void init_model(Model *model)
         model->enemy[i].is_attacking = FALSE;
         model->enemy[i].active = FALSE;
         model->enemy[i].attack_cooldown = 0;
+        model->enemy[i].attack_windup = 0;
         model->enemy[i].y_offset = 0;
         model->enemy[i].facing = -1;
         model->enemy[i].anim_frame = 0;

@@ -24,8 +24,13 @@ typedef struct {
     unsigned int anim_counter;
     unsigned int item_cooldown;
     unsigned int attack_cooldown;
+    unsigned int dash_cooldown;   /* ticks remaining before player can dash again */
     unsigned int h,w;
     int potions; /* number of health potions in inventory */
+    unsigned int trail_x;     /* x where the last dash began              */
+    unsigned int trail_y;     /* y where the last dash began              */
+    int trail_facing; /* direction of the dash: -1 left, 1 right */
+    int trail_timer;  /* ticks remaining to display the trail     */
 } Player;
 
 /* Function purpose: Moves the player vertically

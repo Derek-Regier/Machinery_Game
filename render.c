@@ -32,6 +32,7 @@ void render(const Model *model, UINT32 *base)
         return;
     }
 
+    render_dash_trail(&model->player, base);
     render_player(&model->player, base);
 
     for (i = 0; i < MAX_ENEMIES; i++){
@@ -272,11 +273,46 @@ void render_enemy_slash(const Enemy *enemy, UINT32 *base){
     pbm32(base, (UINT16)slash_y, (UINT16)slash_x, bitmap, 32);
 }
 
+/* Function purpose: Draws speed-lines behind the player for the duration of a dash trail.
+ * Lines run from where the dash began to just behind the player's current position.
+ * Three lines at varied Y offsets and stepped lengths give a motion-blur feel.
+ * Input: Player object and framebuffer base
+ * Output: Horizontal lines drawn on framebuffer; nothing drawn when trail_timer <= 0
+ * Assumptions: trail_x/trail_y/trail_facing were set at dash initiation */
+void render_dash_trail(const Player *player, UINT32 *base)
+{
+    int start_x, length, base_y;
+    /* gap between trail end and player sprite edge, so lines don't overlap the sprite */
+    int gap = 10;
+
+    if (player->trail_timer <= 0) return;
+
+    base_y = (int)player->trail_y;
+
+    if (player->trail_facing > 0) {
+        /* Dashed right: trail_x < player->x; lines sit to the left of current pos */
+        start_x = (int)player->trail_x;
+        length   = (int)player->x - gap - start_x;
+    } else {
+        /* Dashed left: trail_x > player->x; lines sit to the right of current pos */
+        start_x = (int)player->x + (int)player->w + gap;
+        length   = (int)player->trail_x - start_x;
+    }
+
+    if (length <= 0) return;
+
+    /* Three lines: full length, trimmed 6px, trimmed 14px — staggered Y for depth */
+    plot_horizontal_line(base, base_y + 20, start_x,     (UINT16)length);
+    if (length > 6)
+        plot_horizontal_line(base, base_y + 32, start_x + 6,  (UINT16)(length - 6));
+    if (length > 14)
+        plot_horizontal_line(base, base_y + 44, start_x + 14, (UINT16)(length - 14));
+}
+
 void render_background(UINT32 *base){
     pbm32(base, 30, 300, building_1, 32);
 
 }
-
 void render_death_screen(UINT32 *base)
 {
     int r, w;

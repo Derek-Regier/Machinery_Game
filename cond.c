@@ -142,7 +142,6 @@ bool boss_hits_player(Boss *boss, Player *player)
         bool died  = player_take_damage(player, damage);
         boss->attack_cooldown = BOSS_ATTACK_COOLDOWN;
         boss->is_attacking = FALSE;
-        update_health_HUD(player);
         return died;
     }
     return FALSE;
@@ -171,7 +170,7 @@ bool next_level(const Model *model, int stage)
 
     if (stage == 0) {
         index_offset = 0;
-        count        = 2;
+        count = 2;
     } else if (stage == 1) {
         index_offset = 2;
         count = 3;
@@ -245,22 +244,16 @@ void update_spawn_queue(Model *model)
     model->spawn_timer = SPAWN_DELAY;
 }
 /*
- * Activates and initializes a wave of enemies for the given stage.
- * Stage 1 spawns 3 enemies, stage 2 spawns 4, stage 3 spawns 5.
- * Enemies are placed off the right edge of the screen.
- * Updates model->enemy_count to include the newly active enemies.
- *
- * Input:  model - the live game model
- *         stage - wave number (1, 2, or 3)
- * Output: modifies model->enemy array and enemy_count
- * Assumptions: MAX_ENEMIES is large enough to hold all waves (14+)
- */
-/*
  * Initialises the enemies for the given stage but activates only the first
  * one immediately. The remaining enemies sit inactive in the spawn queue
  * (model->spawn_start .. model->spawn_end-1); update_spawn_queue releases
  * them one per SPAWN_DELAY ticks.
  * Stage 4 (boss summon) always activates both enemies at once.
+ *
+ * Input:  model - the live game model
+ *         stage - wave number (1, 2, or 3)
+ * Output: modifies model->enemy array and enemy_count
+ * Assumptions: MAX_ENEMIES is large enough to hold all waves (14+)
  */
 void spawn_enemy(Model *model, int stage)
 {
@@ -305,10 +298,15 @@ void spawn_enemy(Model *model, int stage)
              * lane (189-336).  Base 209 + slot*32 gives:
              *   slot 0 -> 209, 1 -> 241, 2 -> 273, 3 -> 305, 4 -> 337 (clamped)
              * All within or at the lane boundary. */
-            int slot    = i - index_offset;
+            int slot = i - index_offset;
             int spawn_y = 209 + slot * 32;
             if (spawn_y > MAX_Y) spawn_y = MAX_Y;
-            model->enemy[i].x = MAX_X + (rand() % 33) - 32;
+
+            if (rand()%2 == 0){
+                model->enemy[i].x = MAX_X + (rand() % 33) - 32;
+            } else {
+               model->enemy[i].x = (rand() % 33) 
+            }
             model->enemy[i].y = spawn_y;
         }
     }
@@ -317,7 +315,7 @@ void spawn_enemy(Model *model, int stage)
 
     /* Stage 4 activates both summons immediately; others stagger */
     if (stage == 4) {
-        model->enemy[index_offset].active     = TRUE;
+        model->enemy[index_offset].active = TRUE;
         model->enemy[index_offset + 1].active = TRUE;
         model->spawn_start = index_offset + count; /* queue empty */
         model->spawn_end = index_offset + count;

@@ -70,6 +70,12 @@ bool enemy_hits_player(Enemy *enemy, Player *player);
  */
 bool boss_hits_player(Boss *boss, Player *player);
 
+/*
+ * Function Purpose: return whether the next level is to occur
+ * Input: The game model and current stage
+ * Output: Returns TRUE if the the next stage is to occur
+ * Assumptions: Valid inputs
+ */
 bool next_level(const Model *model, int stage);
 
 /*

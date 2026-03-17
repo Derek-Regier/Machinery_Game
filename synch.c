@@ -37,11 +37,11 @@ void separate_enemies(Model *model) {
                 /* Spread both i and j along Y so enemies route around each other.
                  * Pushing only j caused column stacking; spreading both unblocks the lane. */
                 if (ey_j >= ey_i) {
-                    if (ey_j < MAX_Y)      model->enemy[j].y++;
+                    if (ey_j < MAX_Y) model->enemy[j].y++;
                     if (ey_i > MIN_Y_WALK) model->enemy[i].y--;
                 } else {
                     if (ey_j > MIN_Y_WALK) model->enemy[j].y--;
-                    if (ey_i < MAX_Y)      model->enemy[i].y++;
+                    if (ey_i < MAX_Y) model->enemy[i].y++;
                 }
             }
         }
@@ -169,7 +169,7 @@ void update_enemy_position(Enemy *enemy, const Player *player)
         move_enemy_vertical(enemy);
 
     /* Keep enemy within the walkable lane */
-    if (enemy->y > MAX_Y)      enemy->y = MAX_Y;
+    if (enemy->y > MAX_Y) enemy->y = MAX_Y;
     if (enemy->y < MIN_Y_WALK) enemy->y = MIN_Y_WALK;
     if (enemy->x != prev_x || enemy->y != prev_y)
     {

@@ -16,7 +16,7 @@
 #include "health.h"
 
 #define MAX_ENEMIES 16  /* 2 tutorial + 3 + 4 + 5 wave + 2 boss summon */
-#define NUM_ITEMS   4   /* one item drop per wave (stages 0-3) */
+#define NUM_ITEMS 4   /* one item drop per wave (stages 0-3) */
 
 typedef struct {
     Player player;

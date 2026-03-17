@@ -9,8 +9,8 @@
 
 #include "asynch.h"
 #include "item.h"
-#define PLAYER_ATTACK_COOLDOWN 10
-#define ITEM_USE_COOLDOWN 35  /* ~0.5 s at 70 Hz; prevents potion spam */
+#define PLAYER_ATTACK_COOLDOWN 35
+#define ITEM_USE_COOLDOWN 35 
 #define PLAYER_SPEED 2
 #define DASH_SPEED 75
 #define DASH_COOLDOWN 70          /* ~1 s at 70 Hz; prevents dash spam      */

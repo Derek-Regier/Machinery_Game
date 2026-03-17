@@ -177,9 +177,9 @@ init_model(&model);
         ;
     Super(old_ssp);
 
-    temp      = front_buf;
+    temp = front_buf;
     front_buf = back_buf;
-    back_buf  = temp;
+    back_buf = temp;
 
     time_then = get_time();
 
@@ -211,9 +211,9 @@ init_model(&model);
                 ;
             Super(old_ssp);
 
-            temp      = front_buf;
+            temp = front_buf;
             front_buf = back_buf;
-            back_buf  = temp;
+            back_buf = temp;
 
             time_then = time_now;
         }
@@ -223,7 +223,5 @@ init_model(&model);
     old_ssp = Super(0);
     Setscreen(-1L, (long)orig_phys, -1L);
     Super(old_ssp);
-
-    reset_movement(&model);
     return 0;
 }

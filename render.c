@@ -381,17 +381,19 @@ void render_background(UINT32 *base){
     plot_vertical_line(base, 120, 150, 40);
     plot_horizontal_line(base, 120, 100, 50);
     plot_horizontal_line(base, 160, 100, 50);
+    plot_rectangle(base, 125, 105, 30, 40);
 
     /*right window*/
     plot_vertical_line(base, 120, 500, 40);
     plot_vertical_line(base, 120, 550, 40);
     plot_horizontal_line(base, 120, 500, 50);
     plot_horizontal_line(base, 160, 500, 50);
-
+    plot_rectangle(base, 125, 505, 30, 40);
    
     /*left triangle tip*/
     plot_line(base, 20, 75, 60, 100);
     plot_line(base, 20, 75, 60, 50);
+    
 
     /*right triangle tip*/
     plot_line(base, 20, 575, 60, 600);

@@ -104,6 +104,18 @@ bool level_end(const Model *model);
  */
 void drop_item(Model *model, int stage);
 
+/*
+ * Initialises the enemies for the given stage but activates only the first
+ * one immediately. The remaining enemies sit inactive in the spawn queue
+ * (model->spawn_start .. model->spawn_end-1); update_spawn_queue releases
+ * them one per SPAWN_DELAY ticks.
+ * Stage 4 (boss summon) always activates both enemies at once.
+ *
+ * Input:  model - the live game model
+ *         stage - wave number (1, 2, or 3)
+ * Output: modifies model->enemy array and enemy_count
+ * Assumptions: MAX_ENEMIES is large enough to hold all waves (14+)
+ */
 void spawn_enemy(Model *model, int stage);
 
 /*

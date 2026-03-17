@@ -245,7 +245,7 @@ void update_spawn_queue(Model *model)
         model->spawn_timer--;
         return;
     }
-
+    /* If exiting the queue onto screen, activate */
     model->enemy[model->spawn_start].active = TRUE;
     model->spawn_start++;
     model->spawn_timer = SPAWN_DELAY;
@@ -284,6 +284,7 @@ void spawn_enemy(Model *model, int stage)
 
     for (i = index_offset; i < index_offset + count; i++)
     {
+        /* Initialize inactive enemies */
         model->enemy[i].active = FALSE; /* queue, don't activate yet */
         model->enemy[i].health = 20;
         model->enemy[i].damage = 4;
@@ -309,6 +310,7 @@ void spawn_enemy(Model *model, int stage)
             int spawn_y = 209 + slot * 32;
             if (spawn_y > MAX_Y) spawn_y = MAX_Y;
 
+            /* Randomly spawn enemies on either side */
             if (rand()%2 == 0){
                 model->enemy[i].x = MAX_X + (rand() % 33) - 32;
             } else {

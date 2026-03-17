@@ -261,9 +261,10 @@ void update_boss_velocity(Boss *boss, const Player *player)
     else
         boss->delta_y = 0;
 
-    if (boss->delta_x == 0 && boss->delta_y == 0 && boss->attack_cooldown == 0)
+    if (boss->delta_x == 0 && boss->delta_y == 0 && boss->attack_cooldown == 0) {
         boss->is_attacking = TRUE;
-    else
+        boss->stomp_frame = STOMP_DURATION;
+    } else
         boss->is_attacking = FALSE;
 }
 
@@ -336,6 +337,8 @@ void update_player_cooldowns(Player *player) {
         player->dash_cooldown--;
     if (player->trail_timer > 0)
         player->trail_timer--;
+    if (player->hit_flash_timer > 0)
+        player->hit_flash_timer--;
 }
 
 /* Function purpose: updates the enemy cooldowns
@@ -346,6 +349,8 @@ void update_enemy_cooldown(Enemy *enemy)
 {
     if (enemy->attack_cooldown > 0)
         enemy->attack_cooldown--;
+    if (enemy->hit_flash_timer > 0)
+        enemy->hit_flash_timer--;
 }
 
 /* Function purpose: updates the boss cooldowns
@@ -356,4 +361,8 @@ void update_boss_cooldown(Boss *boss)
 {
     if (boss->attack_cooldown > 0)
         boss->attack_cooldown--;
+    if (boss->hit_flash_timer > 0)
+        boss->hit_flash_timer--;
+    if (boss->stomp_frame > 0)
+        boss->stomp_frame--;
 }

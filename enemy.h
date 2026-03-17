@@ -26,6 +26,7 @@ typedef struct {
     int attack_cooldown;   /* ticks remaining before enemy can attack again */
     int attack_windup;     /* ticks spent in engage range before striking */
     int y_offset;
+    int hit_flash_timer; /* ticks remaining to display hit spark */
 } Enemy;
 
 

@@ -85,6 +85,7 @@ void player_hits_enemy(Player *player, Enemy *enemy)
         died = update_enemy_health(enemy, -damage);
         if (died)
             enemy->active = FALSE;
+        enemy->hit_flash_timer = HIT_FLASH_DURATION;
         /* Clear attack flag so the slash stops immediately and damage
          * is applied exactly once per swing. attack_cooldown keeps
          * ticking in update_attack_cooldown, preventing rapid re-attack. */
@@ -108,6 +109,7 @@ void player_hits_boss(Player *player, Boss *boss)
     {
         int damage = light_attack(player);
         update_boss_health(boss, -damage);
+        boss->hit_flash_timer = HIT_FLASH_DURATION;
         /* Clear attack flag so damage is applied exactly once per swing.
          * attack_cooldown keeps ticking, preventing rapid re-attack. */
         player->is_attacking = FALSE;
@@ -130,6 +132,7 @@ bool enemy_hits_player(Enemy *enemy, Player *player)
     {
         int damage = enemy_attack(enemy);
         bool died  = player_take_damage(player, damage);
+        player->hit_flash_timer = HIT_FLASH_DURATION;
         /* cooldown and is_attacking are already handled by update_enemy_velocity
          * when the attack window was committed; nothing to reset here */
         return died;
@@ -147,6 +150,7 @@ bool boss_hits_player(Boss *boss, Player *player)
     {
         int damage = boss_attack(boss);
         bool died  = player_take_damage(player, damage);
+        player->hit_flash_timer = HIT_FLASH_DURATION;
         boss->attack_cooldown = BOSS_ATTACK_COOLDOWN;
         boss->is_attacking = FALSE;
         return died;

@@ -39,6 +39,7 @@ void init_model(Model *model)
     model->player.trail_y = 0;
     model->player.trail_facing = 1;
     model->player.trail_timer = 0;
+    model->player.hit_flash_timer = 0;
     model->player.h = 64;
     model->player.w = 32;
     model->player.facing = 1;
@@ -72,7 +73,8 @@ void init_model(Model *model)
     model->enemy[0].y_offset = -20; /* targets 20px above player — breaks column stacking */
     model->enemy[0].facing = -1; 
     model->enemy[0].anim_frame = 0;
-    model->enemy[0].anim_counter = 0;      
+    model->enemy[0].anim_counter = 0;
+    model->enemy[0].hit_flash_timer = 0;
 
     model->enemy[1].x = 560;
     model->enemy[1].y = 336; /* lower part of walkable lane */
@@ -90,6 +92,7 @@ void init_model(Model *model)
     model->enemy[1].facing = -1;
     model->enemy[1].anim_frame = 0;
     model->enemy[1].anim_counter = 0;
+    model->enemy[1].hit_flash_timer = 0;
 
     for (i = 2; i < MAX_ENEMIES; i++)
     {
@@ -109,6 +112,7 @@ void init_model(Model *model)
         model->enemy[i].facing = -1;
         model->enemy[i].anim_frame = 0;
         model->enemy[i].anim_counter = 0;
+        model->enemy[i].hit_flash_timer = 0;
     }
 
     model->enemy_count = 2; /* only the two tutorial enemies are live */
@@ -120,13 +124,15 @@ void init_model(Model *model)
     model->boss.delta_y = 0;
     model->boss.health = 200;
     model->boss.max_health = 200;
-    model->boss.damage = 10;
+    model->boss.damage = 8;
     model->boss.summoned = FALSE;
     model->boss.is_attacking = FALSE;
     model->boss.active = FALSE; /* activated when stage reaches 4 */
     model->boss.w = 128;
     model->boss.h = 128;
     model->boss.attack_cooldown = 0;
+    model->boss.hit_flash_timer = 0;
+    model->boss.stomp_frame = 0;
     model->boss.facing = -1;
     model->boss.anim_frame = 0;
     model->boss.anim_counter = 0;

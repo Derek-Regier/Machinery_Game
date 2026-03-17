@@ -31,6 +31,7 @@ typedef struct {
     unsigned int trail_y;     /* y where the last dash began              */
     int trail_facing; /* direction of the dash: -1 left, 1 right */
     int trail_timer;  /* ticks remaining to display the trail     */
+    int hit_flash_timer; /* ticks remaining to display hit spark  */
 } Player;
 
 /* Function purpose: Moves the player vertically

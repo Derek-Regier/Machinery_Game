@@ -74,6 +74,23 @@ void render_player_slash(const Player *player, UINT32 *base);
  * Assumptions: none */
 void render_enemy_slash(const Enemy *enemy, UINT32 *base);
 
+/* Function purpose: Draws a 16x16 impact star centred on an entity for
+ *   hit_flash_timer ticks after the entity receives damage.
+ * Input: entity x/y/w/h, hit_flash_timer, framebuffer base
+ * Output: Impact star drawn; nothing if timer is 0
+ * Assumptions: hit_flash_timer decremented by cooldown update path */
+void render_hit_flash(unsigned int ex, unsigned int ey,
+                      unsigned int ew, unsigned int eh,
+                      int hit_flash_timer, UINT32 *base);
+
+/* Function purpose: Renders three growing shockwave arcs to the facing side
+ *   of the boss during the second half of the stomp animation.
+ * Input: Boss object and framebuffer base
+ * Output: sm/md/lg arcs drawn at increasing distances; nothing if not in
+ *   the shockwave phase of the stomp
+ * Assumptions: boss->facing is -1 or 1 */
+void render_boss_stomp(const Boss *boss, UINT32 *base);
+
 /* Function purpose: Renders background
  * Input: framebuffer base
  * Output: displays background elements and vertical line

@@ -26,6 +26,8 @@ typedef struct {
     unsigned int anim_frame;
     unsigned int anim_counter;
     int attack_cooldown; /* ticks remaining before boss can attack again */
+    int hit_flash_timer; /* ticks remaining to display hit spark */
+    int stomp_frame;     /* counts down from STOMP_DURATION on each attack */
 } Boss;
 
 /* Function purpose: Moves the boss vertically

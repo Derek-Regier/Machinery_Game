@@ -21,8 +21,7 @@ static unsigned int prev_slash_y = 0;
  * Input: Game objects (bitmaps and models)
  * Output: Game objects displayed to screen
  * Assumptions: init_model initializes */
-void render(const Model *model, UINT32 *base)
-{
+void render(const Model *model, UINT32 *base){
     int i;
 
     if (model->player.health <= 0)
@@ -62,11 +61,11 @@ void render(const Model *model, UINT32 *base)
  * Input: Player bitmap, models and prev_drawn flag
  * Output: Player object displayed to screen
  * Assumptions: init_model initializes coordinates of model */
-void render_player(const Player *player, UINT32 *base)
-{
+void render_player(const Player *player, UINT32 *base){
     UINT32 *bitmap;
 
-    if (prev_drawn && player->x == prev_player.x && player->y == prev_player.y && player->facing == prev_player.facing &&
+    if (prev_drawn && player->x == prev_player.x && 
+        player->y == prev_player.y && player->facing == prev_player.facing &&
         player->anim_frame == prev_player.anim_frame){
         return;
     }
@@ -91,8 +90,7 @@ void render_player(const Player *player, UINT32 *base)
  * Input: Enemy bitmap, model, prev pointer for this enemy instance
  * Output: Enemy object displayed to screen
  * Assumptions: init_model initializes coordinates of model */
-void render_enemy(const Enemy *enemy, Enemy *prev, UINT32 *base)
-{
+void render_enemy(const Enemy *enemy, Enemy *prev, UINT32 *base){
     UINT32 *bitmap;
 
     if (!enemy->active){
@@ -154,7 +152,6 @@ void render_healthbar(const Healthbar *healthbar, UINT32 *base)
  * Assumptions: init_model initializes coordinates of model */
 void render_item(const Item *item, UINT32 *base)
 {
-
     if (!item->grabbed){
         if (prev_drawn && item->x == prev_item.x && item->y == prev_item.y){
             return;
@@ -178,8 +175,7 @@ void render_boss(const Boss *boss, UINT32 *base){
 
     if (!boss->active)
     {
-        if (prev_drawn && prev_boss.active)
-        {
+        if (prev_drawn && prev_boss.active){
             clear_region(base,
                          (UINT16)prev_boss.y,
                          (UINT16)prev_boss.x,
@@ -198,27 +194,28 @@ void render_boss(const Boss *boss, UINT32 *base){
         prev_boss.active)
         return;
 
-    if (prev_drawn && prev_boss.active)
+    if (prev_drawn && prev_boss.active){
         clear_region(base,
                      (UINT16)prev_boss.y,
                      (UINT16)prev_boss.x,
                      (UINT16)prev_boss.h,
                      (UINT16)prev_boss.w);
+                    }
 
-    if (boss->anim_frame == 0)
+    if (boss->anim_frame == 0){
         bitmap = (boss->facing < 0) ? boss_bitmap_left : boss_bitmap_right;
-    else
+    }else{
         bitmap = (boss->facing < 0) ? boss_bitmap_left_walk1 : boss_bitmap_right_walk1;
-
+    }
     pbm128(base, (UINT16)boss->y, (UINT16)boss->x, bitmap, 128);
 
     prev_boss = *boss;
 }
 
-    /* Function purpose: Displays item count on top left of the screen
-     * Input: on player pickup and framebuffer base
-     * Output: Renders visual display of updating health potions
-     * Assumptions: none */
+/* Function purpose: Displays item count on top left of the screen
+* Input: on player pickup and framebuffer base
+* Output: Renders visual display of updating health potions
+* Assumptions: none */
 void render_item_count(UINT32 *base, const UINT8 *font, const Player *player){
     
     int p = (int)player->potions + '0';
@@ -230,10 +227,10 @@ void render_item_count(UINT32 *base, const UINT8 *font, const Player *player){
     p--;
 }
 
-    /* Function purpose: Render slash bitmap when player attacks
-     * Input: Player Attack and framebuffer base
-     * Output: Renders visual slash effect coming from the direction the player is facing
-     * Assumptions: none */
+/* Function purpose: Render slash bitmap when player attacks
+* Input: Player Attack and framebuffer base
+* Output: Renders visual slash effect coming from the direction the player is facing
+* Assumptions: none */
 void render_player_slash(const Player *player, UINT32 *base){
     unsigned int slash_x;
     unsigned int slash_y;
@@ -252,10 +249,10 @@ void render_player_slash(const Player *player, UINT32 *base){
     pbm32(base, (UINT16)slash_y, (UINT16)slash_x, bitmap, 32);
 }
 
-    /* Function purpose: Render slash bitmap when enemy attacks
-     * Input: Enemy attack and framebuffer base
-     * Output: Renders visual slash effect coming from the direction the enemy is facing
-     * Assumptions: none */
+/* Function purpose: Render slash bitmap when enemy attacks
+* Input: Enemy attack and framebuffer base
+* Output: Renders visual slash effect coming from the direction the enemy is facing
+* Assumptions: none */
 void render_enemy_slash(const Enemy *enemy, UINT32 *base){
    
     unsigned int slash_x;
@@ -282,8 +279,7 @@ void render_enemy_slash(const Enemy *enemy, UINT32 *base){
  * Input: Player object and framebuffer base
  * Output: Horizontal lines drawn on framebuffer; nothing drawn when trail_timer <= 0
  * Assumptions: trail_x/trail_y/trail_facing were set at dash initiation */
-void render_dash_trail(const Player *player, UINT32 *base)
-{
+void render_dash_trail(const Player *player, UINT32 *base){
     int start_x, length, base_y;
     /* gap between trail end and player sprite edge, so lines don't overlap the sprite */
     int gap = 10;
@@ -312,10 +308,10 @@ void render_dash_trail(const Player *player, UINT32 *base)
         plot_horizontal_line(base, base_y + 44, start_x + 14, (UINT16)(length - 14));
 }
 
-    /* Function purpose: Renders background
-     * Input: framebuffer base
-     * Output: displays background elements and vertical line
-     * Assumptions: none */
+/* Function purpose: Renders background
+ * Input: framebuffer base
+ * Output: displays background elements and vertical line
+ * Assumptions: none */
 void render_background(UINT32 *base){
     int i;
     pbm32(base, 180, 300, building_1, 32);
@@ -332,8 +328,7 @@ void render_background(UINT32 *base){
 /* Function purpose: On player death show renders "YOU ARE DEAD"
  * Input: framebuffer base
  * Output: "YOU ARE DEAD"
- * Assumptions: Player health <= 0 
-*/
+ * Assumptions: Player health <= 0 */
 void render_death_screen(UINT32 *base)
 {
     int r, w;

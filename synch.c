@@ -17,31 +17,68 @@
 #define BOSS_ENGAGE_X 31   
 #define BOSS_ENGAGE_Y 64    /* 128 - 64: boss bottom edge meets player top edge */
 
+/* Function purpose: Pushes apart any two active enemies that are too close
+ *   to each other, preventing them from stacking into a single column while
+ *   converging on the player.
+ * Input: The game model (reads and writes enemy x/y positions)
+ * Output: None, nudges overlapping enemies apart in-place
+ * Assumptions: Called once per tick after all enemy positions have been
+ *   updated; MAX_ENEMIES, MIN_ENEMY_SEP, MIN_Y_WALK, MAX_X, MAX_Y are
+ *   defined and valid 
+ * Citations: https://red3d.com/cwr/papers/1987/SIGGRAPH87.pdf
+ *            https://gamedev.net/forums/topic/623012-efficient-algorithm-to-stop-enemies-from-converging/
+ * Note: We did some googling on how to handle this type of converging. Was a big issue
+ */
 void separate_enemies(Model *model) {
-    int i, j, dxi, dyi, ex_i, ey_i, ex_j, ey_j;
+    int i, j;
+    int x_i, y_i, x_j, y_j;
+    int dist_x, dist_y;
+
+    /* O(n^2) pairwise scan — each unique pair (i,j) checked exactly once.
+     * j always starts at i+1 so we never compare a pair twice or an
+     * enemy against itself. */
     for (i = 0; i < MAX_ENEMIES - 1; i++) {
         if (!model->enemy[i].active) continue;
-        ex_i = (int)model->enemy[i].x;
-        ey_i = (int)model->enemy[i].y;
+        x_i = (int)model->enemy[i].x;
+        y_i = (int)model->enemy[i].y;
+
         for (j = i + 1; j < MAX_ENEMIES; j++) {
             if (!model->enemy[j].active) continue;
-            ex_j = (int)model->enemy[j].x;
-            ey_j = (int)model->enemy[j].y;
-            dxi = ex_j - ex_i; if (dxi < 0) dxi = -dxi;
-            dyi = ey_j - ey_i; if (dyi < 0) dyi = -dyi;
-            if (dxi < MIN_ENEMY_SEP && dyi < MIN_ENEMY_SEP) {
-                /* Separate j from i along X */
-                if (ex_j >= ex_i && ex_j < MAX_X) model->enemy[j].x++;
-                else if (ex_j > 0) model->enemy[j].x--;
+            x_j = (int)model->enemy[j].x;
+            y_j = (int)model->enemy[j].y;
 
-                /* Spread both i and j along Y so enemies route around each other.
-                 * Pushing only j caused column stacking; spreading both unblocks the lane. */
-                if (ey_j >= ey_i) {
-                    if (ey_j < MAX_Y) model->enemy[j].y++;
-                    if (ey_i > MIN_Y_WALK) model->enemy[i].y--;
+            /* Compute absolute distance on each axis independently.
+             * We use axis-aligned separation rather than true Euclidean
+             * distance to avoid multiplication and stay C89/integer-only. */
+            dist_x = x_j - x_i; if (dist_x < 0) dist_x = -dist_x;
+            dist_y = y_j - y_i; if (dist_y < 0) dist_y = -dist_y;
+
+            if (dist_x < MIN_ENEMY_SEP && dist_y < MIN_ENEMY_SEP) {
+
+                /* --- X axis: only j is nudged ---
+                 * i keeps its position so the inner loop's cached x_i/y_i
+                 * remains valid for the rest of j's iterations this frame.
+                 * j is pushed away from i: rightward if it is to i's right
+                 * (or directly on top), leftward otherwise. Boundary guards
+                 * prevent j from leaving the screen. */
+                if (x_j >= x_i && x_j < MAX_X) model->enemy[j].x++;
+                else if (x_j > 0)               model->enemy[j].x--;
+
+                /* --- Y axis: both i and j are nudged in opposite directions ---
+                 * Pushing only j caused a column-stacking bug where enemies
+                 * would bunch at the lane boundary. Spreading both entities
+                 * means they actively route around each other rather than
+                 * one blocking the other indefinitely.
+                 * Each nudge is individually clamped to the walkable lane
+                 * (MIN_Y_WALK..MAX_Y) so neither enemy is pushed off the path. */
+                if (y_j >= y_i) {
+                    /* j is below (or level with) i: push j down, i up */
+                    if (y_j < MAX_Y)      model->enemy[j].y++;
+                    if (y_i > MIN_Y_WALK) model->enemy[i].y--;
                 } else {
-                    if (ey_j > MIN_Y_WALK) model->enemy[j].y--;
-                    if (ey_i < MAX_Y) model->enemy[i].y++;
+                    /* j is above i: push j up, i down */
+                    if (y_j > MIN_Y_WALK) model->enemy[j].y--;
+                    if (y_i < MAX_Y)      model->enemy[i].y++;
                 }
             }
         }
@@ -263,12 +300,6 @@ void update_boss_position(Boss *boss, const Player *player)
         boss->anim_frame = 0;
 }
 
-void update_boss_cooldown(Boss *boss)
-{
-    if (boss->attack_cooldown > 0)
-        boss->attack_cooldown--;
-}
-
 /* Function purpose: updates the player cooldowns together
  * Input: The player object
  * Output: None, just updates the cooldowns
@@ -307,8 +338,22 @@ void update_player_cooldowns(Player *player) {
         player->trail_timer--;
 }
 
+/* Function purpose: updates the enemy cooldowns
+ * Input: The enemy object
+ * Output: None, just updates the cooldowns
+ * Assumptions: None
 void update_enemy_cooldown(Enemy *enemy)
 {
     if (enemy->attack_cooldown > 0)
         enemy->attack_cooldown--;
+}
+
+/* Function purpose: updates the boss cooldowns
+ * Input: The boss object
+ * Output: None, just updates the cooldowns
+ * Assumptions: None */
+void update_boss_cooldown(Boss *boss)
+{
+    if (boss->attack_cooldown > 0)
+        boss->attack_cooldown--;
 }

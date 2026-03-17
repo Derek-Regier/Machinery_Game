@@ -125,8 +125,8 @@ void render_enemy(const Enemy *enemy, Enemy *prev, UINT32 *base)
 }
 
 /* Function purpose: Displays rectangle serving as a healthbar using player
-    health to update display
- * Input: Healthbar object and base
+    health to update display. Increments or decrements depending on player health.
+ * Input: Healthbar object and framebuffer base
  * Output: Player health bar displayed to top left of screen, proportionate
     to player health value
  * Assumptions: Damage decrements, Healing increments */
@@ -151,7 +151,7 @@ void render_healthbar(const Healthbar *healthbar, UINT32 *base)
 /* Function purpose: Displays item bitmap according to item's position
  * Input: Item bitmap and models
  * Output: Item object displayed to screen
- * Assumptions: init_model initializes coordinates of model, enemies drop items */
+ * Assumptions: init_model initializes coordinates of model */
 void render_item(const Item *item, UINT32 *base)
 {
 
@@ -169,11 +169,10 @@ void render_item(const Item *item, UINT32 *base)
     }
 }
 
-/* Function purpose: Displays boss bitmap according to boss's position
+/* Function purpose: Displays boss bitmap according to boss's position 
  * Input: Boss bitmap and model
  * Output: Boss object displayed to screen
- * Assumptions: init_model initializes coordinates of model, boss is also
-    128x128 requiring a loop to display full bitmap */
+ * Assumptions: init_model initializes coordinates of model, boss is 128x128*/
 void render_boss(const Boss *boss, UINT32 *base){
     UINT32 (*bitmap)[4];
 
@@ -217,7 +216,7 @@ void render_boss(const Boss *boss, UINT32 *base){
 }
 
     /* Function purpose: Displays item count on top left of the screen
-     * Input: pickup
+     * Input: on player pickup and framebuffer base
      * Output: Renders visual display of updating health potions
      * Assumptions: none */
 void render_item_count(UINT32 *base, const UINT8 *font, const Player *player){
@@ -232,8 +231,8 @@ void render_item_count(UINT32 *base, const UINT8 *font, const Player *player){
 }
 
     /* Function purpose: Render slash bitmap when player attacks
-     * Input: Player attack key
-     * Output: Renders visual slash bitmap
+     * Input: Player Attack and framebuffer base
+     * Output: Renders visual slash effect coming from the direction the player is facing
      * Assumptions: none */
 void render_player_slash(const Player *player, UINT32 *base){
     unsigned int slash_x;
@@ -253,6 +252,10 @@ void render_player_slash(const Player *player, UINT32 *base){
     pbm32(base, (UINT16)slash_y, (UINT16)slash_x, bitmap, 32);
 }
 
+    /* Function purpose: Render slash bitmap when enemy attacks
+     * Input: Enemy attack and framebuffer base
+     * Output: Renders visual slash effect coming from the direction the enemy is facing
+     * Assumptions: none */
 void render_enemy_slash(const Enemy *enemy, UINT32 *base){
    
     unsigned int slash_x;
@@ -309,6 +312,10 @@ void render_dash_trail(const Player *player, UINT32 *base)
         plot_horizontal_line(base, base_y + 44, start_x + 14, (UINT16)(length - 14));
 }
 
+    /* Function purpose: Renders background
+     * Input: framebuffer base
+     * Output: displays background elements and vertical line
+     * Assumptions: none */
 void render_background(UINT32 *base){
     int i;
     pbm32(base, 180, 300, building_1, 32);

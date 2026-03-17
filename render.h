@@ -55,12 +55,28 @@ void render_item(const Item *item, UINT32 *base);
  * Assumptions: Damange decrements, Healing increments*/
 void render_healthbar(const Healthbar *healthbar, UINT32 *base);
 
+ /* Function purpose: Displays item count on top left of the screen
+  * Input: on player pickup and framebuffer base
+  * Output: Renders visual display of updating health potions
+  * Assumptions: none */
 void render_item_count(UINT32 *base, const UINT8 *font, const Player *player);
 
+/* Function purpose: Render slash bitmap when player attacks
+ * Input: Player Attack and framebuffer base
+ * Output: Renders visual slash effect coming from the direction the player is facing
+ * Assumptions: none */
 void render_player_slash(const Player *player, UINT32 *base);
 
+/* Function purpose: Render slash bitmap when enemy attacks
+ * Input: Enemy attack and framebuffer base
+ * Output: Renders visual slash effect coming from the direction the enemy is facing  
+ * Assumptions: none */
 void render_enemy_slash(const Enemy *enemy, UINT32 *base);
 
+/* Function purpose: Renders background
+ * Input: framebuffer base
+ * Output: displays background elements and vertical line
+ * Assumptions: none */
 void render_background(UINT32 *base);
 
 /* Function purpose: Draws speed-lines behind player after a dash

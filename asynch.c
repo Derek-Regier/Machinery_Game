@@ -9,7 +9,7 @@
 
 #include "asynch.h"
 #include "item.h"
-#define PLAYER_ATTACK_COOLDOWN 35
+#define PLAYER_ATTACK_COOLDOWN 20
 #define ITEM_USE_COOLDOWN 35 
 #define PLAYER_SPEED 2
 #define DASH_SPEED 75
@@ -47,10 +47,10 @@ void move_player(Player *player, char key){
     }
     if (key == 'l'){
         if (player->dash_cooldown > 0) return;
-        player->trail_x      = player->x;
-        player->trail_y      = player->y;
+        player->trail_x = player->x;
+        player->trail_y = player->y;
         player->trail_facing = player->facing;
-        player->trail_timer  = DASH_TRAIL_DURATION;
+        player->trail_timer = DASH_TRAIL_DURATION;
         if (player->facing == 1){
             player->delta_x = DASH_SPEED;
         }else{
@@ -67,8 +67,8 @@ void move_player(Player *player, char key){
  * Output: None, modifies player->health, potions, item_cooldown
  * Assumptions: Called from async key handler only */
 void consume_potion(Player *player){
-    if (player->potions <= 0)        return;
-    if (player->item_cooldown > 0)   return;
+    if (player->potions <= 0) return;
+    if (player->item_cooldown > 0) return;
 
     player->health += POTION_HEAL_VALUE;
     if (player->health > PLAYER_MAX_HEALTH)

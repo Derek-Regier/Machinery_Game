@@ -8,7 +8,7 @@
 #ifndef SYNCH_H
 #define SYNCH_H
 #define ENEMY_ATTACK_COOLDOWN 60
-#define ENEMY_WINDUP 35          /* ticks spent in range before striking (~0.5 s at 70 Hz) */
+#define ENEMY_WINDUP 15          /* ticks spent in range before striking (~0.21 s at 70 Hz) */
 #define BOSS_ATTACK_COOLDOWN  90  /* ticks between boss attacks (~1.3 s at 70 Hz) */
 #include "player.h"
 #include "enemy.h"

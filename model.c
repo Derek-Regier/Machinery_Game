@@ -28,8 +28,8 @@ void init_model(Model *model)
     model->player.y = 316; /* center of walkable lane (264-368) */
     model->player.delta_x = 0;
     model->player.delta_y = 0;
-    model->player.health = 100;
-    model->player.damage = 10;
+    model->player.health = 120;
+    model->player.damage = 8;
     model->player.potions = 4;
     model->player.is_attacking = FALSE;
     model->player.item_cooldown = 0;
@@ -61,8 +61,8 @@ void init_model(Model *model)
     model->enemy[0].y = 296; /* upper part of walkable lane */
     model->enemy[0].delta_x = 0;
     model->enemy[0].delta_y = 0;
-    model->enemy[0].health = 60;
-    model->enemy[0].damage = 10;
+    model->enemy[0].health = 20;
+    model->enemy[0].damage = 4;
     model->enemy[0].w = 32;
     model->enemy[0].h = 64;
     model->enemy[0].is_attacking = FALSE;
@@ -78,8 +78,8 @@ void init_model(Model *model)
     model->enemy[1].y = 336; /* lower part of walkable lane */
     model->enemy[1].delta_x = 0;
     model->enemy[1].delta_y = 0;
-    model->enemy[1].health = 60;
-    model->enemy[1].damage = 10;
+    model->enemy[1].health = 20;
+    model->enemy[1].damage = 4;
     model->enemy[1].w = 32;
     model->enemy[1].h = 64;
     model->enemy[1].is_attacking = FALSE;
@@ -120,7 +120,7 @@ void init_model(Model *model)
     model->boss.delta_y = 0;
     model->boss.health = 200;
     model->boss.max_health = 200;
-    model->boss.damage = 15;
+    model->boss.damage = 10;
     model->boss.summoned = FALSE;
     model->boss.is_attacking = FALSE;
     model->boss.active = FALSE; /* activated when stage reaches 4 */

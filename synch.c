@@ -88,10 +88,17 @@ void update_enemy_velocity(Enemy *enemy, const Player *player)
     if (enemy->delta_x == 0 && enemy->delta_y == 0 && enemy->attack_cooldown == 0) {
         /* In range and cooled down: charge up before striking */
         enemy->attack_windup++;
-        if (enemy->attack_windup >= ENEMY_WINDUP)
+        if (enemy->attack_windup >= ENEMY_WINDUP) {
+            /* Commit to one attack tick: set cooldown here so the window is
+             * exactly one tick regardless of whether the hitbox lands.
+             * This prevents the slash from persisting while the player is
+             * in engage range but not inside the hitbox. */
             enemy->is_attacking = TRUE;
-        else
+            enemy->attack_cooldown = ENEMY_ATTACK_COOLDOWN;
+            enemy->attack_windup = 0;
+        } else {
             enemy->is_attacking = FALSE;
+        }
     } else {
         /* Moving or on cooldown: reset the windup so it telegraphs fresh each time */
         enemy->attack_windup = 0;

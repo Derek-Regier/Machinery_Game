@@ -85,6 +85,10 @@ void player_hits_enemy(Player *player, Enemy *enemy)
         died = update_enemy_health(enemy, -damage);
         if (died)
             enemy->active = FALSE;
+        /* Clear attack flag so the slash stops immediately and damage
+         * is applied exactly once per swing. attack_cooldown keeps
+         * ticking in update_attack_cooldown, preventing rapid re-attack. */
+        player->is_attacking = FALSE;
         /* TODO: hit sound, animation */
     }
 }
@@ -123,8 +127,8 @@ bool enemy_hits_player(Enemy *enemy, Player *player)
     {
         int damage = enemy_attack(enemy);
         bool died  = player_take_damage(player, damage);
-        enemy->attack_cooldown = ENEMY_ATTACK_COOLDOWN;
-        enemy->is_attacking = FALSE;
+        /* cooldown and is_attacking are already handled by update_enemy_velocity
+         * when the attack window was committed; nothing to reset here */
         return died;
     }
     return FALSE;
@@ -278,8 +282,8 @@ void spawn_enemy(Model *model, int stage)
     for (i = index_offset; i < index_offset + count; i++)
     {
         model->enemy[i].active = FALSE; /* queue, don't activate yet */
-        model->enemy[i].health = 50;
-        model->enemy[i].damage = 8;
+        model->enemy[i].health = 20;
+        model->enemy[i].damage = 4;
         model->enemy[i].w = 32;
         model->enemy[i].h = 64;
         model->enemy[i].delta_x = 0;

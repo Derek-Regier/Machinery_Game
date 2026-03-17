@@ -373,7 +373,27 @@ void render_background(UINT32 *base){
     plot_vertical_line(base, 60, 500, 30);
     plot_vertical_line(base, 60, 550, 30);
     plot_vertical_line(base, 60, 600, 160);
-    
+
+    /*left window*/
+    plot_vertical_line(base, 100, 100, 60);
+    plot_vertical_line(base, 100, 150, 60);
+    plot_horizontal_line(base, 100, 100, 50);
+    plot_horizontal_line(base, 160, 100, 50);
+
+    /*right window*/
+    plot_vertical_line(base, 100, 500, 60);
+    plot_vertical_line(base, 100, 550, 60);
+    plot_horizontal_line(base, 100, 500, 50);
+    plot_horizontal_line(base, 160, 500, 50);
+
+   
+    /*left triangle tip*/
+    plot_line(base, 20, 75, 60, 100);
+    plot_line(base, 20, 75, 60, 50);
+
+    /*right triangle tip*/
+    plot_line(base, 20, 575, 60, 600);
+    plot_line(base, 20, 575, 60, 550);
 
 }
 /* Function purpose: On player death show renders "YOU ARE DEAD"

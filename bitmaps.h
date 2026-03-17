@@ -58,9 +58,15 @@ extern UINT32 slash_bitmap_left[32];  /* 32x32 slash effect */
 
 extern UINT32 building_1[32];
 
+extern UINT32 building_2[32];
+
+extern UINT32 building_3[32];
+
 extern UINT32 castle[32];
 
-extern UINT32 tree_1[16];
+extern UINT32 tree_1[32];
+
+extern UINT32 mountain_1[32];
 
 extern UINT32 dead_bitmap[21][7];
 #endif /* BITMAPS_H */

@@ -310,19 +310,34 @@ void render_dash_trail(const Player *player, UINT32 *base)
 }
 
 void render_background(UINT32 *base){
-    pbm32(base, 30, 300, building_1, 32);
+    int i;
+    pbm32(base, 180, 300, building_1, 32);
+    pbm32(base, 180, 320, castle, 32);
+    pbm32(base, 180, 280, mountain_1, 32);
+    pbm32(base, 180, 260, building_2, 32);
+    pbm32(base, 180, 220, building_3, 32);
+    pbm32(base, 180, 240, mountain_1, 32);
+    plot_horizontal_line(base, 220, 0, 639);
+  
+
 
 }
+/* Function purpose: On player death show renders "YOU ARE DEAD"
+ * Input: framebuffer base
+ * Output: "YOU ARE DEAD"
+ * Assumptions: Player health <= 0 
+*/
 void render_death_screen(UINT32 *base)
 {
     int r, w;
     UINT16 x = (640 - DEAD_W) / 2;  /* 208 */
     UINT16 y = (400 - DEAD_H) / 2;  /* 189 */
-
-    for (r = 0; r < DEAD_H; r++)
-        for (w = 0; w < 7; w++)
+    for (r = 0; r < DEAD_H; r++){
+        for (w = 0; w < 7; w++){
             pbm32(base, y + r, x + (w * 32), &dead_bitmap[r][w], 1);
-}
+        }
+    }       
+}   
 
 void render_reset(void){
     prev_drawn = FALSE;

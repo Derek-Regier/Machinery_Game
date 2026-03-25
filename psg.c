@@ -54,13 +54,22 @@ void set_volume(int channel, int volume){
 /*Turns the given channel’s tone/noise signals 
 on/off (0=off, 1=on).*/
 void enable_channel(int channel, int tone_on, int noise_on){
-
+    *PSG_reg_select = channel;
+    *PSG_reg
 
 }
 /*Silences all PSG sound production.*/
 void stop_sound(){
 
-    
+    *PSG_reg_select = 8;		/* set channel A volume = 0 */
+	*PSG_reg_write  = 0;
+
+    *PSG_reg_select = 9;		/* set channel B volume = 0 */
+	*PSG_reg_write  = 0;
+
+
+    *PSG_reg_select = 10;		/* set channel C volume = 0 */
+	*PSG_reg_write  = 0;
 
 }
 

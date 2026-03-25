@@ -6,8 +6,10 @@
 
 
 #include "psg.h"
-#include "TYPES.H"
 
 
 
-
+/*
+* test write_psg - check for boundaries also
+*
+*/

@@ -1,12 +1,11 @@
 /*
-* Low-level PSG library 
+* low-level PSG library 
 *
 */
 
 #ifndef PSG_H
 #define PSG_H
 
-#include <osbind.h>
 #include "types.h"
 
 

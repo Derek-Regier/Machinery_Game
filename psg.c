@@ -22,10 +22,6 @@ other functions in this module.*/
 void write_psg(int reg, UINT8 val){
     long old_ssp = Super(0);
 
-    if((val >= 256 || val < 0) || (reg >= 16 || reg < 0) ){
-        return;
-    }
-
     *PSG_reg_select = reg;
     *PSG_reg_write = val;
 
@@ -33,11 +29,19 @@ void write_psg(int reg, UINT8 val){
 
 }
 
+/*
+Used for testing sound 
+reads value from psg resgister and returns it*/
 UINT8 read_psg(int reg){
-    long old_ssp = Super(0);
+    UINT8 prev_psg:
 
+    long old_ssp = Super(0);
+    *PSG_reg_select = reg;
+    prev_psg = *PSG_reg_write;
 
     Super(old_ssp);
+
+    return prev_psg;
 }
 
 
@@ -51,13 +55,20 @@ void set_tone(int channel, int tuning){
 
 /*Loads the volume register for the given channel.*/
 void set_volume(int channel, int volume){
-    long old_ssp = Super(0);
-
-    write_psg(channel, volume);
-
-    Super(old_ssp);
-
+    if (volume >= 15 || volume <=0){
+        return;
+    }
+    if(channel == 0){
+        write_psg(8, volume);
+    }else if (channel == 1){
+        write_psg(9, volume);
+    }else if (channel == 2){
+        write_psg(10, volume);
+    }else{
+        return;
+    }
 }
+
 /*Turns the given channel’s tone/noise signals 
 on/off (0=off, 1=on).*/
 void enable_channel(int channel, int tone_on, int noise_on){
@@ -70,16 +81,10 @@ void enable_channel(int channel, int tone_on, int noise_on){
 void stop_sound(){
     long old_ssp = Super(0);
 
-    *PSG_reg_select = 8;		/* set channel A volume = 0 */
-	*PSG_reg_write  = 0;
-    write_psg(8, 0);
-    *PSG_reg_select = 9;		/* set channel B volume = 0 */
-	*PSG_reg_write  = 0;
-    write_psg(9, 0);
+    write_psg(8, 0); /* set channel A volume = 0 */
+    write_psg(9, 0); /* set channel B volume = 0 */
+    write_psg(10, 0); /* set channel C volume = 0 */
 
-    *PSG_reg_select = 10;		/* set channel C volume = 0 */
-	*PSG_reg_write  = 0;
-    write_psg(10, 0);
     Super(old_ssp);
 }
 

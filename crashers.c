@@ -1,4 +1,3 @@
-/*Renamed file to castle_crashers.c*/
 #include "crashers.h"
 
 #define KEY_MOVE_UP 'w'

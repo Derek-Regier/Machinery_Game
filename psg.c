@@ -17,6 +17,13 @@ This is a helper
 routine to be used by the 
 other functions in this module.*/
 
+/* Function purpose: Write the given byte value between 0 to 255 to
+ * specifed PSG register (0-15), primarly used as a helper funtion
+ * Input: PSG register and value that will placed into PSG register
+ * Output: 
+ * Assumptions: 
+ */
+
 void write_psg(int reg, UINT8 val){
     long old_ssp = Super(0);
 

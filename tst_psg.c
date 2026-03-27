@@ -13,3 +13,10 @@
 * test write_psg - check for boundaries also
 *
 */
+
+
+int(main){
+    
+}
+
+

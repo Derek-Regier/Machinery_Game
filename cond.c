@@ -133,8 +133,7 @@ bool enemy_hits_player(Enemy *enemy, Player *player)
         int damage = enemy_attack(enemy);
         bool died  = player_take_damage(player, damage);
         player->hit_flash_timer = HIT_FLASH_DURATION;
-        /* cooldown and is_attacking are already handled by update_enemy_velocity
-         * when the attack window was committed; nothing to reset here */
+        player->hit_facing = enemy->facing;
         return died;
     }
     return FALSE;
@@ -151,6 +150,7 @@ bool boss_hits_player(Boss *boss, Player *player)
         int damage = boss_attack(boss);
         bool died  = player_take_damage(player, damage);
         player->hit_flash_timer = HIT_FLASH_DURATION;
+        player->hit_facing = boss->facing;
         boss->attack_cooldown = BOSS_ATTACK_COOLDOWN;
         boss->is_attacking = FALSE;
         return died;

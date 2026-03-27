@@ -53,12 +53,14 @@ void render(const Model *model, UINT32 *base){
             render_enemy_slash(&model->enemy[i], base);
             render_hit_flash(model->enemy[i].x, model->enemy[i].y,
                              model->enemy[i].w, model->enemy[i].h,
+                             model->player.facing,
                              model->enemy[i].hit_flash_timer, base);
         }
     }
 
     render_hit_flash(model->player.x, model->player.y,
                      model->player.w, model->player.h,
+                     model->player.hit_facing,
                      model->player.hit_flash_timer, base);
 
     if (model->boss.active)
@@ -66,6 +68,7 @@ void render(const Model *model, UINT32 *base){
         render_boss_stomp(&model->boss, base);
         render_hit_flash(model->boss.x, model->boss.y,
                          model->boss.w, model->boss.h,
+                         model->player.facing,
                          model->boss.hit_flash_timer, base);
     }
 
@@ -294,13 +297,17 @@ void render_enemy_slash(const Enemy *enemy, UINT32 *base){
     pbm32(base, (UINT16)slash_y, (UINT16)slash_x, bitmap, 32);
 }
 
-/* Function purpose: Draws a 16x16 impact star centred on an entity when
- *   its hit_flash_timer is active. Works for player, enemy, and boss.
- * Input: entity top-left x/y, entity w/h, hit_flash_timer, framebuffer base
- * Output: Impact star bitmap drawn centred on entity; nothing if timer is 0
+/* Function purpose: Draws a 16x16 impact star in the upper area of an entity
+ *   when its hit_flash_timer is active. The star is offset left or right based
+ *   on attacker_facing so it appears on the side the hit came from rather than
+ *   dead-centre where it would be hidden by the sprite.
+ * Input: entity top-left x/y, entity w/h, attacker_facing (-1/0/1),
+ *        hit_flash_timer, framebuffer base
+ * Output: Impact star bitmap drawn near upper edge of entity; nothing if timer is 0
  * Assumptions: hit_flash_timer is decremented by the cooldown update path */
 void render_hit_flash(unsigned int ex, unsigned int ey,
                       unsigned int ew, unsigned int eh,
+                      int attacker_facing,
                       int hit_flash_timer, UINT32 *base)
 {
     unsigned int cx;
@@ -308,9 +315,18 @@ void render_hit_flash(unsigned int ex, unsigned int ey,
 
     if (hit_flash_timer <= 0) return;
 
-    /* Centre the 16x16 star on the entity */
-    cx = ex + (ew / 2) - 8;
-    cy = ey + (eh / 2) - 8;
+    /* Place star in the upper quarter of the entity on the side the hit came
+     * from.  attacker_facing 1  = attacker faced right, hit lands on the
+     * entity's left side;  -1 = attacker faced left, hit lands on right side;
+     * 0 (unknown) = horizontally centred. */
+    cy = ey + (eh / 4) - 8;
+
+    if (attacker_facing > 0)
+        cx = ex - 4;              /* left side of entity, slight overhang */
+    else if (attacker_facing < 0)
+        cx = ex + ew - 12;        /* right side of entity */
+    else
+        cx = ex + (ew / 2) - 8;  /* centred fallback */
 
     pbm16((UINT16 *)base, (UINT16)cy, (UINT16)cx, hit_star_bitmap, 16);
 }

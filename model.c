@@ -40,6 +40,7 @@ void init_model(Model *model)
     model->player.trail_facing = 1;
     model->player.trail_timer = 0;
     model->player.hit_flash_timer = 0;
+    model->player.hit_facing = 0;
     model->player.h = 64;
     model->player.w = 32;
     model->player.facing = 1;

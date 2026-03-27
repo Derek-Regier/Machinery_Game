@@ -81,6 +81,7 @@ void render_enemy_slash(const Enemy *enemy, UINT32 *base);
  * Assumptions: hit_flash_timer decremented by cooldown update path */
 void render_hit_flash(unsigned int ex, unsigned int ey,
                       unsigned int ew, unsigned int eh,
+                      int attacker_facing,
                       int hit_flash_timer, UINT32 *base);
 
 /* Function purpose: Renders three growing shockwave arcs to the facing side

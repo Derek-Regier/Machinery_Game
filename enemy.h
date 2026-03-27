@@ -27,6 +27,9 @@ typedef struct {
     int attack_windup;     /* ticks spent in engage range before striking */
     int y_offset;
     int hit_flash_timer; /* ticks remaining to display hit spark */
+    unsigned int target_x; /* cached player x used for deferred targeting */
+    unsigned int target_y; /* cached player y used for deferred targeting */
+    int move_timer;        /* ticks until next target refresh; 0 = refresh now */
 } Enemy;
 
 

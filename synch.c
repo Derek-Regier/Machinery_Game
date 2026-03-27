@@ -8,7 +8,8 @@
 #include "synch.h"
 #define MAX_X 608       /* 640 - 32 (player/enemy width) */
 #define MAX_Y 336       /* 400 - 64 (player/enemy height); bottom clamp so entity stays on screen */
-#define MAX_Y_BOSS 272  /* 400 - 128 (boss height) */
+#define MAX_Y_BOSS 272  /* 400 - 128 (boss height); top-left y so bottom edge stays on screen */
+#define MAX_X_BOSS 512  /* 640 - 128 (boss width);  top-left x so right edge stays on screen */
 #define MIN_Y_WALK 189  /* top of walkable lane: old 264 - 75 extra pixels = 189 */
 #define ENGAGE_RANGE_X 31   /* pixels - touching player position bitmap */
 #define ENGAGE_RANGE_Y 16   /* pixels - vertical forgiveness */
@@ -92,18 +93,32 @@ static int diff(int a, int b)
 }
 
 /*
- * Sets enemy delta_x and delta_y to move toward the player,
- * but stops on each axis independently once inside engage range.
- * Enemy will not move on an axis it is already close enough on.
+ * Sets enemy delta_x and delta_y to move toward a cached target position,
+ * refreshing the target from the live player position every MOVE_UPDATE_INTERVAL
+ * ticks.  Between refreshes the enemy keeps heading toward the last known
+ * position, which smooths out direction changes and cuts per-tick recalculation.
+ * Stops on each axis independently once inside engage range.
  *
  * Input:  enemy  - the enemy to update velocity for
  *         player - the player to move toward
- * Output: modifies enemy->delta_x and enemy->delta_y only
+ * Output: modifies enemy->delta_x, delta_y, move_timer, target_x, target_y
  */
 void update_enemy_velocity(Enemy *enemy, const Player *player)
 {
-    int dx = diff((int)player->x, (int)enemy->x);
-    int dy = diff((int)player->y + enemy->y_offset, (int)enemy->y);
+    int dx;
+    int dy;
+
+    /* Refresh target on expiry; decrement otherwise */
+    if (enemy->move_timer <= 0) {
+        enemy->target_x = player->x;
+        enemy->target_y = player->y;
+        enemy->move_timer = MOVE_UPDATE_INTERVAL;
+    } else {
+        enemy->move_timer--;
+    }
+
+    dx = diff((int)enemy->target_x, (int)enemy->x);
+    dy = diff((int)enemy->target_y + enemy->y_offset, (int)enemy->y);
 
     /* X axis - close enough? stop horizontal movement */
     if (dx > ENGAGE_RANGE_X){
@@ -122,14 +137,11 @@ void update_enemy_velocity(Enemy *enemy, const Player *player)
         enemy->delta_y = -1;
     else
         enemy->delta_y = 0;
+
     if (enemy->delta_x == 0 && enemy->delta_y == 0 && enemy->attack_cooldown == 0) {
         /* In range and cooled down: charge up before striking */
         enemy->attack_windup++;
         if (enemy->attack_windup >= ENEMY_WINDUP) {
-            /* Commit to one attack tick: set cooldown here so the window is
-             * exactly one tick regardless of whether the hitbox lands.
-             * This prevents the slash from persisting while the player is
-             * in engage range but not inside the hitbox. */
             enemy->is_attacking = TRUE;
             enemy->attack_cooldown = ENEMY_ATTACK_COOLDOWN;
             enemy->attack_windup = 0;
@@ -192,8 +204,22 @@ void update_player_position(Player *player)
     else
         player->anim_frame = 0;
 
-    player->delta_x = 0;
-    player->delta_y = 0;
+    /* Friction: dash deltas (|delta| > PLAYER_NORMAL_SPEED) are consumed
+     * immediately — the burst is exactly one tick.  Normal walking deltas
+     * decay by 1 per tick toward zero, giving a short slide-to-stop without
+     * needing key-release events.  This also lets the last held direction
+     * carry briefly into the next axis press, producing diagonal movement. */
+    if (player->delta_x > PLAYER_NORMAL_SPEED || player->delta_x < -PLAYER_NORMAL_SPEED)
+        player->delta_x = 0;
+    else if (player->delta_x > 0)
+        player->delta_x--;
+    else if (player->delta_x < 0)
+        player->delta_x++;
+
+    if (player->delta_y > 0)
+        player->delta_y--;
+    else if (player->delta_y < 0)
+        player->delta_y++;
 }
 /* Function purpose: Moves the enemy according to the velocity
  * Input: The enemy object
@@ -206,8 +232,17 @@ void update_enemy_position(Enemy *enemy, const Player *player)
 
     update_enemy_velocity(enemy, player);
 
-    if (enemy->delta_x != 0)
+    /* Horizontal: guard unsigned underflow then clamp right edge.
+     * Mirrors the same pattern used in update_player_position. */
+    if (enemy->delta_x < 0 &&
+        enemy->x < (unsigned int)(-enemy->delta_x))
+    {
+        enemy->x = 0;
+    }
+    else if (enemy->delta_x != 0)
         move_enemy_horizontal(enemy);
+
+    if (enemy->x > MAX_X) enemy->x = MAX_X;
 
     if (enemy->delta_y != 0)
         move_enemy_vertical(enemy);
@@ -231,18 +266,32 @@ void update_enemy_position(Enemy *enemy, const Player *player)
 }
 
 /*
- * Sets boss delta_x and delta_y to move toward the player,
- * stopping on each axis independently once inside engage range.
+ * Sets boss delta_x and delta_y to move toward a cached target position,
+ * refreshing every MOVE_UPDATE_INTERVAL ticks (same cadence as enemies).
+ * Stops on each axis independently once inside engage range.
  * Sets is_attacking when the boss is in range and the cooldown is clear.
  *
  * Input:  boss   - the boss to update
  *         player - the player to move toward
- * Output: modifies boss->delta_x, delta_y, and is_attacking
+ * Output: modifies boss->delta_x, delta_y, is_attacking, move_timer,
+ *         target_x, target_y
  */
 void update_boss_velocity(Boss *boss, const Player *player)
 {
-    int dx = diff((int)player->x, (int)boss->x);
-    int dy = diff((int)player->y, (int)boss->y);
+    int dx;
+    int dy;
+
+    /* Refresh target on expiry; decrement otherwise */
+    if (boss->move_timer <= 0) {
+        boss->target_x = player->x;
+        boss->target_y = player->y;
+        boss->move_timer = MOVE_UPDATE_INTERVAL;
+    } else {
+        boss->move_timer--;
+    }
+
+    dx = diff((int)boss->target_x, (int)boss->x);
+    dy = diff((int)boss->target_y, (int)boss->y);
 
     if (dx > BOSS_ENGAGE_X){
         boss->delta_x = 1;
@@ -279,8 +328,18 @@ void update_boss_position(Boss *boss, const Player *player)
 
     update_boss_velocity(boss, player);
 
-    if (boss->delta_x != 0)
+    /* Horizontal: guard unsigned underflow then clamp so the 128px
+     * boss sprite never extends past the right screen edge (640px).
+     * MAX_X_BOSS = 640 - 128 = 512.  Mirrors update_player_position. */
+    if (boss->delta_x < 0 &&
+        boss->x < (unsigned int)(-boss->delta_x))
+    {
+        boss->x = 0;
+    }
+    else if (boss->delta_x != 0)
         move_boss_horizontal(boss);
+
+    if (boss->x > MAX_X_BOSS) boss->x = MAX_X_BOSS;
 
     if (boss->delta_y != 0)
         move_boss_vertical(boss);

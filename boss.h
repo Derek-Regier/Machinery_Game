@@ -28,6 +28,9 @@ typedef struct {
     int attack_cooldown; /* ticks remaining before boss can attack again */
     int hit_flash_timer; /* ticks remaining to display hit spark */
     int stomp_frame;     /* counts down from STOMP_DURATION on each attack */
+    unsigned int target_x; /* cached player x used for deferred targeting */
+    unsigned int target_y; /* cached player y used for deferred targeting */
+    int move_timer;        /* ticks until next target refresh; 0 = refresh now */
 } Boss;
 
 /* Function purpose: Moves the boss vertically

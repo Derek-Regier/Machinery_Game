@@ -75,8 +75,9 @@ void init_model(Model *model)
     model->enemy[0].anim_frame = 0;
     model->enemy[0].anim_counter = 0;
     model->enemy[0].hit_flash_timer = 0;
-
-    model->enemy[1].x = 560;
+    model->enemy[0].target_x = 64;  /* player start x */
+    model->enemy[0].target_y = 316; /* player start y */
+    model->enemy[0].move_timer = 0; /* refresh on first tick */
     model->enemy[1].y = 336; /* lower part of walkable lane */
     model->enemy[1].delta_x = 0;
     model->enemy[1].delta_y = 0;
@@ -93,6 +94,9 @@ void init_model(Model *model)
     model->enemy[1].anim_frame = 0;
     model->enemy[1].anim_counter = 0;
     model->enemy[1].hit_flash_timer = 0;
+    model->enemy[1].target_x = 64;  /* player start x */
+    model->enemy[1].target_y = 316; /* player start y */
+    model->enemy[1].move_timer = 0; /* refresh on first tick */
 
     for (i = 2; i < MAX_ENEMIES; i++)
     {
@@ -113,6 +117,9 @@ void init_model(Model *model)
         model->enemy[i].anim_frame = 0;
         model->enemy[i].anim_counter = 0;
         model->enemy[i].hit_flash_timer = 0;
+        model->enemy[i].target_x = 0;
+        model->enemy[i].target_y = 0;
+        model->enemy[i].move_timer = 0;
     }
 
     model->enemy_count = 2; /* only the two tutorial enemies are live */
@@ -136,6 +143,9 @@ void init_model(Model *model)
     model->boss.facing = -1;
     model->boss.anim_frame = 0;
     model->boss.anim_counter = 0;
+    model->boss.target_x = 64;  /* player start x */
+    model->boss.target_y = 316; /* player start y */
+    model->boss.move_timer = 0; /* refresh on first tick */
 
     /* create items
      * All four items start off-screen (x=700 is past the right edge).

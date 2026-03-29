@@ -9,6 +9,7 @@ do_all:
 	make -f tst_evt.mak
 	make -f tst_mdl.mak
 	make -f tst_rend.mak
+	make -f tst_sound.mak
 clean:
 	make -f tst_rast.mak clean
 	make -f tst_font.mak clean

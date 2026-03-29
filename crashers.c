@@ -189,6 +189,10 @@ int main(void)
     UINT32 time_elapsed;
     char key;
 
+    old_ssp = Super(0);
+   
+    Super(old_ssp);
+
     /* Initalize model */
     init_model(&model);
 
@@ -200,11 +204,12 @@ int main(void)
     clear_screen(front_buf);
     render_reset();
     render(&model, front_buf);
-
+    
     start_music();
 
     /* flip to back buffer */
     old_ssp = Super(0);
+   
     Setscreen(-1L, (long)back_buf, -1L);
     vbl_now = *timer;
     while (*timer == vbl_now)
@@ -260,7 +265,9 @@ int main(void)
     }
 
     /* restore original physbase */
+    stop_sound();
     old_ssp = Super(0);
+   
     Setscreen(-1L, (long)orig_phys, -1L);
     Super(old_ssp);
     return 0;

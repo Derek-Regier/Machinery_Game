@@ -8,7 +8,7 @@
 
 #include "types.h"
 
-
+extern volatile UINT8 curr_r7_val;
 
 void write_psg(int reg, UINT8 val);
 

@@ -38,11 +38,11 @@ void write_psg(int reg, UINT8 val){
 Used for testing sound 
 reads value from psg resgister and returns it*/
 UINT8 read_psg(int reg){
-    UINT8 prev_psg:
+    UINT8 prev_psg;
 
     long old_ssp = Super(0);
     *PSG_reg_select = reg;
-    prev_psg = *PSG_reg_write;
+    prev_psg = *PSG_reg_select;
 
     Super(old_ssp);
 
@@ -54,7 +54,7 @@ UINT8 read_psg(int reg){
 the given channel (0=A, 1=B, 2=C) with the
 given 12-bit tuning. */
 void set_tone(int channel, int tuning){
-    if(tuning > 4095){
+    if(tuning <0 || tuning > 4095){
         return;
     }
 
@@ -78,7 +78,7 @@ void set_tone(int channel, int tuning){
 
 /*Loads the volume register for the given channel.*/
 void set_volume(int channel, int volume){
-    if (volume >= 15 || volume <=0){
+    if (volume >= 15 || volume <0){
         return;
     }
     if(channel == 0){
@@ -140,13 +140,11 @@ void enable_channel(int channel, int tone_on, int noise_on){
 
 /*Silences all PSG sound production.*/
 void stop_sound(){
-    long old_ssp = Super(0);
 
     write_psg(8, 0); /* set channel A volume = 0 */
     write_psg(9, 0); /* set channel B volume = 0 */
     write_psg(10, 0); /* set channel C volume = 0 */
 
-    Super(old_ssp);
 }
 
 

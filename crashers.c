@@ -201,6 +201,8 @@ int main(void)
     render_reset();
     render(&model, front_buf);
 
+    start_music();
+
     /* flip to back buffer */
     old_ssp = Super(0);
     Setscreen(-1L, (long)back_buf, -1L);
@@ -230,9 +232,12 @@ int main(void)
 
        if (time_elapsed > 0)
         {
+            /* update music*/
+            update_music(time_elapsed);
             /* process events */
             process_sync_events(&model);
             process_cond_events(&model);
+
 
             /* Render current state */
             clear_screen(back_buf);

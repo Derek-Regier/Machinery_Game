@@ -138,6 +138,25 @@ void enable_channel(int channel, int tone_on, int noise_on){
     return;
 }
 
+/*
+    Function: Set noise (register 6)
+*/
+void set_noise(int tuning){
+    if (tuning < 0 || tuning > 0x1F) {
+        return;
+    }
+    write_psg(6, tuning);
+}
+
+void set_envelope(int shape, unsigned int sustain){
+    if (shape < 0 || shape > 0xF){
+        return;
+    }
+    write_psg(11, sustain & 0xFF);  
+    write_psg(12, sustain >> 8);    
+    write_psg(13, shape);           
+}
+
 /*Silences all PSG sound production.*/
 void stop_sound(){
 

@@ -10,7 +10,9 @@
 #include "asynch.h"
 #include "cond.h"
 #include "input.h"
-#include "types.h"
+#include "types.h" 
+#include "psg.h"
+#include "music.h"
 
 /*
  * Reads and returns the current 70Hz TOS timer value at 0x462.

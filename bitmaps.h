@@ -81,6 +81,6 @@ extern UINT32 letter_R[32];
 extern UINT32 letter_S[32];
 extern UINT32 letter_T[32];
 
-extern UINT8 arrow[8];'
+extern UINT8 arrow[8];
   
 #endif /* BITMAPS_H */

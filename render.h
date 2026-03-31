@@ -105,4 +105,6 @@ void render_dash_trail(const Player *player, UINT32 *base);
 
 void render_reset(void);
 
+void render_splash(UINT32 *base, const UINT8 *font, bool quit);
+
 #endif /* RENDER_H */

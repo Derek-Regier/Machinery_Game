@@ -167,6 +167,7 @@ void init_model(Model *model)
     model->spawn_end   = 0;
     model->spawn_timer = 0;
     model->quit = FALSE;
+    model->started = FALSE;
 }
 
 /* Unused function, intended to work with continous input/key releases */

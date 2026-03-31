@@ -528,7 +528,46 @@ void render_death_screen(UINT32 *base)
             pbm32(base, y + r, x + (w * 32), &dead_bitmap[r][w], 1);
         }
     }       
-}   
+}  
+
+void render_splash(UINT32 *base, const UINT8 *font, bool quit){
+
+    pbm32(base, 100, 100, letter_C, 32);
+    pbm32(base, 100, 150, letter_A, 32);
+    pbm32(base, 100, 200, letter_S, 32);
+    pbm32(base, 100, 250, letter_T, 32);
+    pbm32(base, 100, 300, letter_L, 32);
+    pbm32(base, 100, 350, letter_E, 32);
+    
+    pbm32(base, 133, 100, letter_C, 32);
+    pbm32(base, 133, 150, letter_R, 32);
+    pbm32(base, 133, 200, letter_A, 32);
+    pbm32(base, 133, 250, letter_S, 32);
+    pbm32(base, 133, 300, letter_H, 32);
+    pbm32(base, 133, 350, letter_E, 32);
+    pbm32(base, 133, 400, letter_R, 32);
+    pbm32(base, 133, 450, letter_S, 32);
+
+    plot_string(base, 199, 125, "1 Player", font);
+    plot_horizontal_line(base, 189, 105, 100);
+    plot_horizontal_line(base, 214, 105, 100);
+    plot_vertical_line(base, 189, 105, 25);
+    plot_vertical_line(base, 189, 205, 25);
+
+    plot_string(base, 232, 125, "quit", font);
+    plot_horizontal_line(base, 222, 105, 100);
+    plot_horizontal_line(base, 247, 105, 100);
+    plot_vertical_line(base, 222, 105, 25);
+    plot_vertical_line(base, 222, 205, 25);
+
+    if (quit){
+        
+        pbm8(base, 232, 210, arrow, 8);
+    }else{
+
+        pbm8(base, 199, 210, arrow, 8);
+    } 
+}
 
 void render_reset(void){
     prev_drawn = FALSE;

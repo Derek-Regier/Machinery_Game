@@ -22,3 +22,5 @@ void on_hit_sound();
  * Output: None
  * Assumptions: None*/
 void enemy_death_sound();
+
+void item_pickup_sound();

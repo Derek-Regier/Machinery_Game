@@ -27,6 +27,7 @@ void grab_item(Player *player, Item *item){
     {
         player->potions++;
         item->grabbed = TRUE;
+        item_pickup_sound();
     }
 }
 
@@ -113,6 +114,7 @@ void player_hits_boss(Player *player, Boss *boss)
                                boss->w, boss->h))
     {
         int damage = light_attack(player);
+        on_hit_sound();
         update_boss_health(boss, -damage);
         boss->hit_flash_timer = HIT_FLASH_DURATION;
         /* Clear attack flag so damage is applied exactly once per swing.

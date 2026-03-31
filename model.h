@@ -30,6 +30,7 @@ typedef struct {
     int spawn_end;          /* index just past the last queued enemy        */
     int spawn_timer;        /* ticks until next enemy is released           */
     bool quit;
+    bool started;
 } Model;
 
 /*

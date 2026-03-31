@@ -72,4 +72,15 @@ extern UINT32 shockwave_md_l[16];  /* 16-row leftward  arc      */
 extern UINT32 shockwave_lg_r[32];  /* 32-row rightward arc      */
 extern UINT32 shockwave_lg_l[32];  /* 32-row leftward  arc      */
 
+extern UINT32 letter_A[32];
+extern UINT32 letter_C[32];
+extern UINT32 letter_E[32];
+extern UINT32 letter_H[32];
+extern UINT32 letter_L[32];
+extern UINT32 letter_R[32];
+extern UINT32 letter_S[32];
+extern UINT32 letter_T[32];
+
+extern UINT8 arrow[8];'
+  
 #endif /* BITMAPS_H */

@@ -1,8 +1,25 @@
+/*Test all sound implementations, which includes psg, music and effects*/
+
 #include <osbind.h>
 #include <stdio.h>
 #include "psg.h"
+#include "music.h"
+#include "effects.h"
 
 #define NOTE_A4   284
+
+UINT8 result;
+
+static volatile long *timer = (volatile long *)0x462L;
+
+UINT32 get_time(void){
+    UINT32 currTime;
+    long oldSsp;
+    oldSsp = Super(0);
+    currTime = *timer;
+    Super(oldSsp);
+    return currTime;
+}
 
 UINT8 result;
 
@@ -355,6 +372,98 @@ void test_set_envelope(){
     stop_sound();
 }
 
+/* ------------------------
+ * TEST: music
+ * ------------------------ */
+void test_music(){
+    UINT32 time_then, time_now, time_elapsed;
+    int ticks = 0;
+    print_separator("music");
+
+    /* test start_music initializes correctly */
+    printf("[music] calling start_music...\n");
+    start_music();
+    printf("[music] curr_r7_val = 0x%02X -- %s\n",
+        curr_r7_val, (curr_r7_val & 0x01) == 0 ? "PASS channel A tone on" : "FAIL channel A tone off");
+
+    /* let music play for a few seconds via update_music */
+    printf("[music] running update_music for ~5 seconds...\n");
+    time_then = get_time();
+
+    while (ticks < 300){        /* time delay */
+        time_now     = get_time();
+        time_elapsed = time_now - time_then;
+
+        if (time_elapsed > 0){
+            update_music(time_elapsed);
+            time_then = time_now;
+            ticks += time_elapsed;
+        }
+    }
+
+    /* verify channel A is still active */
+    printf("[music] after 5 seconds: curr_r7_val = 0x%02X -- %s\n",
+        curr_r7_val, (curr_r7_val & 0x01) == 0 ? "PASS still playing" : "FAIL channel went silent");
+
+    /* test that song loops, run for another 5 seconds */
+    printf("[music] running for another 5 seconds to verify loop...\n");
+    ticks = 0;
+    time_then = get_time();
+
+    while (ticks < 300){
+        time_now     = get_time();
+        time_elapsed = time_now - time_then;
+
+        if (time_elapsed > 0){
+            update_music(time_elapsed);
+            time_then = time_now;
+            ticks += time_elapsed;
+        }
+    }
+
+    printf("[music] loop test: curr_r7_val = 0x%02X -- %s\n",
+        curr_r7_val, (curr_r7_val & 0x01) == 0 ? "PASS still playing" : "FAIL stopped after one loop");
+
+    stop_sound();
+    printf("[music] stop_sound called -- listen for silence\n");
+}
+
+/* ------------------------
+ * TEST: attack_swing_sound
+ * ------------------------ */
+void test_attack_swing_sound(){
+    print_separator("attack_swing_sound");
+
+    attack_swing_sound();
+    printf("[attack_swing] channel B tone on: %s\n",
+        (curr_r7_val & 0x02) == 0 ? "PASS" : "FAIL");
+    stop_sound();
+}
+
+/* ------------------------
+ * TEST: on_hit_sound
+ * ------------------------ */
+void test_on_hit_sound(){
+    print_separator("on_hit_sound");
+
+    on_hit_sound();
+    printf("[on_hit] channel B tone on: %s\n",
+        (curr_r7_val & 0x02) == 0 ? "PASS" : "FAIL");
+    stop_sound();
+}
+
+/* ------------------------
+ * TEST: enemy_death_sound
+ * ------------------------ */
+void test_enemy_death_sound(){
+    print_separator("enemy_death_sound");
+
+    enemy_death_sound();
+    printf("[enemy_death] channel C noise on: %s\n",
+        (curr_r7_val & 0x20) == 0 ? "PASS" : "FAIL");
+    stop_sound();
+}
+
 /* ---------
  * MAIN
  * ---------*/
@@ -367,7 +476,10 @@ int main(){
     test_stop_sound();
     test_set_noise();
     test_set_envelope();
-
+    test_music();
+    test_attack_swing_sound();
+    test_on_hit_sound();
+    test_enemy_death_sound();
 
     printf("\n========== ALL TESTS COMPLETE ==========\n");
     return 0;

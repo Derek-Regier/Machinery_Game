@@ -1,9 +1,12 @@
-crashers.prg: crashers.o music.o psg.o font.o render.o raster.o model.o synch.o asynch.o cond.o input.o bitmaps.o player.o enemy.o boss.o item.o health.o rast_asm.o
-	cc68x -g -o crashers.prg crashers.o music.o psg.o font.o render.o raster.o model.o synch.o asynch.o cond.o input.o bitmaps.o player.o enemy.o boss.o item.o health.o rast_asm.o
+crashers.prg: crashers.o music.o psg.o font.o render.o raster.o model.o synch.o asynch.o cond.o input.o bitmaps.o player.o enemy.o boss.o item.o health.o rast_asm.o effects.o
+	cc68x -g -o crashers.prg crashers.o music.o psg.o font.o render.o raster.o model.o synch.o asynch.o cond.o input.o bitmaps.o player.o enemy.o boss.o item.o health.o rast_asm.o effects.o
 
 
 crashers.o: crashers.c crashers.h
 	cc68x -g -c crashers.c
+
+effects.o: effects.c effects.h
+	cc68x -g -c effects.c
 
 music.o: music.c music.h 
 	cc68x -g -c music.c

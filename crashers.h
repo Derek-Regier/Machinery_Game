@@ -13,6 +13,7 @@
 #include "types.h" 
 #include "psg.h"
 #include "music.h"
+#include "effects.h"
 
 /*
  * Reads and returns the current 70Hz TOS timer value at 0x462.

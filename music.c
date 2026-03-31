@@ -26,29 +26,25 @@ static const Note song[] = {
     {AS4, SIXTEENTH},
     {A4, EIGHT},
     {G4, EIGHT},
-    {G4, EIGHT},
     {F4, EIGHT}
 };
 
 #define SONG_LENGTH (sizeof(song) / sizeof(song[0]))
 
-/* ---------------
+/* 
  *  STATE
- *  --------------*/
+ */
 
 static int    current_note = 0;
 static UINT32 time_on_note = 0;
 
-/* ------------------------------------------
- *  Begins the playing of the song by loading
- *  the data for the first note into the PSG.
- * ------------------------------------------ */
 
+/* Function purpose: Begins the playing of the song by loading
+ *  the data for the first note into the PSG.
+ * Input: None
+ * Output: None
+ * Assumptions: None*/
 void start_music(){
-    
-    /* disable keyboard click via TOS */
-  
-    
     current_note = 0;
     time_on_note = 0;
     set_tone(0, song[0].tuning);
@@ -56,11 +52,12 @@ void start_music(){
     enable_channel(0, 1, 0);
 }
 
-/* -----------------------------------------
- *  Advances the song by time_elapsed ticks.
- *  Called once per game loop tick.
- * ----------------------------------------- */
 
+/* Function purpose: Advances the song by time_elapsed ticks.
+ *  Called once per game loop tick.
+ * Input: Time elapsed
+ * Output: Next note
+ * Assumptions: None*/
 void update_music(UINT32 time_elapsed){
     time_on_note += time_elapsed;
 

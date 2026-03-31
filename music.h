@@ -71,12 +71,12 @@
 #define AS6   67
 #define B6    63
 
-/* Durations */
-#define SIX    8
-#define EIGHT  15
-#define QUART  30
-#define HALF   60
-#define WHOLE 120
+/* Durations at 120 BPM, e.g QUART = 0.35 ticks*/
+#define SIX    9
+#define EIGHT  18
+#define QUART  35
+#define HALF   70
+#define WHOLE 140
 
 typedef struct {
     int    tuning;

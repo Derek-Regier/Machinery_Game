@@ -36,6 +36,7 @@ void grab_item(Player *player, Item *item){
  */
 bool player_take_damage(Player *player, int damage)
 {
+    on_hit_sound();
     player->health -= damage;
     return player->health <= 0;
 }
@@ -83,14 +84,18 @@ void player_hits_enemy(Player *player, Enemy *enemy)
     {
         int damage = light_attack(player);
         died = update_enemy_health(enemy, -damage);
-        if (died)
+        if (died){
             enemy->active = FALSE;
+            on_hit_sound();
+        } else {
+            on_hit_sound();
+        }
         enemy->hit_flash_timer = HIT_FLASH_DURATION;
         /* Clear attack flag so the slash stops immediately and damage
          * is applied exactly once per swing. attack_cooldown keeps
          * ticking in update_attack_cooldown, preventing rapid re-attack. */
         player->is_attacking = FALSE;
-        /* TODO: hit sound, animation */
+        
     }
 }
 

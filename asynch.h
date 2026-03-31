@@ -13,6 +13,7 @@
 #include "enemy.h"
 #include "boss.h"
 #include "item.h"
+#include "effects.h"
 
 /* Asynchronous event handlers */
 

@@ -18,6 +18,7 @@
 #include "enemy.h"
 #include "boss.h"
 #include "model.h"
+#include "effects.h"
 
 void separate_enemies(Model *model);
 /* Function purpose: Moves the player according to the velocity

@@ -63,6 +63,7 @@ void process_async_event(Model *model, char key)
             break;
 
         case KEY_ATTACK:
+            attack_swing_sound();
             on_light_attack(&model->player,
                             model->player.attack_cooldown);
             break;

@@ -29,3 +29,11 @@ void enemy_death_sound(){
 
 }
 
+
+void item_pickup_sound(){
+    set_tone(1,GS6);
+    set_envelope(9, 200);
+    write_psg(9, 0x10);
+    enable_channel(1,1,0);
+}
+

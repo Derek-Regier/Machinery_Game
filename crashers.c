@@ -224,6 +224,52 @@ int main(void)
     /* start clock */
     time_then = get_time();
 
+    /* splash screen */
+    while (!model.started){
+
+        if (has_input())
+        {
+            key = get_input();
+            if (key == KEY_MOVE_UP){
+
+                model.quit = FALSE;
+            }
+            if (key == KEY_MOVE_DOWN){
+                
+                model.quit = TRUE;
+            }
+            if (key == 'm'){
+               
+                model.started = TRUE;
+            }
+        }
+        time_now = get_time();
+        time_elapsed = time_now - time_then;
+        if (time_elapsed > 0)
+        {
+            /* update music*/
+            update_music(time_elapsed);
+            /* Render current state */
+            clear_screen(back_buf);
+            render_reset();
+            render(&model, back_buf);
+
+            old_ssp = Super(0);
+            Setscreen(-1L, (long)back_buf, -1L);
+            vbl_now = *timer;
+            while (*timer == vbl_now)
+                ;
+            Super(old_ssp);
+
+            temp = front_buf;
+            front_buf = back_buf;
+            back_buf = temp;
+
+            time_then = time_now;
+        }
+
+    }
+    
     while (!model.quit)
     {
         /* if input process the asynch events*/

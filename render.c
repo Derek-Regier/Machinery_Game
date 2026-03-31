@@ -25,53 +25,57 @@ static unsigned int prev_slash_y = 0;
 void render(const Model *model, UINT32 *base){
     int i;
 
-    if (model->player.health <= 0)
-    {
-        clear_screen(base);
-        render_death_screen(base);
-        return;
-    }
+    if (!model->started){
 
-    render_dash_trail(&model->player, base);
-    render_player(&model->player, base);
-
-    for (i = 0; i < MAX_ENEMIES; i++){
-        render_enemy(&model->enemy[i], &prev_enemy[i], base);
-    }
+        render_splash(base, font, model->quit);
+    }else{
+        if (model->player.health <= 0)
+        {
+            clear_screen(base);
+            render_death_screen(base);
+            return;
+        }
     
-    render_healthbar(&model->healthbar, base);
-    for (i = 0; i < NUM_ITEMS; i ++){
-        render_item (&model->item[i], base);
-    }
-    render_boss(&model->boss, base);
-    render_item_count(base, font, &model->player);
-    render_player_slash(&model->player, base);
-    render_background(base);    
+        render_dash_trail(&model->player, base);
+        render_player(&model->player, base);
     
-    for (i = 0; i < model->enemy_count; i++){
-        if (model->enemy[i].active){
-            render_enemy_slash(&model->enemy[i], base);
-            render_hit_flash(model->enemy[i].x, model->enemy[i].y,
-                             model->enemy[i].w, model->enemy[i].h,
+        for (i = 0; i < MAX_ENEMIES; i++){
+            render_enemy(&model->enemy[i], &prev_enemy[i], base);
+        }
+        
+        render_healthbar(&model->healthbar, base);
+        for (i = 0; i < NUM_ITEMS; i ++){
+            render_item (&model->item[i], base);
+        }
+        render_boss(&model->boss, base);
+        render_item_count(base, font, &model->player);
+        render_player_slash(&model->player, base);
+        render_background(base);    
+        
+        for (i = 0; i < model->enemy_count; i++){
+            if (model->enemy[i].active){
+                render_enemy_slash(&model->enemy[i], base);
+                render_hit_flash(model->enemy[i].x, model->enemy[i].y,
+                                 model->enemy[i].w, model->enemy[i].h,
+                                 model->player.facing,
+                                 model->enemy[i].hit_flash_timer, base);
+            }
+        }
+    
+        render_hit_flash(model->player.x, model->player.y,
+                         model->player.w, model->player.h,
+                         model->player.hit_facing,
+                         model->player.hit_flash_timer, base);
+    
+        if (model->boss.active)
+        {
+            render_boss_stomp(&model->boss, base);
+            render_hit_flash(model->boss.x, model->boss.y,
+                             model->boss.w, model->boss.h,
                              model->player.facing,
-                             model->enemy[i].hit_flash_timer, base);
+                             model->boss.hit_flash_timer, base);
         }
     }
-
-    render_hit_flash(model->player.x, model->player.y,
-                     model->player.w, model->player.h,
-                     model->player.hit_facing,
-                     model->player.hit_flash_timer, base);
-
-    if (model->boss.active)
-    {
-        render_boss_stomp(&model->boss, base);
-        render_hit_flash(model->boss.x, model->boss.y,
-                         model->boss.w, model->boss.h,
-                         model->player.facing,
-                         model->boss.hit_flash_timer, base);
-    }
-
     prev_drawn = TRUE;
 }
 

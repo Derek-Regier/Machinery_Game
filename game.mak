@@ -56,6 +56,12 @@ item.o: item.c item.h
 health.o: health.c health.h
 	cc68x -g -c health.c
 
+isr.o: isr.c isr.h
+	cc68x -g -c isr.c
+
+isr_asm.o: ISR_ASM.S
+	gen -D -L2 ISR_ASM.S
+
 rast_asm.o: rast_asm.s
 	gen -D -L2 rast_asm.s
 	

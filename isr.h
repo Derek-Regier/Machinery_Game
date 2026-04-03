@@ -14,9 +14,6 @@
 
 #include "TYPES.H"
 
-/* Function pointer type matching the 68000 ISR calling convention. */
-typedef void (*Vector)(void);
-
 /*
  * Overwrites interrupt vector 'num' with 'vec'.
  * Returns the original vector so it can be restored later.

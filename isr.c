@@ -59,7 +59,7 @@ void install_vectors(void)
 
     /* Clear bit 7 (RIE) of the MIDI 6850 control register */
     old_ssp = Super(0);
-    *midi_ctrl &= 0x7F;
+    *midi_ctrl = 0x16;   /* divide/64, 8N1, RTS low, RIE disabled */
     Super(old_ssp);
 }
 
@@ -77,7 +77,7 @@ void uninstall_vectors(void)
 
     /* Restore bit 7 (RIE) of the MIDI 6850 control register */
     old_ssp = Super(0);
-    *midi_ctrl |= 0x80;
+    *midi_ctrl = 0x96;   /* divide/64, 8N1, RTS low, RIE enabled */
     Super(old_ssp);
 }
 

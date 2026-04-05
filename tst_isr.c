@@ -1,7 +1,7 @@
 /*
  * tst_isr.c - Interactive test for interrupt-driven keyboard input.
  *
- * Installs the VBL and IKBD ISRs, then redraws each VBL showing:
+ * Installs the VBL and IKBD ISRs, then updates the display showing:
  *   - The last raw scan code received from keystroke()
  *   - The live held state of the game keys (W A S D E J L)
  *
@@ -21,22 +21,19 @@
 #include "raster.h"
 #include "font.h"
 
-/* Row positions (pixels) for each display line */
 #define ROW_TITLE    20
 #define ROW_HINT     40
 #define ROW_SCAN     80
-#define ROW_GAME    110
-#define ROW_HELD    140
+#define ROW_HELD_LBL 110
+#define ROW_HELD_IND 130
 
-#define COL_L         8
+#define CH   8
+#define COL_L   8
+#define COL_HEX (COL_L + 17 * CH)
+#define COL_IND_0 COL_L
 
 /* ------------------------------------------------------------------ */
-/* Helpers                                                             */
-/* ------------------------------------------------------------------ */
 
-/*
- * Writes "0xXX" for the given byte into buf (must be >= 5 bytes).
- */
 static void byte_to_hex(UINT8 val, char *buf)
 {
     static const char hex[] = "0123456789ABCDEF";
@@ -47,69 +44,38 @@ static void byte_to_hex(UINT8 val, char *buf)
     buf[4] = '\0';
 }
 
-/*
- * Draws the static labels that never change.
- */
 static void draw_labels(UINT8 *base)
 {
-    plot_string(base, ROW_TITLE, COL_L,
-                "ISR INPUT TEST", font);
-    plot_string(base, ROW_HINT,  COL_L,
-                "Press keys. ESC to quit.", font);
-    plot_string(base, ROW_SCAN,  COL_L,
-                "Last scan code:  ", font);
-    plot_string(base, ROW_GAME,  COL_L,
-                "Game keys (held):", font);
-    plot_string(base, ROW_HELD,  COL_L,
-                "W   A   S   D   E   J   L", font);
+    plot_string(base, ROW_TITLE,    COL_L, "ISR INPUT TEST",           font);
+    plot_string(base, ROW_HINT,     COL_L, "Press keys. ESC to quit.", font);
+    plot_string(base, ROW_SCAN,     COL_L, "Last scan code:  ",        font);
+    plot_string(base, ROW_HELD_LBL, COL_L, "Game keys (held):",        font);
+    plot_string(base, ROW_HELD_IND, COL_L, "W   A   S   D   E   J   L",font);
 }
 
-/*
- * Redraws the dynamic portion of the display.
- */
 static void draw_state(UINT8 *base, UINT8 last_scan)
 {
+    static const UINT8 scans[7] = {
+        SCAN_W, SCAN_A, SCAN_S, SCAN_D, SCAN_E, SCAN_J, SCAN_L
+    };
     char hex_buf[5];
     int col;
+    int i;
 
-    /* Last scan code */
+    clear_region((UINT32 *)base, ROW_SCAN, COL_HEX, CH, 4 * CH);
     byte_to_hex(last_scan, hex_buf);
-    plot_string(base, ROW_SCAN, COL_L + 17 * 8, hex_buf, font);
+    plot_string(base, ROW_SCAN, COL_HEX, hex_buf, font);
 
-    /* Held indicators for each game key, spaced 4 chars apart to match
-       the "W   A   S   D   E   J   L" label above */
-    col = COL_L;
-
-    plot_character(base, ROW_HELD + 12, col,
-                   is_key_held(SCAN_W) ? '*' : '-', font);
-    col += 4 * 8;
-
-    plot_character(base, ROW_HELD + 12, col,
-                   is_key_held(SCAN_A) ? '*' : '-', font);
-    col += 4 * 8;
-
-    plot_character(base, ROW_HELD + 12, col,
-                   is_key_held(SCAN_S) ? '*' : '-', font);
-    col += 4 * 8;
-
-    plot_character(base, ROW_HELD + 12, col,
-                   is_key_held(SCAN_D) ? '*' : '-', font);
-    col += 4 * 8;
-
-    plot_character(base, ROW_HELD + 12, col,
-                   is_key_held(SCAN_E) ? '*' : '-', font);
-    col += 4 * 8;
-
-    plot_character(base, ROW_HELD + 12, col,
-                   is_key_held(SCAN_J) ? '*' : '-', font);
-    col += 4 * 8;
-
-    plot_character(base, ROW_HELD + 12, col,
-                   is_key_held(SCAN_L) ? '*' : '-', font);
+    col = COL_IND_0;
+    for (i = 0; i < 7; i++)
+    {
+        clear_region((UINT32 *)base, ROW_HELD_IND + CH + 2, col, CH, CH);
+        plot_character(base, ROW_HELD_IND + CH + 2, col,
+                       is_key_held(scans[i]) ? '*' : '-', font);
+        col += 4 * CH;
+    }
 }
 
-/* ------------------------------------------------------------------ */
-/* main                                                                */
 /* ------------------------------------------------------------------ */
 
 int main(void)
@@ -117,8 +83,13 @@ int main(void)
     UINT8 *base = (UINT8 *)Physbase();
     UINT8 last_scan = 0;
     UINT8 scan;
+    int   dirty = 0;
 
     install_vectors();
+
+    /* Discard any bytes the IKBD had queued before our ISR was installed */
+    while (keystroke() != 0)
+        ;
 
     clear_screen((UINT32 *)base);
     draw_labels(base);
@@ -126,19 +97,27 @@ int main(void)
 
     while (!is_key_held(SCAN_ESC))
     {
-        /* Drain the scan-code buffer; remember the most recent code */
-        while ((scan = keystroke()) != 0)
-        {
-            last_scan = scan;
-        }
-
-        /* Redraw once per VBL */
+        /*
+         * Only drain the keystroke buffer once per VBL (70 Hz).
+         * This prevents hammering mask_ikbd/unmask_ikbd in a tight
+         * spin loop, which spams the ACIA control register and
+         * prevents subsequent interrupts from firing.
+         */
         if (render_request)
         {
             render_request = 0;
-            clear_screen((UINT32 *)base);
-            draw_labels(base);
-            draw_state(base, last_scan);
+
+            while ((scan = keystroke()) != 0)
+            {
+                last_scan = scan;
+                dirty = 1;
+            }
+
+            if (dirty)
+            {
+                draw_state(base, last_scan);
+                dirty = 0;
+            }
         }
     }
 

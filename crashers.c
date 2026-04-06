@@ -138,7 +138,6 @@ int main(void)
     void *back_buf  = (void *)(((UINT32)screenBuffer + 255L) & ~255L);
     void *front_buf = orig_phys;
     void *temp;
-    long old_ssp;
     Model model;
     UINT8 scan;
 
@@ -160,9 +159,7 @@ int main(void)
     install_vectors();
 
     /* Flip to back buffer, then wait for the next VBL so the flip settles */
-    old_ssp = Super(0);
-    Setscreen(-1L, (long)back_buf, -1L);
-    Super(old_ssp);
+    set_video_base(back_buf);
 
     render_request = 0;
     while (!render_request)
@@ -197,9 +194,7 @@ int main(void)
         render_reset();
         render(&model, back_buf);
 
-        old_ssp = Super(0);
-        Setscreen(-1L, (long)back_buf, -1L);
-        Super(old_ssp);
+        set_video_base(back_buf);
 
         temp = front_buf;
         front_buf = back_buf;
@@ -237,9 +232,7 @@ int main(void)
 
         /* Flip buffers - next iteration waits on render_request before
          * we touch back_buf again, so no explicit VBL poll needed here */
-        old_ssp = Super(0);
-        Setscreen(-1L, (long)back_buf, -1L);
-        Super(old_ssp);
+        set_video_base(back_buf);
 
         temp = front_buf;
         front_buf = back_buf;
@@ -250,9 +243,7 @@ int main(void)
     stop_sound();
     uninstall_vectors();
 
-    old_ssp = Super(0);
-    Setscreen(-1L, (long)orig_phys, -1L);
-    Super(old_ssp);
+    set_video_base(orig_phys);
 
     return 0;
 }

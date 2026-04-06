@@ -10,6 +10,7 @@
  */
 
 #include "raster.h"
+#include <osbind.h>
 
 #define SCREEN_WIDTH      640
 #define SCREEN_HEIGHT     400
@@ -361,3 +362,20 @@ void plot_string(UINT8 *base, UINT16 row, UINT16 col,
     }
 }
 */
+/*
+ * Writes addr to the Atari ST video base hardware registers.
+ * 0xFF8201 = bits 23-16 (high byte), 0xFF8203 = bits 15-8 (middle byte).
+ * The hardware latches these at the next VBL boundary so the flip is
+ * always clean regardless of when during the frame this is called.
+ * addr must be 256-byte aligned (low byte is always 0x00).
+ */
+void set_video_base(void *addr)
+{
+    volatile UINT8 *vid_hi  = (volatile UINT8 *)0xFF8201L;
+    volatile UINT8 *vid_mid = (volatile UINT8 *)0xFF8203L;
+    UINT32 a = (UINT32)addr;
+    long old_ssp = Super(0);
+    *vid_hi  = (UINT8)(a >> 16);
+    *vid_mid = (UINT8)(a >> 8);
+    Super(old_ssp);
+}

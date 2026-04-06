@@ -69,4 +69,12 @@ void plot_character(UINT8 *base, UINT16 row, UINT16 col,
 void plot_string(UINT8 *base, UINT16 row, UINT16 col,
                  const char *str, const UINT8 *font_table);
 
+/*
+ * Writes the display address directly to the Atari ST video base hardware
+ * registers (0xFF8201 high byte, 0xFF8203 middle byte). The hardware latches
+ * these at the next VBL boundary, giving a clean tear-free flip.
+ * addr must be 256-byte aligned.
+ */
+void set_video_base(void *addr);
+
 #endif /* RASTER_H */

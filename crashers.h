@@ -10,29 +10,22 @@
 #include "asynch.h"
 #include "cond.h"
 #include "input.h"
+#include "isr.h"
 #include "types.h" 
 #include "psg.h"
 #include "music.h"
 #include "effects.h"
 
 /*
- * Reads and returns the current 70Hz TOS timer value at 0x462.
- * Enters privileged mode only long enough to read the longword,
- * then immediately exits. Returns the tick count as UINT32.
- */
-UINT32 get_time(void);
-
-/*
- * Dispatches a single key press to the appropriate async handler.
- * Updates request/velocity fields on the model only - does NOT
- * move anything. Movement happens on the clock tick in synch.
+ * Dispatches a single discrete key press (scan code) to the appropriate
+ * async handler. Movement keys are handled separately via is_key_held()
+ * in the main loop and do NOT pass through this function.
  *
  * Input:  model - pointer to the live game model
- *         key   - character read from get_input()
+ *         scan  - scan code dequeued from keystroke()
  * Output: sets model->quit = TRUE if ESC is pressed
  */
-void process_async_event(Model *model, char key);
-
+void process_async_event(Model *model, UINT8 scan);
 
 /*
  * Function Purpose: Process all synch events
@@ -52,8 +45,5 @@ void process_sync_events(Model *model);
  * Assumptions: process_sync_events has already run this tick so positions
  *              and cooldowns are current */
 void process_cond_events(Model *model);
-
-
-
 
 #endif /* CRASHERS_H */

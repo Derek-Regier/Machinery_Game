@@ -21,14 +21,14 @@
 #include "raster.h"
 #include "font.h"
 
-#define ROW_TITLE    20
-#define ROW_HINT     40
-#define ROW_SCAN     80
+#define ROW_TITLE 20
+#define ROW_HINT 40
+#define ROW_SCAN 80
 #define ROW_HELD_LBL 110
 #define ROW_HELD_IND 130
 
-#define CH   8
-#define COL_L   8
+#define CH 8
+#define COL_L 8
 #define COL_HEX (COL_L + 17 * CH)
 #define COL_IND_0 COL_L
 
@@ -46,10 +46,10 @@ static void byte_to_hex(UINT8 val, char *buf)
 
 static void draw_labels(UINT8 *base)
 {
-    plot_string(base, ROW_TITLE,    COL_L, "ISR INPUT TEST",           font);
-    plot_string(base, ROW_HINT,     COL_L, "Press keys. ESC to quit.", font);
-    plot_string(base, ROW_SCAN,     COL_L, "Last scan code:  ",        font);
-    plot_string(base, ROW_HELD_LBL, COL_L, "Game keys (held):",        font);
+    plot_string(base, ROW_TITLE, COL_L, "ISR INPUT TEST", font);
+    plot_string(base, ROW_HINT, COL_L, "Press keys. ESC to quit.", font);
+    plot_string(base, ROW_SCAN, COL_L, "Last scan code:  ", font);
+    plot_string(base, ROW_HELD_LBL, COL_L, "Game keys (held):", font);
     plot_string(base, ROW_HELD_IND, COL_L, "W   A   S   D   E   J   L",font);
 }
 
@@ -76,7 +76,6 @@ static void draw_state(UINT8 *base, UINT8 last_scan)
     }
 }
 
-/* ------------------------------------------------------------------ */
 
 int main(void)
 {

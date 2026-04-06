@@ -1,78 +1,34 @@
 #include "crashers.h"
+#include "isr.h"
 
-#define KEY_MOVE_UP 'w'
-#define KEY_MOVE_DOWN 's'
-#define KEY_MOVE_LEFT 'a'
-#define KEY_MOVE_RIGHT 'd'
-#define KEY_ATTACK 'j'
-#define KEY_DASH 'l'
-#define KEY_USE_ITEM 'e'
-#define KEY_QUIT '\x1B' /* ESC */
-
-typedef struct {
-    Player player;
-    Enemy  enemy[MAX_ENEMIES];
-    Boss   boss;
-    Item   item[NUM_ITEMS];
-    Healthbar healthbar;
-} Snapshot;
-
-static Snapshot snap[2];  /* one per buffer */
-static int snap_idx = 0;  /* which snapshot pairs with current back buffer */
+#define SCAN_M 0x32
 
 static UINT8 screenBuffer[32255];
-static volatile long *timer = (volatile long *)0x462L;
 
 /*
- * Reads and returns the current 70Hz TOS timer value at 0x462.
- * Enters privileged mode only long enough to read the longword,
- * then immediately exits. Returns the tick count as UINT32.
- */
-UINT32 get_time(void)
-{
-    UINT32 currTime;
-    long oldSsp;
-
-    oldSsp = Super(0);
-    currTime = *timer;
-    Super(oldSsp);
-
-    return currTime;
-}
-
-/*
- * Dispatches a single key press to the appropriate async handler.
- * Updates request/velocity fields on the model only - does NOT
- * move anything. Movement happens on the clock tick in synch.
+ * Dispatches a single discrete key press (scan code) to the appropriate
+ * async handler. Movement keys are NOT handled here - they are checked
+ * each frame via is_key_held() in the main loop.
  *
  * Input:  model - pointer to the live game model
- *         key   - character read from get_input()
+ *         scan  - scan code dequeued from keystroke()
  * Output: sets model->quit = TRUE if ESC is pressed
  */
-void process_async_event(Model *model, char key)
+void process_async_event(Model *model, UINT8 scan)
 {
-    /* Choose which key to pass */
-    switch (key)
+    switch (scan)
     {
-        case KEY_MOVE_UP:
-        case KEY_MOVE_DOWN:
-        case KEY_MOVE_LEFT:
-        case KEY_MOVE_RIGHT:
-        case KEY_DASH:
-            move_player(&model->player, key);
-            break;
-
-        case KEY_ATTACK:
+        case SCAN_J:
             attack_swing_sound();
             on_light_attack(&model->player,
                             model->player.attack_cooldown);
             break;
 
-        case KEY_USE_ITEM:
+        case SCAN_E:
             consume_potion(&model->player);
             break;
 
-        case KEY_QUIT:
+        case SCAN_ESC:
             model->quit = TRUE;
             break;
 
@@ -177,27 +133,19 @@ void process_cond_events(Model *model)
 
 int main(void)
 {
-    /* set buffers, frame buffer, stack pointer, time, etc */
+    /* set buffers, frame buffer, stack pointer, etc */
     void *orig_phys = Physbase();
     void *back_buf  = (void *)(((UINT32)screenBuffer + 255L) & ~255L);
     void *front_buf = orig_phys;
     void *temp;
     long old_ssp;
-    long vbl_now;
     Model model;
-    UINT32 time_then;
-    UINT32 time_now;
-    UINT32 time_elapsed;
-    char key;
+    UINT8 scan;
 
-    old_ssp = Super(0);
-   
-    Super(old_ssp);
-
-    /* Initalize model */
+    /* Initialise model */
     init_model(&model);
 
-    /* initialise both buffers, and render first frame */
+    /* Initialise both buffers and render first frame */
     clear_screen(back_buf);
     render_reset();
     render(&model, back_buf);
@@ -205,117 +153,106 @@ int main(void)
     clear_screen(front_buf);
     render_reset();
     render(&model, front_buf);
-    
+
     start_music();
 
-    /* flip to back buffer */
+    /* Install ISRs before entering any loop that depends on render_request */
+    install_vectors();
+
+    /* Flip to back buffer, then wait for the next VBL so the flip settles */
     old_ssp = Super(0);
-   
     Setscreen(-1L, (long)back_buf, -1L);
-    vbl_now = *timer;
-    while (*timer == vbl_now)
-        ;
     Super(old_ssp);
-    
+
+    render_request = 0;
+    while (!render_request)
+        ;
+    render_request = 0;
+
     temp = front_buf;
     front_buf = back_buf;
     back_buf = temp;
 
-    /* start clock */
-    time_then = get_time();
+    /* Splash screen loop */
+    while (!model.started)
+    {
+        while (!render_request)
+            ;
+        render_request = 0;
 
-    /* splash screen */
-    while (!model.started){
-
-        if (has_input())
+        /* Drain keystroke buffer for splash navigation */
+        while ((scan = keystroke()) != 0)
         {
-            key = get_input();
-            if (key == KEY_MOVE_UP){
-
+            if (scan == SCAN_W)
                 model.quit = FALSE;
-            }
-            if (key == KEY_MOVE_DOWN){
-                
+            else if (scan == SCAN_S)
                 model.quit = TRUE;
-            }
-            if (key == 'm'){
-               
+            else if (scan == SCAN_M)
                 model.started = TRUE;
-            }
-        }
-        time_now = get_time();
-        time_elapsed = time_now - time_then;
-        if (time_elapsed > 0)
-        {
-            /* update music*/
-            update_music(time_elapsed);
-            /* Render current state */
-            clear_screen(back_buf);
-            render_reset();
-            render(&model, back_buf);
-
-            old_ssp = Super(0);
-            Setscreen(-1L, (long)back_buf, -1L);
-            vbl_now = *timer;
-            while (*timer == vbl_now)
-                ;
-            Super(old_ssp);
-
-            temp = front_buf;
-            front_buf = back_buf;
-            back_buf = temp;
-
-            time_then = time_now;
         }
 
+        update_music(1);
+
+        clear_screen(back_buf);
+        render_reset();
+        render(&model, back_buf);
+
+        old_ssp = Super(0);
+        Setscreen(-1L, (long)back_buf, -1L);
+        Super(old_ssp);
+
+        temp = front_buf;
+        front_buf = back_buf;
+        back_buf = temp;
     }
-    
+
+    /* Main game loop */
     while (!model.quit)
     {
-        /* if input process the asynch events*/
-        if (has_input())
-        {
-            key = get_input();
-            process_async_event(&model, key);
-        }
-        /* get clock timings */
-        time_now = get_time();
-        time_elapsed = time_now - time_then;
+        /* Wait for VBL tick */
+        while (!render_request)
+            ;
+        render_request = 0;
 
-       if (time_elapsed > 0)
-        {
-            /* update music*/
-            update_music(time_elapsed);
-            /* process events */
-            process_sync_events(&model);
-            process_cond_events(&model);
+        /* Continuous movement: checked every frame via held-key state */
+        if (is_key_held(SCAN_W)) move_player(&model.player, 'w');
+        if (is_key_held(SCAN_A)) move_player(&model.player, 'a');
+        if (is_key_held(SCAN_S)) move_player(&model.player, 's');
+        if (is_key_held(SCAN_D)) move_player(&model.player, 'd');
+        if (is_key_held(SCAN_L)) move_player(&model.player, 'l');
 
+        /* Discrete actions: drain the scan-code buffer */
+        while ((scan = keystroke()) != 0)
+            process_async_event(&model, scan);
 
-            /* Render current state */
-            clear_screen(back_buf);
-            render_reset();
-            render(&model, back_buf);
+        /* Synchronous and conditional events */
+        update_music(1);
+        process_sync_events(&model);
+        process_cond_events(&model);
 
-            old_ssp = Super(0);
-            Setscreen(-1L, (long)back_buf, -1L);
-            vbl_now = *timer;
-            while (*timer == vbl_now)
-                ;
-            Super(old_ssp);
+        /* Render current state into back buffer */
+        clear_screen(back_buf);
+        render_reset();
+        render(&model, back_buf);
 
-            temp = front_buf;
-            front_buf = back_buf;
-            back_buf = temp;
+        /* Flip buffers - next iteration waits on render_request before
+         * we touch back_buf again, so no explicit VBL poll needed here */
+        old_ssp = Super(0);
+        Setscreen(-1L, (long)back_buf, -1L);
+        Super(old_ssp);
 
-            time_then = time_now;
-        }
+        temp = front_buf;
+        front_buf = back_buf;
+        back_buf = temp;
     }
 
-    /* restore original physbase */
+    /* Restore original screen and OS state */
     stop_sound();
+    uninstall_vectors();
+
     old_ssp = Super(0);
-   
     Setscreen(-1L, (long)orig_phys, -1L);
     Super(old_ssp);
+
     return 0;
 }

@@ -134,7 +134,7 @@ void process_cond_events(Model *model)
 int main(void)
 {
     /* set buffers, frame buffer, stack pointer, etc */
-    void *orig_phys = Physbase();
+    void *orig_phys = (void *)get_video_base();
     void *back_buf  = (void *)(((UINT32)screenBuffer + 255L) & ~255L);
     void *front_buf = orig_phys;
     void *temp;

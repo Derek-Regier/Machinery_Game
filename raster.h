@@ -70,6 +70,14 @@ void plot_string(UINT8 *base, UINT16 row, UINT16 col,
                  const char *str, const UINT8 *font_table);
 
 /*
+ * Reads the current frame buffer start address directly from the Atari ST
+ * video base hardware registers (0xFF8201 high byte, 0xFF8203 middle byte).
+ * The low byte is always zero on the ST, so only 16 bits are stored.
+ * Returns the assembled 24-bit address as a UINT16 pointer.
+ */
+UINT16 *get_video_base(void);
+
+/*
  * Writes the display address directly to the Atari ST video base hardware
  * registers (0xFF8201 high byte, 0xFF8203 middle byte). The hardware latches
  * these at the next VBL boundary, giving a clean tear-free flip.

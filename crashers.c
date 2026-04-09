@@ -182,37 +182,40 @@ int main(void)
         {
             int mx;
             int my;
+            int quit_hovered;
+            int clicked;
 
-            /* Mouse-driven menu navigation */
             mx = get_mouse_x();
             my = get_mouse_y();
 
-            /* Selection: above midpoint = "1 Player", below = "quit".
-             * Midpoint sits in the gap between the two boxes (rows 214-222). */
-            if (my < 218)
-                model.quit = FALSE;
-            else
-                model.quit = TRUE;
+            /* Midpoint sits in the gap between the two boxes (rows 214-222) */
+            quit_hovered = (my >= 218);
+            clicked      = get_mouse_button();
 
-            /* Click commits the highlighted choice */
-            if (get_mouse_button())
-            {
-                if (!model.quit)
-                    model.started = TRUE;
-                else
-                    break;  /* quit selected: exit splash, main loop won't run */
-            }
-
+            /* Set model.quit temporarily so render_splash highlights the
+             * correct option, then restore it — the loop condition must not
+             * be affected by hover alone. */
+            model.quit = quit_hovered;
             clear_screen(back_buf);
             render_reset();
             render(&model, back_buf);
+            model.quit = FALSE;
+
+            /* Commit selection only on click */
+            if (clicked)
+            {
+                if (!quit_hovered)
+                    model.started = TRUE;
+                else
+                    model.quit = TRUE;
+            }
 
             set_video_base(back_buf);
 
             temp = front_buf;
             front_buf = back_buf;
             back_buf = temp;
-            render_request = 0;  /* clear AFTER scheduling flip */
+            render_request = 0;
         }
     }
 

@@ -101,7 +101,7 @@ void do_VBL_ISR(void)
     if (isr_model != NULL && isr_model->started)
     {
         /* 2. Synchronous and conditional events */
-        process_sync_events(isr_model);crash
+        process_sync_events(isr_model);
         process_cond_events(isr_model);
 
         /* 3. Async: continuous movement from held keys */

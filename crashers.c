@@ -180,14 +180,13 @@ int main(void)
 
         while (!render_request)
             ;
-        render_request = 0;
 
         /* Mouse-driven menu navigation */
         mx = get_mouse_x();
         my = get_mouse_y();
 
         /* Selection: above midpoint = "1 Player", below = "quit".
-        * Midpoint sits in the gap between the two boxes (rows 214-222). */
+         * Midpoint sits in the gap between the two boxes (rows 214-222). */
         if (my < 218)
             model.quit = FALSE;
         else
@@ -211,6 +210,7 @@ int main(void)
         temp = front_buf;
         front_buf = back_buf;
         back_buf = temp;
+        render_request = 0;  /* clear AFTER scheduling flip */
     }
 
     /* Main game loop */
@@ -219,7 +219,6 @@ int main(void)
         /* Wait for VBL tick */
         while (!render_request)
             ;
-        render_request = 0;
 
         /* Continuous movement: checked every frame via held-key state */
         if (is_key_held(SCAN_W)) move_player(&model.player, 'w');
@@ -241,13 +240,15 @@ int main(void)
         render_reset();
         render(&model, back_buf);
 
-        /* Flip buffers - next iteration waits on render_request before
-         * we touch back_buf again, so no explicit VBL poll needed here */
+        /* Flip buffers, then clear the flag so the next iteration
+         * waits for the VBL that latches this flip before touching
+         * back_buf again */
         set_video_base(back_buf);
 
         temp = front_buf;
         front_buf = back_buf;
         back_buf = temp;
+        render_request = 0;  /* clear AFTER scheduling flip */
     }
 
     /* Restore original screen and OS state */

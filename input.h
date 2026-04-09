@@ -41,6 +41,13 @@ int is_key_held(UINT8 scan);
  * Uses mask_ikbd / unmask_ikbd internally for the critical section. */
 UINT8 keystroke(void);
 
+/*
+ * Returns 1 if the circular buffer contains at least one pending
+ * keystroke, 0 if empty.  Safe to call at any rate — no ACIA access.
+ * Use this to guard keystroke() calls in tight loops.
+ */
+int has_keystroke(void);
+
 /* Mouse accessors.
  * All three are safe to call from non-ISR code; they protect the read
  * with a brief IKBD mask so values are never partially updated.*/

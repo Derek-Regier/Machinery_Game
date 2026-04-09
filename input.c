@@ -144,6 +144,15 @@ int is_key_held(UINT8 scan)
 }
 
 /*
+ * Returns 1 if the circular buffer contains at least one pending keystroke,
+ * 0 otherwise.  No ACIA access — safe to call at any rate from any context.
+ */
+int has_keystroke(void)
+{
+    return kb_fill > 0;
+}
+
+/*
  * Dequeues and returns the next scan code from the circular buffer.
  * Returns 0 if the buffer is empty.
  * Protects the read with a brief IKBD mask to avoid torn reads.

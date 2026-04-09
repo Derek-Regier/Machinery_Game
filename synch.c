@@ -175,6 +175,7 @@ void update_player_position(Player *player)
             if (player->x > MAX_X) player->x = MAX_X;
         }
         player->facing = (player->delta_x < 0) ? -1 : 1;
+        player->delta_x = 0;
     }
 
     /* Vertical: clamp to walkable lane (MIN_Y_WALK..MAX_Y).
@@ -186,9 +187,10 @@ void update_player_position(Player *player)
             player->y = MIN_Y_WALK;
         } else {
             move_player_vertical(player);
-            if (player->y > MAX_Y)      player->y = MAX_Y;
+            if (player->y > MAX_Y) player->y = MAX_Y;
             if (player->y < MIN_Y_WALK) player->y = MIN_Y_WALK;
         }
+        player->delta_y = 0;
     }
 
     /* Animation — flip frame every 4 pixels of movement */
@@ -203,23 +205,6 @@ void update_player_position(Player *player)
     }
     else
         player->anim_frame = 0;
-
-    /* Friction: dash deltas (|delta| > PLAYER_NORMAL_SPEED) are consumed
-     * immediately — the burst is exactly one tick.  Normal walking deltas
-     * decay by 1 per tick toward zero, giving a short slide-to-stop without
-     * needing key-release events.  This also lets the last held direction
-     * carry briefly into the next axis press, producing diagonal movement. */
-    if (player->delta_x > PLAYER_NORMAL_SPEED || player->delta_x < -PLAYER_NORMAL_SPEED)
-        player->delta_x = 0;
-    else if (player->delta_x > 0)
-        player->delta_x--;
-    else if (player->delta_x < 0)
-        player->delta_x++;
-
-    if (player->delta_y > 0)
-        player->delta_y--;
-    else if (player->delta_y < 0)
-        player->delta_y++;
 }
 /* Function purpose: Moves the enemy according to the velocity
  * Input: The enemy object

@@ -13,6 +13,13 @@
 #define ISR_H
 
 #include "TYPES.H"
+#include "model.h"
+
+/*
+ * Registers the game model pointer so do_VBL_ISR can run game logic.
+ * Must be called before install_vectors().
+ */
+void set_isr_model(Model *m);
 
 /*
  * Overwrites interrupt vector 'num' with 'vec'.

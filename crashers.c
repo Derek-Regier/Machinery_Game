@@ -157,6 +157,9 @@ int main(void)
 
     start_music();
 
+    /* Register model pointer so the VBL ISR can run game logic */
+    set_isr_model(&model);
+
     /* Install ISRs before entering any loop that depends on render_request */
     install_vectors();
 
@@ -173,82 +176,72 @@ int main(void)
     back_buf = temp;
 
     /* Splash screen loop */
-    while (!model.started)
+    while (!model.started && !model.quit)
     {
-        int mx;
-        int my;
-
-        while (!render_request)
-            ;
-
-        /* Mouse-driven menu navigation */
-        mx = get_mouse_x();
-        my = get_mouse_y();
-
-        /* Selection: above midpoint = "1 Player", below = "quit".
-         * Midpoint sits in the gap between the two boxes (rows 214-222). */
-        if (my < 218)
-            model.quit = FALSE;
-        else
-            model.quit = TRUE;
-
-        /* Click commits the highlighted choice */
-        if (get_mouse_button())
+        if (render_request)
         {
-            if (!model.quit)
-                model.started = TRUE;
+            int mx;
+            int my;
+
+            /* Mouse-driven menu navigation */
+            mx = get_mouse_x();
+            my = get_mouse_y();
+
+            /* Selection: above midpoint = "1 Player", below = "quit".
+             * Midpoint sits in the gap between the two boxes (rows 214-222). */
+            if (my < 218)
+                model.quit = FALSE;
             else
-                break;  /* quit selected: exit splash, main loop won't run */
+                model.quit = TRUE;
+
+            /* Click commits the highlighted choice */
+            if (get_mouse_button())
+            {
+                if (!model.quit)
+                    model.started = TRUE;
+                else
+                    break;  /* quit selected: exit splash, main loop won't run */
+            }
+
+            clear_screen(back_buf);
+            render_reset();
+            render(&model, back_buf);
+
+            set_video_base(back_buf);
+
+            temp = front_buf;
+            front_buf = back_buf;
+            back_buf = temp;
+            render_request = 0;  /* clear AFTER scheduling flip */
         }
-
-        clear_screen(back_buf);
-        render_reset();
-        render(&model, back_buf);
-
-        set_video_base(back_buf);
-
-        temp = front_buf;
-        front_buf = back_buf;
-        back_buf = temp;
-        render_request = 0;  /* clear AFTER scheduling flip */
     }
 
     /* Main game loop */
     while (!model.quit)
     {
-        /* Wait for VBL tick */
-        while (!render_request)
-            ;
+        /* If asynchronous (discrete) event(s) outstanding, process them */
+        if (has_keystroke())
+        {
+            while ((scan = keystroke()) != 0)
+                process_async_event(&model, scan);
+        }
 
-        /* Continuous movement: checked every frame via held-key state */
-        if (is_key_held(SCAN_W)) move_player(&model.player, 'w');
-        if (is_key_held(SCAN_A)) move_player(&model.player, 'a');
-        if (is_key_held(SCAN_S)) move_player(&model.player, 's');
-        if (is_key_held(SCAN_D)) move_player(&model.player, 'd');
-        if (is_key_held(SCAN_L)) move_player(&model.player, 'l');
+        /* If the VBL ISR has signalled a new frame, render it */
+        if (render_request)
+        {
+            /* Render current model state into back buffer */
+            clear_screen(back_buf);
+            render_reset();
+            render(&model, back_buf);
 
-        /* Discrete actions: drain the scan-code buffer */
-        while ((scan = keystroke()) != 0)
-            process_async_event(&model, scan);
+            /* Schedule page flip */
+            set_video_base(back_buf);
 
-        /* Synchronous and conditional events */
-        process_sync_events(&model);
-        process_cond_events(&model);
-
-        /* Render current state into back buffer */
-        clear_screen(back_buf);
-        render_reset();
-        render(&model, back_buf);
-
-        /* Flip buffers, then clear the flag so the next iteration
-         * waits for the VBL that latches this flip before touching
-         * back_buf again */
-        set_video_base(back_buf);
-
-        temp = front_buf;
-        front_buf = back_buf;
-        back_buf = temp;
-        render_request = 0;  /* clear AFTER scheduling flip */
+            temp = front_buf;
+            front_buf = back_buf;
+            back_buf = temp;
+            render_request = 0;  /* clear AFTER scheduling flip */
+        }
     }
 
     /* Restore original screen and OS state */

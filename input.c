@@ -211,16 +211,12 @@ int get_mouse_button(void)
  */
 void mask_ikbd(void)
 {
-    long old_ssp = Super(0);
     *IKBD_ACIA = RIE_OFF;
-    Super(old_ssp);
 }
 
 void unmask_ikbd(void)
 {
-    long old_ssp = Super(0);
     *IKBD_ACIA = RIE_ON;
-    Super(old_ssp);
 }
 /*
  * Returns 1 if a keypress is waiting in the TOS input buffer.

@@ -11,7 +11,7 @@
  */
 
 #include "isr.h"
-#include <osbind.h>
+#include "music.h"
 
 #define VBL_VECTOR  28
 #define IKBD_VECTOR 70
@@ -36,11 +36,9 @@ Vector install_vector(int num, Vector vec)
 {
     Vector  orig;
     Vector *vptr = (Vector *)((long)num << 2);
-    long old_ssp = Super(0);
 
     orig = *vptr;
     *vptr = vec;
-    Super(old_ssp);
 
     return orig;
 }
@@ -51,16 +49,12 @@ Vector install_vector(int num, Vector vec)
  */
 void install_vectors(void)
 {
-    long old_ssp;
     volatile UINT8 *midi_ctrl = (volatile UINT8 *)0xFFFC04;
 
     orig_VBL = install_vector(VBL_VECTOR,  vbl_isr);
     orig_IKBD = install_vector(IKBD_VECTOR, ikbd_isr);
 
-    /* Clear bit 7 (RIE) of the MIDI 6850 control register */
-    old_ssp = Super(0);
     *midi_ctrl = 0x16;   /* divide/64, 8N1, RTS low, RIE disabled */
-    Super(old_ssp);
 }
 
 /*
@@ -69,16 +63,12 @@ void install_vectors(void)
  */
 void uninstall_vectors(void)
 {
-    long old_ssp;
     volatile UINT8 *midi_ctrl = (volatile UINT8 *)0xFFFC04;
 
     install_vector(VBL_VECTOR,  orig_VBL);
     install_vector(IKBD_VECTOR, orig_IKBD);
 
-    /* Restore bit 7 (RIE) of the MIDI 6850 control register */
-    old_ssp = Super(0);
     *midi_ctrl = 0x96;   /* divide/64, 8N1, RTS low, RIE enabled */
-    Super(old_ssp);
 }
 
 /*
@@ -86,5 +76,6 @@ void uninstall_vectors(void)
  */
 void do_VBL_ISR(void)
 {
+    update_music(1);
     render_request = 1;
 }

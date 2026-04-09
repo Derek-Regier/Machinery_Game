@@ -1,6 +1,7 @@
 #include "render.h"
 #include "font.h"
 #include "synch.h"
+#include "input.h"
 
 /*
  * Copy each structure as statics for saving coordinates of player, enemy,
@@ -535,6 +536,8 @@ void render_death_screen(UINT32 *base)
 }  
 
 void render_splash(UINT32 *base, const UINT8 *font, bool quit){
+    int mx = get_mouse_x();
+    int my = get_mouse_y();
 
     pbm32(base, 100, 100, letter_C, 32);
     pbm32(base, 100, 150, letter_A, 32);
@@ -565,12 +568,17 @@ void render_splash(UINT32 *base, const UINT8 *font, bool quit){
     plot_vertical_line(base, 222, 205, 25);
 
     if (quit){
-        
         pbm8(base, 232, 210, arrow, 8);
     }else{
-
         pbm8(base, 199, 210, arrow, 8);
-    } 
+    }
+
+    /* Crosshair cursor: 7-pixel horizontal and vertical arms */
+    plot_horizontal_line(base, (UINT16)my,
+                         (UINT16)(mx > 3 ? mx - 3 : 0), 7);
+    plot_vertical_line(base,
+                       (UINT16)(my > 3 ? my - 3 : 0),
+                       (UINT16)mx, 7);
 }
 
 void render_reset(void){

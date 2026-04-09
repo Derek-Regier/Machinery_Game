@@ -288,7 +288,7 @@ void pbm32(UINT32 *base, UINT16 row, UINT16 col,
 /* ------------------------------------------------------------------ */
 /* plot_bitmap_128                                                       */
 /* ------------------------------------------------------------------ */
-
+/*
 void pbm128(UINT32 *base, UINT16 row, UINT16 col, UINT32 bitmap[][4], UINT16 height)
 {
     UINT16 r;
@@ -322,7 +322,7 @@ void pbm128(UINT32 *base, UINT16 row, UINT16 col, UINT32 bitmap[][4], UINT16 hei
             base[screen_index + 4] |= (d3 << (32 - shift));
         }
     }
-}
+} */
 
 /* ------------------------------------------------------------------ */
 /* plot_character                                                     */
@@ -372,9 +372,7 @@ UINT16 *get_video_base(void)
     volatile UINT8 *vid_hi  = (volatile UINT8 *)0xFF8201L;
     volatile UINT8 *vid_mid = (volatile UINT8 *)0xFF8203L;
     UINT32 addr;
-    long old_ssp = Super(0);
     addr = ((UINT32)*vid_hi << 16) | ((UINT32)*vid_mid << 8);
-    Super(old_ssp);
     return (UINT16 *)addr;
 }
 
@@ -384,13 +382,12 @@ UINT16 *get_video_base(void)
  * always clean regardless of when during the frame this is called.
  * addr must be 256-byte aligned (low byte is always 0x00).
  */
+ /*
 void set_video_base(void *addr)
 {
     volatile UINT8 *vid_hi  = (volatile UINT8 *)0xFF8201L;
     volatile UINT8 *vid_mid = (volatile UINT8 *)0xFF8203L;
     UINT32 a = (UINT32)addr;
-    long old_ssp = Super(0);
     *vid_hi  = (UINT8)(a >> 16);
     *vid_mid = (UINT8)(a >> 8);
-    Super(old_ssp);
-}
+} */

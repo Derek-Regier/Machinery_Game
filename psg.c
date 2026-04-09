@@ -2,7 +2,6 @@
 * Low-level PSG Library 
 */ 
 
-#include <osbind.h>
 #include "psg.h"
 
 
@@ -25,13 +24,8 @@ other functions in this module.*/
  */
 
 void write_psg(int reg, UINT8 val){
-    long old_ssp = Super(0);
-
     *PSG_reg_select = reg;
     *PSG_reg_write = val;
-
-    Super(old_ssp);
-
 }
 
 /*
@@ -40,11 +34,8 @@ reads value from psg resgister and returns it*/
 UINT8 read_psg(int reg){
     UINT8 prev_psg;
 
-    long old_ssp = Super(0);
     *PSG_reg_select = reg;
     prev_psg = *PSG_reg_select;
-
-    Super(old_ssp);
 
     return prev_psg;
 }
@@ -165,6 +156,3 @@ void stop_sound(){
     write_psg(10, 0); /* set channel C volume = 0 */
 
 }
-
-
-

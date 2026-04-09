@@ -1,4 +1,4 @@
-	xdef	_plot_pixel
+    xdef	_plot_pixel
 	xdef	_clear_screen
 	xdef	_clear_region
 	xdef	_plot_horizontal_line
@@ -10,6 +10,8 @@
 	xdef	_pbm8
 	xdef	_pbm16
 	xdef	_pbm32
+	xdef	_pbm128
+	xdef	_set_video_base
 	xdef    _plot_character
 	xdef	_plot_string
 
@@ -1238,6 +1240,136 @@ plot32_done:
     rts
 
 ;----------------------------------------------------
+; _pbm128:
+;
+; Purpose:
+;
+; - Plots a 128-bit (4 longword) wide bitmap to the
+;   screen at the given coordinates.  Each row of
+;   the bitmap is four consecutive UINT32 values.
+;   Handles arbitrary column alignment via a carry-
+;   chain shift so all 5 output longs are filled
+;   correctly when the column is not 32-aligned.
+;
+; Inputs:
+;
+; - BM_BASE:   Pointer to the framebuffer (UINT32 *)
+; - BM_ROW:    Starting row  (UINT16)
+; - BM_COL:    Starting col  (UINT16)
+; - BM_BITMAP: Pointer to bitmap data (UINT32 (*)[4])
+; - BM_HEIGHT: Number of rows (UINT16)
+;
+; Outputs: None
+;
+; Notes:
+;   The BM_* equates are shared with pbm8/16/32.
+;   Supervisor mode must already be active if this
+;   is called from an ISR context.
+;----------------------------------------------------
+
+_pbm128:
+    link    a6,#0
+    movem.l d0-d7/a0-a2,-(sp)
+
+    movea.l BM_BASE(a6),a0   ; a0 = framebuffer base
+    movea.l BM_BITMAP(a6),a1   ; a1 = bitmap data pointer
+    move.w  BM_ROW(a6),d0   ; d0 = starting row (r)
+    move.w  BM_COL(a6),d1   ; d1 = col
+    move.w  BM_HEIGHT(a6),d2   ; d2 = height
+
+    tst.w   d2
+    beq     plot128_done
+
+    ; shift = col % 32
+    move.w  d1,d3
+    and.w   #31,d3              ; d3 = shift
+
+    ; byte offset of the first long column = (col/32)*4
+    lsr.w   #5,d1               ; col / 32
+    lsl.w   #2,d1               ; * 4  -> byte offset into row (d1)
+
+    ; anti_shift = 32 - shift  (only meaningful when shift != 0)
+    move.w  #32,d4
+    sub.w   d3,d4               ; d4 = anti_shift
+
+    subq.w  #1,d2               ; convert to dbra count
+
+plot128_loop:
+    ; a2 = base + row*80 + col_byte_offset
+    ; row*80 = (row<<6) + (row<<4)
+    move.w  d0,d6
+    lsl.w   #6,d6
+    move.w  d0,d7
+    lsl.w   #4,d7
+    add.w   d7,d6               ; d6 = row * 80
+    add.w   d1,d6               ; + column byte offset
+    movea.l a0,a2
+    adda.w  d6,a2               ; a2 = screen pointer for this row
+
+    tst.w   d3
+    beq     plot128_aligned
+
+    ; --- unaligned: carry-chain through 4 bitmap longs ---
+    ; d5 = current bitmap long, d6 = carry, d7 = temp for shift copy
+
+    ; long 0
+    move.l  (a1)+,d5
+    move.l  d5,d7
+    lsr.l   d3,d5               ; bm[0] >> shift
+    or.l    d5,(a2)             ; out[0] |= (bm[0] >> shift)
+    lsl.l   d4,d7               ; carry = bm[0] << anti_shift
+    move.l  d7,d6
+
+    ; long 1
+    move.l  (a1)+,d5
+    move.l  d5,d7
+    lsr.l   d3,d5
+    or.l    d6,d5               ; out = carry | (bm[1] >> shift)
+    or.l    d5,4(a2)
+    lsl.l   d4,d7
+    move.l  d7,d6
+
+    ; long 2
+    move.l  (a1)+,d5
+    move.l  d5,d7
+    lsr.l   d3,d5
+    or.l    d6,d5
+    or.l    d5,8(a2)
+    lsl.l   d4,d7
+    move.l  d7,d6
+
+    ; long 3
+    move.l  (a1)+,d5
+    move.l  d5,d7
+    lsr.l   d3,d5
+    or.l    d6,d5
+    or.l    d5,12(a2)
+    lsl.l   d4,d7
+    or.l    d7,16(a2)           ; final carry spill into 5th long
+
+    bra     plot128_next
+
+plot128_aligned:
+    ; col is 32-aligned: OR 4 longs straight in, no spill
+    move.l  (a1)+,d5
+    or.l    d5,(a2)
+    move.l  (a1)+,d5
+    or.l    d5,4(a2)
+    move.l  (a1)+,d5
+    or.l    d5,8(a2)
+    move.l  (a1)+,d5
+    or.l    d5,12(a2)
+
+plot128_next:
+    addq.w  #1,d0               ; r++
+    dbra    d2,plot128_loop
+
+plot128_done:
+    movem.l (sp)+,d0-d7/a0-a2
+    unlk    a6
+    rts
+
+;----------------------------------------------------
 ; _plot_character:
 ;
 ; Purpose:
@@ -1368,3 +1500,43 @@ str_done:
     rts
 
 
+;----------------------------------------------------
+; _set_video_base:
+;
+; Purpose:
+;
+; - Writes a new display address to the Atari ST
+;   video hardware registers so the next VBL latch
+;   flips to the new buffer (tear-free page flip).
+;
+;   0xFF8201 receives bits 23-16 (high byte).
+;   0xFF8203 receives bits 15-8  (mid  byte).
+;   The low 8 bits are always zero (256-byte align).
+;
+;   No Super() call is made.  The caller must already
+;   be in supervisor mode (standard for game main()).
+;
+; Inputs:
+;
+; - SVB_ADDR(a6): void * — 256-byte-aligned buffer
+;
+; Outputs: None
+;----------------------------------------------------
+
+SVB_ADDR equ 8
+
+_set_video_base:
+    link    a6,#0
+    movem.l d0,-(sp)
+
+    move.l  SVB_ADDR(a6),d0     ; d0 = buffer address
+
+    lsr.l   #8,d0               ; d0.b = bits 15-8 (mid byte)
+    move.b  d0,$FF8203          ; vid_mid register
+
+    lsr.l   #8,d0               ; d0.b = bits 23-16 (hi byte)
+    move.b  d0,$FF8201          ; vid_hi register
+
+    movem.l (sp)+,d0
+    unlk    a6
+    rts

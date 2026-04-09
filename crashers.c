@@ -133,6 +133,8 @@ void process_cond_events(Model *model)
 
 int main(void)
 {
+    long old_ssp = Super(0);   /* enter supervisor mode for program lifetime */
+
     /* set buffers, frame buffer, stack pointer, etc */
     void *orig_phys = (void *)get_video_base();
     void *back_buf  = (void *)(((UINT32)screenBuffer + 255L) & ~255L);
@@ -173,22 +175,32 @@ int main(void)
     /* Splash screen loop */
     while (!model.started)
     {
+        int mx;
+        int my;
+
         while (!render_request)
             ;
         render_request = 0;
 
-        /* Drain keystroke buffer for splash navigation */
-        while ((scan = keystroke()) != 0)
-        {
-            if (scan == SCAN_W)
-                model.quit = FALSE;
-            else if (scan == SCAN_S)
-                model.quit = TRUE;
-            else if (scan == SCAN_M)
-                model.started = TRUE;
-        }
+        /* Mouse-driven menu navigation */
+        mx = get_mouse_x();
+        my = get_mouse_y();
 
-        update_music(1);
+        /* Selection: above midpoint = "1 Player", below = "quit".
+        * Midpoint sits in the gap between the two boxes (rows 214-222). */
+        if (my < 218)
+            model.quit = FALSE;
+        else
+            model.quit = TRUE;
+
+        /* Click commits the highlighted choice */
+        if (get_mouse_button())
+        {
+            if (!model.quit)
+                model.started = TRUE;
+            else
+                break;  /* quit selected: exit splash, main loop won't run */
+        }
 
         clear_screen(back_buf);
         render_reset();
@@ -221,7 +233,6 @@ int main(void)
             process_async_event(&model, scan);
 
         /* Synchronous and conditional events */
-        update_music(1);
         process_sync_events(&model);
         process_cond_events(&model);
 
@@ -245,5 +256,6 @@ int main(void)
 
     set_video_base(orig_phys);
 
+    Super(old_ssp);
     return 0;
 }

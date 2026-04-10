@@ -1,5 +1,5 @@
 /*
-* Low-level PSG Library 
+* Low-level PSG Library for making sounds effects and music
 */ 
 
 #include "psg.h"
@@ -9,28 +9,24 @@ volatile char *PSG_reg_select = 0xFF8800;
 volatile char *PSG_reg_write  = 0xFF8802;
 volatile UINT8 curr_r7_val = 0x3F;
 
-/*Function: ***** ADD MORE DESCRIPTION TO ALL FUNCTIONS *****
-Writes the given byte value (0-255) to 
-the given PSG register (0-15).
-This is a helper
-routine to be used by the 
-other functions in this module.*/
+
 
 /* Function purpose: Write the given byte value between 0 to 255 to
  * specifed PSG register (0-15), primarly used as a helper funtion
  * Input: PSG register and value that will placed into PSG register
- * Output: 
- * Assumptions: 
+ * Output: None
+ * Assumptions: None 
  */
-
 void write_psg(int reg, UINT8 val){
     *PSG_reg_select = reg;
     *PSG_reg_write = val;
 }
 
-/*
-Used for testing sound 
-reads value from psg resgister and returns it*/
+/* Function purpose: Used for testing sound, reads value from psg resgister and returns it
+ * Input:  register 
+ * Output: register data
+ * Assumptions: None
+ */
 UINT8 read_psg(int reg){
     UINT8 prev_psg;
 
@@ -41,9 +37,13 @@ UINT8 read_psg(int reg){
 }
 
 
-/*Loads the tone registers (coarse and fine) for 
-the given channel (0=A, 1=B, 2=C) with the
-given 12-bit tuning. */
+/* Function purpose: Loads the tone registers (coarse and fine) for 
+ * the given channel (0=A, 1=B, 2=C) with the
+ * given 12-bit tuning. 
+ * Input: Channel and Tuning values
+ * Output: None
+ * Assumptions: None
+ */
 void set_tone(int channel, int tuning){
     if(tuning <0 || tuning > 4095){
         return;
@@ -66,8 +66,11 @@ void set_tone(int channel, int tuning){
     }
 }
 
-
-/*Loads the volume register for the given channel.*/
+/* Function purpose: Loads the volume register for the given channel.
+ * Input: Channel and Volume values
+ * Output: None
+ * Assumptions: None
+ */
 void set_volume(int channel, int volume){
     if (volume >= 15 || volume <0){
         return;
@@ -83,8 +86,12 @@ void set_volume(int channel, int volume){
     }
 }
 
-/*Turns the given channel’s tone/noise signals 
-on/off (0=off, 1=on).*/
+/* Function purpose: Turns the given channel’s tone/noise signals 
+ * on/off (0=off, 1=on).
+ * Input: Channel, Tone on, Noise on
+ * Output: None
+ * Assumptions: None
+ */
 void enable_channel(int channel, int tone_on, int noise_on){
    
     if (channel == 0){  
@@ -129,9 +136,13 @@ void enable_channel(int channel, int tone_on, int noise_on){
     return;
 }
 
-/*
-    Function: Set noise (register 6)
-*/
+
+
+/* Function purpose: Set noise (register 6)
+ * Input: Channel, Tone on, Noise on
+ * Output: None
+ * Assumptions: None
+ */
 void set_noise(int tuning){
     if (tuning < 0 || tuning > 0x1F) {
         return;
@@ -139,6 +150,12 @@ void set_noise(int tuning){
     write_psg(6, tuning);
 }
 
+
+/* Function purpose: Set envelope (11, 12, or 13)
+ * Input: Shape and Sustain
+ * Output: None
+ * Assumptions: None
+ */
 void set_envelope(int shape, unsigned int sustain){
     if (shape < 0 || shape > 0xF){
         return;
@@ -148,7 +165,12 @@ void set_envelope(int shape, unsigned int sustain){
     write_psg(13, shape);           
 }
 
-/*Silences all PSG sound production.*/
+
+/* Function purpose: Silences all PSG sound production.
+ * Input: None
+ * Output: None
+ * Assumptions: None
+ */
 void stop_sound(){
 
     write_psg(8, 0); /* set channel A volume = 0 */

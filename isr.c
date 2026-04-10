@@ -96,10 +96,16 @@ void uninstall_vectors(void)
  */
 void do_VBL_ISR(void)
 {
+    static int frame_count = 0;
+
     update_music(1);
 
     if (isr_model != NULL && isr_model->started)
     {
+        frame_count++;
+        /*use every second frame, reduces game speed*/
+        if (frame_count % 2 == 0){
+
         /* 2. Synchronous and conditional events */
         process_sync_events(isr_model);
         process_cond_events(isr_model);
@@ -110,6 +116,8 @@ void do_VBL_ISR(void)
         if (is_key_held(SCAN_S)) move_player(&isr_model->player, 's');
         if (is_key_held(SCAN_D)) move_player(&isr_model->player, 'd');
         if (is_key_held(SCAN_L)) move_player(&isr_model->player, 'l');
+        }
+  
     }
 
     /* 4. Signal the main loop that a new frame is ready */

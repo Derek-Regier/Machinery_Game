@@ -135,124 +135,149 @@ int main(void)
 {
     long old_ssp = Super(0);   /* enter supervisor mode for program lifetime */
 
-    /* set buffers, frame buffer, stack pointer, etc */
     void *orig_phys = (void *)get_video_base();
     void *back_buf  = (void *)(((UINT32)screenBuffer + 255L) & ~255L);
     void *front_buf = orig_phys;
     void *temp;
     Model model;
     UINT8 scan;
-
-    /* Initialise model */
-    init_model(&model);
-
-    /* Initialise both buffers and render first frame */
-    clear_screen(back_buf);
-    render_reset();
-    render(&model, back_buf);
-
-    clear_screen(front_buf);
-    render_reset();
-    render(&model, front_buf);
+    int running = 1;
 
     start_music();
-
-    /* Register model pointer so the VBL ISR can run game logic */
     set_isr_model(&model);
-
-    /* Install ISRs before entering any loop that depends on render_request */
     install_vectors();
 
-    /* Flip to back buffer, then wait for the next VBL so the flip settles */
+    /* One-time sync: wait for the first VBL after the initial flip */
     set_video_base(back_buf);
-
     render_request = 0;
     while (!render_request)
         ;
     render_request = 0;
-
     temp = front_buf;
     front_buf = back_buf;
     back_buf = temp;
 
-    /* Splash screen loop */
-    while (!model.started && !model.quit)
+    while (running)
     {
-        if (render_request)
+        /* Re-initialise model for a fresh run */
+        init_model(&model);
+
+        clear_screen(back_buf);
+        render_reset();
+        render(&model, back_buf);
+
+        clear_screen(front_buf);
+        render_reset();
+        render(&model, front_buf);
+
+        /* Splash screen loop */
+        while (!model.started && !model.quit)
         {
-            int mx;
-            int my;
-            int quit_hovered;
-            int clicked;
-
-            mx = get_mouse_x();
-            my = get_mouse_y();
-
-            /* Midpoint sits in the gap between the two boxes (rows 214-222) */
-            quit_hovered = (my >= 218);
-            clicked      = get_mouse_button();
-
-            /* Set model.quit temporarily so render_splash highlights the
-             * correct option, then restore it — the loop condition must not
-             * be affected by hover alone. */
-            model.quit = quit_hovered;
-            clear_screen(back_buf);
-            render_reset();
-            render(&model, back_buf);
-            model.quit = FALSE;
-
-            /* Commit selection only on click */
-            if (clicked)
+            if (render_request)
             {
-                if (!quit_hovered)
-                    model.started = TRUE;
-                else
-                    model.quit = TRUE;
+                int mx = get_mouse_x();
+                int my = get_mouse_y();
+                int in_1p   = (mx >= SPLASH_BTN_X1 && mx <= SPLASH_BTN_X2
+                            && my >= SPLASH_1P_Y1   && my <= SPLASH_1P_Y2);
+                int in_quit = (mx >= SPLASH_BTN_X1 && mx <= SPLASH_BTN_X2
+                            && my >= SPLASH_QUIT_Y1 && my <= SPLASH_QUIT_Y2);
+
+                /* Borrow model.quit for the arrow highlight, restore after */
+                model.quit = in_quit;
+                clear_screen(back_buf);
+                render_reset();
+                render(&model, back_buf);
+                model.quit = FALSE;
+
+                if (get_mouse_button())
+                {
+                    if (in_1p)
+                        model.started = TRUE;
+                    else if (in_quit)
+                    {
+                        running = 0;
+                        break;
+                    }
+                }
+
+                set_video_base(back_buf);
+                temp = front_buf;
+                front_buf = back_buf;
+                back_buf = temp;
+                render_request = 0;
+            }
+        }
+
+        if (!running) break;
+
+        /* Main game loop */
+        while (!model.quit)
+        {
+            if (has_keystroke())
+            {
+                while ((scan = keystroke()) != 0)
+                    process_async_event(&model, scan);
             }
 
-            set_video_base(back_buf);
+            if (render_request)
+            {
+                clear_screen(back_buf);
+                render_reset();
+                render(&model, back_buf);
 
-            temp = front_buf;
-            front_buf = back_buf;
-            back_buf = temp;
-            render_request = 0;
+                set_video_base(back_buf);
+                temp = front_buf;
+                front_buf = back_buf;
+                back_buf = temp;
+                render_request = 0;
+            }
         }
-    }
 
-    /* Main game loop */
-    while (!model.quit)
-    {
-        /* If asynchronous (discrete) event(s) outstanding, process them */
-        if (has_keystroke())
+        /* End screen loop (death or win) */
         {
-            while ((scan = keystroke()) != 0)
-                process_async_event(&model, scan);
+            bool won     = (model.boss.health <= 0 && model.player.health > 0);
+            int end_done = 0;
+
+            while (!end_done)
+            {
+                if (render_request)
+                {
+                    int mx = get_mouse_x();
+                    int my = get_mouse_y();
+                    int in_menu = (mx >= END_BTN_X1 && mx <= END_BTN_X2
+                                && my >= END_MENU_Y1 && my <= END_MENU_Y2);
+                    int in_quit = (mx >= END_BTN_X1 && mx <= END_BTN_X2
+                                && my >= END_QUIT_Y1 && my <= END_QUIT_Y2);
+                    int hovered = in_quit ? 1 : 0;
+
+                    clear_screen(back_buf);
+                    render_end_screen(back_buf, font, won, hovered);
+
+                    set_video_base(back_buf);
+                    temp = front_buf;
+                    front_buf = back_buf;
+                    back_buf = temp;
+                    render_request = 0;
+
+                    if (get_mouse_button())
+                    {
+                        if (in_menu)
+                            end_done = 1;        /* restart: outer loop re-inits */
+                        else if (in_quit)
+                        {
+                            running  = 0;
+                            end_done = 1;
+                        }
+                    }
+                }
+            }
         }
+    } /* end outer running loop */
 
-        /* If the VBL ISR has signalled a new frame, render it */
-        if (render_request)
-        {
-            /* Render current model state into back buffer */
-            clear_screen(back_buf);
-            render_reset();
-            render(&model, back_buf);
-
-            /* Schedule page flip */
-            set_video_base(back_buf);
-
-            temp = front_buf;
-            front_buf = back_buf;
-            back_buf = temp;
-            render_request = 0;  /* clear AFTER scheduling flip */
-        }
-    }
-
-    /* Restore original screen and OS state */
+    /* estore OS state */
     stop_sound();
     uninstall_vectors();
-
     set_video_base(orig_phys);
-
     Super(old_ssp);
     return 0;
 }

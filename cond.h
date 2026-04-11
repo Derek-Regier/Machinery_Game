@@ -7,7 +7,7 @@
 
 #ifndef COND_H
 #define COND_H
-#define SPAWN_DELAY 140  /* ticks between staggered enemy releases */
+#define SPAWN_DELAY 70  /* ticks between staggered enemy releases */
 #include "asynch.h"
 #include "types.h"
 #include "model.h"

@@ -103,8 +103,44 @@ void render_background(UINT32 *base);
  * Output: Horizontal trail lines; nothing if trail_timer <= 0 */
 void render_dash_trail(const Player *player, UINT32 *base);
 
+/*
+ * Button geometry — shared between render.c and crashers.c for hit-testing.
+ *
+ * Splash screen buttons (left-aligned):
+ *   "1 Player": x=105..205, y=189..214
+ *   "Quit":     x=105..205, y=222..247
+ */
+#define SPLASH_BTN_X1   105
+#define SPLASH_BTN_X2   205
+#define SPLASH_1P_Y1    189
+#define SPLASH_1P_Y2    214
+#define SPLASH_QUIT_Y1  222
+#define SPLASH_QUIT_Y2  247
+
+/*
+ * End-screen buttons (centered, 200px wide):
+ *   "Main Menu": x=220..420, y=250..275
+ *   "Quit":      x=220..420, y=283..308
+ */
+#define END_BTN_X1   220
+#define END_BTN_X2   420
+#define END_MENU_Y1  250
+#define END_MENU_Y2  275
+#define END_QUIT_Y1  283
+#define END_QUIT_Y2  308
+
 void render_reset(void);
 
 void render_splash(UINT32 *base, const UINT8 *font, bool quit);
 
-#endif /* RENDER_H */
+/*
+ * Function purpose: Renders the post-game end screen (death or win).
+ * Shows the death bitmap or "YOU WIN" text, then two buttons:
+ *   hovered == 0 -> arrow points at "Main Menu"
+ *   hovered == 1 -> arrow points at "Quit"
+ * Input: framebuffer base, font, won flag, hovered button index
+ * Output: end screen drawn to base
+ */
+void render_end_screen(UINT32 *base, const UINT8 *font, bool won, int hovered);
+
+#endif

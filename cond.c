@@ -297,8 +297,8 @@ void spawn_enemy(Model *model, int stage)
     {
         /* Initialize inactive enemies */
         model->enemy[i].active = FALSE; /* queue, don't activate yet */
-        model->enemy[i].health = 20;
-        model->enemy[i].damage = 4;
+        model->enemy[i].health = 40;
+        model->enemy[i].damage = 5;
         model->enemy[i].w = 32;
         model->enemy[i].h = 64;
         model->enemy[i].delta_x = 0;

@@ -29,7 +29,7 @@ void init_model(Model *model)
     model->player.delta_x = 0;
     model->player.delta_y = 0;
     model->player.health = 100;
-    model->player.damage = 8;
+    model->player.damage = 5;
     model->player.potions = 4;
     model->player.is_attacking = FALSE;
     model->player.item_cooldown = 0;
@@ -63,8 +63,8 @@ void init_model(Model *model)
     model->enemy[0].y = 296; /* upper part of walkable lane */
     model->enemy[0].delta_x = 0;
     model->enemy[0].delta_y = 0;
-    model->enemy[0].health = 20;
-    model->enemy[0].damage = 4;
+    model->enemy[0].health = 40;
+    model->enemy[0].damage = 5;
     model->enemy[0].w = 32;
     model->enemy[0].h = 64;
     model->enemy[0].is_attacking = FALSE;
@@ -157,7 +157,7 @@ void init_model(Model *model)
         model->item[i].y = 316; /* off-screen but within lane height */
         model->item[i].h = 16;
         model->item[i].w = 16;
-        model->item[i].value = 30;
+        model->item[i].value = 20;
         model->item[i].grabbed = TRUE; /* inert until drop_item activates it */
     }
 

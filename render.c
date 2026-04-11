@@ -30,13 +30,6 @@ void render(const Model *model, UINT32 *base){
 
         render_splash(base, font, model->quit);
     }else{
-        if (model->player.health <= 0)
-        {
-            clear_screen(base);
-            render_death_screen(base);
-            return;
-        }
-    
         render_dash_trail(&model->player, base);
         render_player(&model->player, base);
     
@@ -534,6 +527,58 @@ void render_death_screen(UINT32 *base)
         }
     }       
 }  
+
+/*
+ * Function purpose: Renders the post-game end screen (death or win).
+ * Input: framebuffer base, font, won flag, hovered (0=menu, 1=quit)
+ * Output: end screen drawn to base
+ */
+void render_end_screen(UINT32 *base, const UINT8 *font, bool won, int hovered)
+{
+    int r, w;
+    int mx = get_mouse_x();
+    int my = get_mouse_y();
+
+    if (won)
+    {
+        plot_string(base, 170, 240, "YOU WIN!", font);
+    }
+    else
+    {
+        UINT16 x = (640 - DEAD_W) / 2;
+        UINT16 y = 160;
+        for (r = 0; r < DEAD_H; r++)
+            for (w = 0; w < 7; w++)
+                pbm32(base, y + r, x + (w * 32), &dead_bitmap[r][w], 1);
+    }
+
+    /* Main Menu button */
+    plot_string(base, END_MENU_Y1 + 8, END_BTN_X1 + 10, "Main Menu", font);
+    plot_horizontal_line(base, END_MENU_Y1, END_BTN_X1, 200);
+    plot_horizontal_line(base, END_MENU_Y2, END_BTN_X1, 200);
+    plot_vertical_line(base, END_MENU_Y1, END_BTN_X1, 25);
+    plot_vertical_line(base, END_MENU_Y1, END_BTN_X2, 25);
+
+    /* Quit button */
+    plot_string(base, END_QUIT_Y1 + 8, END_BTN_X1 + 10, "Quit", font);
+    plot_horizontal_line(base, END_QUIT_Y1, END_BTN_X1, 200);
+    plot_horizontal_line(base, END_QUIT_Y2, END_BTN_X1, 200);
+    plot_vertical_line(base, END_QUIT_Y1, END_BTN_X1, 25);
+    plot_vertical_line(base, END_QUIT_Y1, END_BTN_X2, 25);
+
+    /* Arrow indicator */
+    if (hovered == 0)
+        pbm8(base, END_MENU_Y1 + 8, END_BTN_X2 + 4, arrow, 8);
+    else
+        pbm8(base, END_QUIT_Y1 + 8, END_BTN_X2 + 4, arrow, 8);
+
+    /* Crosshair cursor */
+    plot_horizontal_line(base, (UINT16)my,
+                         (UINT16)(mx > 3 ? mx - 3 : 0), 7);
+    plot_vertical_line(base,
+                       (UINT16)(my > 3 ? my - 3 : 0),
+                       (UINT16)mx, 7);
+}
 
 void render_splash(UINT32 *base, const UINT8 *font, bool quit){
     int mx = get_mouse_x();

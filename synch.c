@@ -74,12 +74,12 @@ void separate_enemies(Model *model) {
                  * (MIN_Y_WALK..MAX_Y) so neither enemy is pushed off the path. */
                 if (y_j >= y_i) {
                     /* j is below (or level with) i: push j down, i up */
-                    if (y_j < MAX_Y)      model->enemy[j].y++;
+                    if (y_j < MAX_Y) model->enemy[j].y++;
                     if (y_i > MIN_Y_WALK) model->enemy[i].y--;
                 } else {
                     /* j is above i: push j up, i down */
                     if (y_j > MIN_Y_WALK) model->enemy[j].y--;
-                    if (y_i < MAX_Y)      model->enemy[i].y++;
+                    if (y_i < MAX_Y) model->enemy[i].y++;
                 }
             }
         }

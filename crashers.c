@@ -19,13 +19,21 @@ void process_async_event(Model *model, UINT8 scan)
     switch (scan)
     {
         case SCAN_J:
-            attack_swing_sound();
+            if(model->player.attack_cooldown == 0){
+                 attack_swing_sound();
+            }         
             on_light_attack(&model->player,
                             model->player.attack_cooldown);
             break;
 
         case SCAN_E:
             consume_potion(&model->player);
+            break;
+
+        case SCAN_L:
+            if(model -> player.dash_cooldown == 0){
+                 on_light_attack(&model->player, model-> player.attack_cooldown);
+        }
             break;
 
         case SCAN_ESC:

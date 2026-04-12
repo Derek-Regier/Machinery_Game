@@ -616,6 +616,13 @@ void render_splash(UINT32 *base, const UINT8 *font, bool quit){
     plot_vertical_line(base, 222, 105, 25);
     plot_vertical_line(base, 222, 205, 25);
 
+    plot_string(base, 200, 400, "Instructions:", font);
+    plot_string(base, 216, 400, "W,A,S,D for Movement", font);
+    plot_string(base, 224, 400, "J=Attack", font);
+    plot_string(base, 232, 400, "L=Dash", font);
+    plot_string(base, 240, 400, "ESC=Endgame", font);
+    plot_rectangle(base, 180, 385, 80, 200);
+
     if (quit){
         pbm8(base, 232, 210, arrow, 8);
     }else{

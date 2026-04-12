@@ -7,8 +7,8 @@
  */
 #ifndef SYNCH_H
 #define SYNCH_H
-#define ENEMY_ATTACK_COOLDOWN 80
-#define ENEMY_WINDUP 35
+#define ENEMY_ATTACK_COOLDOWN 60
+#define ENEMY_WINDUP 15
 #define BOSS_ATTACK_COOLDOWN 80
 #define HIT_FLASH_DURATION 4
 #define STOMP_DURATION 40  /* ticks for full stomp: 10 leg-up, 10 shockwave */

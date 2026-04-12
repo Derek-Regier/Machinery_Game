@@ -69,7 +69,7 @@ void player_hits_enemy(Player *player, Enemy *enemy)
     bool died;
 
     if (!player_is_attacking(player)) return;
-    if (!enemy->active)               return;  /* already dead, skip */
+    if (!enemy->active) return;  /* already dead, skip */
 
     if (player_hitbox_overlaps(player,
                                enemy->x, enemy->y,
@@ -289,8 +289,8 @@ void spawn_enemy(Model *model, int stage)
     {
         /* Initialize inactive enemies */
         model->enemy[i].active = FALSE; /* queue, don't activate yet */
-        model->enemy[i].health = 40;
-        model->enemy[i].damage = 5;
+        model->enemy[i].health = 35;
+        model->enemy[i].damage = 4;
         model->enemy[i].w = 32;
         model->enemy[i].h = 64;
         model->enemy[i].delta_x = 0;

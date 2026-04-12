@@ -185,7 +185,7 @@ int main(void)
             {
                 int mx = get_mouse_x();
                 int my = get_mouse_y();
-                int in_1p   = (mx >= SPLASH_BTN_X1 && mx <= SPLASH_BTN_X2
+                int in_1p = (mx >= SPLASH_BTN_X1 && mx <= SPLASH_BTN_X2 
                             && my >= SPLASH_1P_Y1   && my <= SPLASH_1P_Y2);
                 int in_quit = (mx >= SPLASH_BTN_X1 && mx <= SPLASH_BTN_X2
                             && my >= SPLASH_QUIT_Y1 && my <= SPLASH_QUIT_Y2);
@@ -273,7 +273,7 @@ int main(void)
                             end_done = 1;        /* restart: outer loop re-inits */
                         else if (in_quit)
                         {
-                            running  = 0;
+                            running = 0;
                             end_done = 1;
                         }
                     }

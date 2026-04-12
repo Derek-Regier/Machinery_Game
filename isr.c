@@ -6,7 +6,7 @@
  * The IKBD ISR body (do_IKBD_ISR) lives in input.c so that module
  * owns all hardware keyboard/mouse state.
  *
- * Authors: Derek Regier, Aydin Saloniu, Chintan Thakor
+ * Authors: Derek Regier, Aydin Salonius, Chintan Thakor
  * Course:  COMP 2659, Winter 2026
  */
 

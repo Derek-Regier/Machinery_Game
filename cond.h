@@ -21,14 +21,6 @@
  */
 bool player_take_damage(Player *player, int damage);
 
-/*
- * Function Purpose: Updates the health HUD to reflect the player's current health.
- * Calls into the renderer/raster layer (TODO).
- * Input: The player object
- * Output: None -> Changes the HUD
- * Assumptions: Player's health is appropriate and in bounds.
- */
-void update_health_HUD(Player *player);
 
 /*
  * Function Purpose: Checks boss summon threshold and marks boss->summoned.

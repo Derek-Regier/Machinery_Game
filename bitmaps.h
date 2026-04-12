@@ -60,6 +60,8 @@ extern UINT32 mountain_1[32];
 
 extern UINT32 dead_bitmap[21][7];
 
+extern UINT32 you_win_bitmap[21][7];
+
 extern UINT16 hit_star_bitmap[16]; /* 16x16 impact spark for hit flash */
 
 extern UINT32 boss_bitmap_right_stomp[128][4]; /* leg raised for stomp */

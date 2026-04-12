@@ -224,7 +224,6 @@ int main(void)
                 clear_screen(back_buf);
                 render_reset();
                 render(&model, back_buf);
-
                 set_video_base(back_buf);
                 temp = front_buf;
                 front_buf = back_buf;
@@ -235,11 +234,12 @@ int main(void)
 
         /* End screen loop (death or win) */
         {
+            
             bool won     = (model.boss.health <= 0 && model.player.health > 0);
             int end_done = 0;
-
             while (!end_done)
-            {
+            { 
+                
                 if (render_request)
                 {
                     int mx = get_mouse_x();
@@ -258,7 +258,6 @@ int main(void)
                     front_buf = back_buf;
                     back_buf = temp;
                     render_request = 0;
-
                     if (get_mouse_button())
                     {
                         if (in_menu)

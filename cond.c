@@ -42,14 +42,6 @@ bool player_take_damage(Player *player, int damage)
     return player->health <= 0;
 }
 
-/*
- * Updates health HUD visual to match current player health.
- * Renderer/raster implementation is TODO.
- */
-void update_health_HUD(Player *player)
-{
-    /* TODO: call raster layer to redraw health bar */
-}
 
 /*
  * Checks whether the boss has crossed the 50% health threshold and

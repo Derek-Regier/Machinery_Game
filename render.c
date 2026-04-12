@@ -541,7 +541,11 @@ void render_end_screen(UINT32 *base, const UINT8 *font, bool won, int hovered)
 
     if (won)
     {
-        plot_string(base, 170, 240, "YOU WIN!", font);
+        UINT16 x = (640 - DEAD_W) / 2;
+        UINT16 y = 160;
+        for (r = 0; r < DEAD_H; r++)
+            for (w = 0; w < 7; w++)
+                pbm32(base, y + r, x + (w * 32), &you_win_bitmap[r][w], 1);
     }
     else
     {

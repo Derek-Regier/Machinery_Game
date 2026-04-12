@@ -159,7 +159,7 @@ int main(void)
 
     while (running)
     {
-        /* Re-initialise model for a fresh run */
+        /* Re-initialise model for a fresh run*/
         init_model(&model);
 
         clear_screen(back_buf);
@@ -230,6 +230,7 @@ int main(void)
                 back_buf = temp;
                 render_request = 0;
             }
+            
         }
 
         /* End screen loop (death or win) */
@@ -237,9 +238,9 @@ int main(void)
             
             bool won     = (model.boss.health <= 0 && model.player.health > 0);
             int end_done = 0;
+            init_model(&model); /*stops on_hit_sound effect due to setting enemies in their initial position*/
             while (!end_done)
             { 
-                
                 if (render_request)
                 {
                     int mx = get_mouse_x();
